@@ -10,8 +10,9 @@ namespace DotA.Model
     public class Item
     {
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string ID { get; set; }
         public byte[] Picture { get; set; }
+        public bool IsRecipe { get; set; }
 
         /// <summary>
         /// Stats provided by item
@@ -21,9 +22,9 @@ namespace DotA.Model
         public decimal Intelligence { get; set; }
 
         private decimal cost = 0; 
-        public decimal Cost
+        public decimal ItemCost
         {
-            get => Recipe.Count > 0 ? Recipe.Sum(i => i.Cost) : cost;
+            get => Recipe.Count > 0 ? Recipe.Sum(i => i.ItemCost) : cost;
             set => cost = value;
         }
 

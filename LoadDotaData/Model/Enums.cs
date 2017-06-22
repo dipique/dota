@@ -67,22 +67,43 @@ namespace DotA.Model.Enums
     public enum EffectClass
     {
         Other = 0,
+
+        [ValueDest("BaseDamage")]
+        [JID("bonus_damage")]
         Damage,
+
+        [ValueDest()]
+        [JID("lifesteal_percent")]
         Lifesteal,
-        Mobility,
+
+        [ValueDest()]
+        [JID("movement_speed_percent_bonus")]
+        Movement_Speed_Pct,
+
+        [JID("slow")]
+        [ExpectedValue("duration", "Duration")]
         Slow,
+
         Disable,
         XP_Gain,
         Cooldown_Reduction,
         Movement_Speed,
+
+        [JID("health_bonus")]
         Health,
         All_Stats,
         Evasion,
+
+        [JID("bonus_armor")]
         Armor,
         Spell_Amplification,
+
+        [JID("bonus_attack_speed")]
         Attack_Speed,
         Mana_Regen,
         Mana,
+
+        [JID("bonus_intellect")]
         Intelligence,
         Cast_Range,
         Magic_Resistance,
@@ -92,7 +113,10 @@ namespace DotA.Model.Enums
         Attack_Range,
         Agility,
         Health_Regen,
-        Spell_Lifesteal
+        Spell_Lifesteal,
+
+        [JID("stun_duration")]
+        Stun
     }
 
     [Prefix("DOTA_ABILITY_BEHAVIOR_")]
@@ -140,6 +164,18 @@ namespace DotA.Model.Enums
     }
 
     /// <summary>
+    /// JSON identifiers for certain elements
+    /// </summary>
+    public class JID : Attribute
+    {
+        public string ID { get; set; }
+        public JID(string id)
+        {
+            ID = id;
+        }
+    }
+
+    /// <summary>
     /// For enums defined in Dota already, the prefix is removed from each value for easier coding. It is kept to make
     /// it easier to parse files.
     /// </summary>
@@ -149,6 +185,33 @@ namespace DotA.Model.Enums
         public Prefix(string val)
         {
             Value = val;
+        }
+    }
+
+    /// <summary>
+    /// Determines which field should store the value provided. If blank it will be
+    /// stored in the "Amount" field.
+    /// </summary>
+    public class ValueDest : Attribute
+    {
+        public string FieldName { get; set; }
+        public ValueDest(string field = "Amount")
+        {
+            FieldName = field;
+        }
+    }
+
+    /// <summary>
+    /// Expected
+    /// </summary>
+    public class ExpectedValue : Attribute
+    {
+        public string Indicator { get; set; }
+        public string DestField { get; set; }
+        public ExpectedValue(string ind, string dest)
+        {
+            Indicator = ind;
+            DestField = dest;
         }
     }
 

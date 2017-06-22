@@ -28,11 +28,6 @@ namespace DotA.Model
         /// </summary>
         public decimal Amount { get; set; }
 
-        /// <summary>
-        /// Some classes (such as slow) have a duration; these are captured here.
-        /// </summary>
-        public decimal Duration { get; set; }
-
         public TargetType TargetType { get; set; } = TargetType.NONE;
         public DamageType DamageType { get; set; } = DamageType.None;
         public DamageScalingType ScalingType { get; set; } = DamageScalingType.None;
@@ -44,11 +39,23 @@ namespace DotA.Model
         public LinkensInteraction LinkensInteraction { get; set; } = LinkensInteraction.None;
 
         //Potential level-scaling properties
-        public decimal[] DisableDuration { get; set; } = new decimal[] { 0 };
+        public decimal[] Duration { get; set; } = new decimal[] { 0 };
         public decimal[] CastRange { get; set; } = new decimal[] { 0 };
-        public decimal[] BaseDamage { get; set; } = new decimal[] { 0 };
         public int[] Cooldown { get; set; } = new int[] { 0 };
         public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
+        private decimal[] baseDamage = new decimal[] { 0 };
+        public decimal[] BaseDamage //defaults to physical
+        {
+            get => baseDamage;
+            set
+            {
+                baseDamage = value;
+                if (value == null || value.Count() == 0 || value[0] == 0)
+                    DamageType = DamageType.None;
+                else
+                    DamageType = DamageType.Physical;                
+            }
+        }
 
         /// <summary>
         /// Effects can be "leveled up" for abilities, but not for items. These methods
@@ -70,10 +77,10 @@ namespace DotA.Model
             if (Cooldown.Count() < points) return 0;
             return Cooldown[points - 1];
         }
-        public decimal GetDisableDuration(int points = 1)
+        public decimal GetDuration(int points = 1)
         {
-            if (DisableDuration.Count() < points) return 0;
-            return DisableDuration[points - 1];
+            if (Duration.Count() < points) return 0;
+            return Duration[points - 1];
         }
 
         public bool HasAOE => AOE > 0;

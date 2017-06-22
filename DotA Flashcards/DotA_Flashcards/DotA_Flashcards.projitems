@@ -12,20 +12,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\CustomQuestion.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\FlashcardMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Ability.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\DotaData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Effect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Enums.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Hero.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Item.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\QuestionResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Parsing\DotAParser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Parsing\StringManipulation.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
