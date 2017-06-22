@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>12e495ce-0857-428d-8d2f-1ee85367509e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>DotA</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\CustomQuestion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\FlashcardMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Ability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\DotaData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Effect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Enums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Hero.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Item.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Flashcards\QuestionResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Parsing\DotAParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Parsing\StringManipulation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
