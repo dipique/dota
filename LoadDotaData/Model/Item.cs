@@ -7,11 +7,12 @@ using DotA.Model.Enums;
 
 namespace DotA.Model
 {
+    [ImageFolder("item")]
     public class Item
     {
         public string Name { get; set; }
         public string ID { get; set; }
-        public byte[] Picture { get; set; }
+        public string ImgName { get; set; }
         public bool IsRecipe { get; set; }
 
         /// <summary>

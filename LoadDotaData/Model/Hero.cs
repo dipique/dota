@@ -7,13 +7,14 @@ using DotA.Model.Enums;
 
 namespace DotA.Model
 {
+    [ImageFolder("hero")]
     public class Hero
     {
 
         [InputHeader("HERO")] public string Name { get; set; }
-        public byte[] Picture { get; set; }
+        public string ImgName { get; set; }
 
-        
+
         [InputHeader("RTCL")] public AttackType AttackType { get; set; }
         [InputHeader("RANG")] public AttackType AttackRange { get; set; }
         [InputHeader("MSPD")] public AttackType MissileSpeed { get; set; }

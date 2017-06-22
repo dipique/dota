@@ -223,4 +223,13 @@ namespace DotA.Model.Enums
             Header = header;
         }
     }
+
+    public class ImageFolder : Attribute
+    {
+        public string FolderName { get; set; }
+        public ImageFolder(string folder)
+        {
+            FolderName = folder;
+        }
+    }
 }
