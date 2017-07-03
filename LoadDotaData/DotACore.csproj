@@ -51,6 +51,7 @@
     <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\Hero.cs" />
     <Compile Include="Model\Item.cs" />
+    <Compile Include="Model\Parseable.cs" />
     <Compile Include="Parsing\DotAParser.cs" />
     <Compile Include="Parsing\StringManipulation.cs" />
     <Compile Include="Program.cs" />

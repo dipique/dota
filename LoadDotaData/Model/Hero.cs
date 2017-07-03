@@ -7,6 +7,9 @@ using DotA.Model.Enums;
 
 namespace DotA.Model
 {
+    /// <summary>
+    ///  Located in the game\dota\scripts\npc folder inside your Dota 2 install directory
+    /// </summary>
     [ImageFolder("hero")]
     public class Hero
     {
