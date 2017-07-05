@@ -81,42 +81,92 @@ namespace DotA.Model.Enums
         Movement_Speed_Pct,
 
         [JID("slow")]
-        [ExpectedValue("duration", "Duration")]
+        [DurationTag("duration")]
         Slow,
 
         Disable,
         XP_Gain,
+
+        [JID("bonus_cooldown")]
         Cooldown_Reduction,
+
+        [JID("bonus_movement")]
         Movement_Speed,
 
         [JID("health_bonus")]
         Health,
+
+        [JID("health_restore")]
+        Health_Restore,
+
+        [JID("mana_restore")]
+        Mana_Restore,
+
+        [JID("bonus_all_stats")]
         All_Stats,
+
+        [JID("bonus_evasion")]
+        [PercentEffect]
         Evasion,
 
         [JID("bonus_armor")]
         Armor,
+
+        [PercentEffect]
         Spell_Amplification,
 
         [JID("bonus_attack_speed")]
         Attack_Speed,
+
+        [JID("mana_restore")]
         Mana_Regen,
+
+        [JID("bonus_mana")]
         Mana,
 
-        [JID("bonus_intellect")]
+        [JID("bonus_intellect", "bonus_intelligence")]
         Intelligence,
         Cast_Range,
+
+        [JID("bonus_magical_armor")]
         Magic_Resistance,
+
         GPM,
         Gold,
+
+        [JID("bonus_strength")]
         Strength,
         Attack_Range,
         Agility,
+
+        [ActiveEffect]
+        [JID("health_restore")]
         Health_Regen,
+
+        [PercentEffect]
         Spell_Lifesteal,
 
+        [ActiveEffect]
+        [JID("extra_spell_damage_precent")]
+        [PercentEffect]
+        Take_Extra_Magic_Damage,
+
+        [ActiveEffect]
         [JID("stun_duration")]
-        Stun
+        Stun,
+
+        [JID("true_sight_range")]
+        True_Sight,
+
+        [ActiveEffect]
+        [ExpectedValue("duration", "Duration")]
+        [JID("fade_time", "fade_delay")]
+        Invisibility,
+
+
+        [JID("corruption_armor")]
+        [DurationTag("curruption_duration")]
+        Armor_Reduction
     }
 
     [Prefix("DOTA_ABILITY_BEHAVIOR_")]
@@ -168,10 +218,10 @@ namespace DotA.Model.Enums
     /// </summary>
     public class JID : Attribute
     {
-        public string ID { get; set; }
-        public JID(string id)
+        public string[] IDs { get; set; }
+        public JID(params string[] ids)
         {
-            ID = id;
+            IDs = ids;
         }
     }
 
@@ -202,7 +252,7 @@ namespace DotA.Model.Enums
     }
 
     /// <summary>
-    /// Expected
+    /// For this effect class, we expect to see certain other attributes
     /// </summary>
     public class ExpectedValue : Attribute
     {
@@ -231,5 +281,30 @@ namespace DotA.Model.Enums
         {
             FolderName = folder;
         }
+    }
+
+    /// <summary>
+    /// Indicates that a given effect should be assumed to be an active (passive is the default)
+    /// </summary>
+    public class ActiveEffect : Attribute
+    {
+        public ActiveEffect() { }
+    }
+
+    /// <summary>
+    /// Indicates that a given effect value is a percentage
+    /// </summary>
+    public class PercentEffect : Attribute
+    {
+        public PercentEffect() { }
+    }
+
+    /// <summary>
+    /// Some effects store their duration in a separate entry; it can be specified using this attribute
+    /// </summary>
+    public class DurationTag : Attribute
+    {
+        public string Tag { get; set; }
+        public DurationTag(string tag) { Tag = tag; }
     }
 }

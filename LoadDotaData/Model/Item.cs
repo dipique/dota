@@ -32,14 +32,16 @@ namespace DotA.Model
         [JID("ItemCost")]
         public decimal ItemCost
         {
-            get => Recipe.Count > 0 ? Recipe.Sum(i => i.ItemCost) : cost;
+            get => Recipe.Count > 0 ? GetRecipeItems.Sum(i => i.ItemCost) : cost;
             set => cost = value;
         }
 
         /// <summary>
         /// Items that produce 
         /// </summary>
-        public List<Item> Recipe { get; set; }
+        public List<string> Recipe { get; set; }
+
+        public List<Item> GetRecipeItems { get; set; } //TODO this should do a lookup to get all the items from the strings
 
     }
 }

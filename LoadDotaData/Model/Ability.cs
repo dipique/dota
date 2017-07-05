@@ -12,8 +12,8 @@ namespace DotA.Model
     {
         public string Description { get; set; }
 
-        public int MaxLevels { get; set; } //how many ability points can be placed in this ability?
+        public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability?
 
-        public bool IsUltimate { get; set; } = false;        
+        public bool IsUltimate { get; set; } = false;
     }
 }
