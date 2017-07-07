@@ -66,13 +66,33 @@ namespace DotA.Model.Enums
 
     public enum EffectClass
     {
-        Other = 0,
+        None = 0,
+
+        [JID("bash_change_melee")]
+        [ValueDest(nameof(Effect.Chance))]
+        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
+        [ExpectedEntry("bash_cooldown", nameof(Effect.Cooldown))]
+        [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
+        Bash_Melee,
+
+        [JID("bash_change_ranged")]
+        [ValueDest(nameof(Effect.Chance))]
+        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
+        [ExpectedEntry("bash_cooldown", nameof(Effect.Cooldown))]
+        [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
+        Bash_Ranged,
+
+        [ValueDest(nameof(Effect.CastRange))]
+        [JID("blink_range")]
+        Blink,
+
+        [JID("crit_chance")]
+        Crit,
 
         [ValueDest("BaseDamage")]
         [JID("bonus_damage")]
         Damage,
 
-        [ValueDest()]
         [JID("lifesteal_percent")]
         Lifesteal,
 
@@ -81,10 +101,13 @@ namespace DotA.Model.Enums
         Movement_Speed_Pct,
 
         [JID("slow")]
-        [DurationTag("duration")]
+        [ExpectedEntry("duration", nameof(Effect.Duration))]
         Slow,
 
+        [JID("sheep_duration")]
+        [ValueDest(nameof(Effect.Duration))]
         Disable,
+
         XP_Gain,
 
         [JID("bonus_cooldown")]
@@ -113,6 +136,7 @@ namespace DotA.Model.Enums
         Armor,
 
         [PercentEffect]
+        [JID("spell_amp")]
         Spell_Amplification,
 
         [JID("bonus_attack_speed")]
@@ -126,17 +150,28 @@ namespace DotA.Model.Enums
 
         [JID("bonus_intellect", "bonus_intelligence")]
         Intelligence,
+
+        [JID("cast_range_bonus")]
         Cast_Range,
 
         [JID("bonus_magical_armor")]
         Magic_Resistance,
 
         GPM,
+
+        [ActiveEffect]
+        [ValueDest(nameof(Effect.Cooldown))]
+        [JID("bonus_gold")]
+        [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
         Gold,
 
         [JID("bonus_strength")]
         Strength,
+
+        [JID("base_attack_range")]
         Attack_Range,
+
+        [JID("bonus_agility")]
         Agility,
 
         [ActiveEffect]
@@ -159,13 +194,12 @@ namespace DotA.Model.Enums
         True_Sight,
 
         [ActiveEffect]
-        [ExpectedValue("duration", "Duration")]
+        [ExpectedEntry("duration", nameof(Effect.Duration))]
         [JID("fade_time", "fade_delay")]
         Invisibility,
 
-
         [JID("corruption_armor")]
-        [DurationTag("curruption_duration")]
+        [ExpectedEntry("curruption_duration", nameof(Effect.Duration))]
         Armor_Reduction
     }
 
@@ -204,7 +238,7 @@ namespace DotA.Model.Enums
     /// separated by underscore. Optionally, other text can be added for display. These
     /// are also separated by underscore if hierarchical.
     /// </summary>
-    public class OptionText : Attribute
+    public sealed class OptionText : Attribute
     {
         public string Description { get; set; }
         public OptionText(string desc)
@@ -216,7 +250,7 @@ namespace DotA.Model.Enums
     /// <summary>
     /// JSON identifiers for certain elements
     /// </summary>
-    public class JID : Attribute
+    public sealed class JID : Attribute
     {
         public string[] IDs { get; set; }
         public JID(params string[] ids)
@@ -226,10 +260,22 @@ namespace DotA.Model.Enums
     }
 
     /// <summary>
+    /// Indicates what section types, if any, have a special handler within that implementation of Parseable
+    /// </summary>
+    public sealed class SpecialHandlerSectionMethod : Attribute
+    {
+        public string SectionType { get; set; }
+        public SpecialHandlerSectionMethod(string sectionType)
+        {
+            SectionType = sectionType;
+        }
+    }
+
+    /// <summary>
     /// For enums defined in Dota already, the prefix is removed from each value for easier coding. It is kept to make
     /// it easier to parse files.
     /// </summary>
-    public class Prefix : Attribute
+    public sealed class Prefix : Attribute
     {
         public string Value { get; set; }
         public Prefix(string val)
@@ -242,30 +288,31 @@ namespace DotA.Model.Enums
     /// Determines which field should store the value provided. If blank it will be
     /// stored in the "Amount" field.
     /// </summary>
-    public class ValueDest : Attribute
+    public sealed class ValueDest : Attribute
     {
-        public string FieldName { get; set; }
-        public ValueDest(string field = "Amount")
+        public string DestProperty { get; set; }
+        public ValueDest(string prop = "Amount")
         {
-            FieldName = field;
+            DestProperty = prop;
         }
     }
 
     /// <summary>
     /// For this effect class, we expect to see certain other attributes
     /// </summary>
-    public class ExpectedValue : Attribute
+   [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public sealed class ExpectedEntry : Attribute
     {
         public string Indicator { get; set; }
         public string DestField { get; set; }
-        public ExpectedValue(string ind, string dest)
+        public ExpectedEntry(string ind, string dest)
         {
             Indicator = ind;
             DestField = dest;
         }
     }
 
-    public class InputHeader: Attribute
+    public sealed class InputHeader: Attribute
     {
         public string Header { get; set; }
         public InputHeader(string header)
@@ -274,7 +321,7 @@ namespace DotA.Model.Enums
         }
     }
 
-    public class ImageFolder : Attribute
+    public sealed class ImageFolder : Attribute
     {
         public string FolderName { get; set; }
         public ImageFolder(string folder)
@@ -286,7 +333,7 @@ namespace DotA.Model.Enums
     /// <summary>
     /// Indicates that a given effect should be assumed to be an active (passive is the default)
     /// </summary>
-    public class ActiveEffect : Attribute
+    public sealed class ActiveEffect : Attribute
     {
         public ActiveEffect() { }
     }
@@ -294,17 +341,8 @@ namespace DotA.Model.Enums
     /// <summary>
     /// Indicates that a given effect value is a percentage
     /// </summary>
-    public class PercentEffect : Attribute
+    public sealed class PercentEffect : Attribute
     {
         public PercentEffect() { }
-    }
-
-    /// <summary>
-    /// Some effects store their duration in a separate entry; it can be specified using this attribute
-    /// </summary>
-    public class DurationTag : Attribute
-    {
-        public string Tag { get; set; }
-        public DurationTag(string tag) { Tag = tag; }
     }
 }

@@ -41,8 +41,17 @@ namespace DotA.Model
         //Potential level-scaling properties
         public decimal[] Duration { get; set; } = new decimal[] { 0 };
         public decimal[] CastRange { get; set; } = new decimal[] { 0 };
-        public int[] Cooldown { get; set; } = new int[] { 0 };
+
+        [JID("AbilityCastPoint")]
+        public decimal CastPoint { get; set; } = 0;
+
+        [JID("AbilityCooldown")]
+        public decimal[] Cooldown { get; set; } = new decimal[] { 0 };
+
+        [JID("AbilityManaCost")]
         public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
+
+        public decimal[] Chance { get; set; } = new decimal[] { 1 };
         private decimal[] baseDamage = new decimal[] { 0 };
         public decimal[] BaseDamage //defaults to physical
         {
