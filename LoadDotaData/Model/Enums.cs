@@ -204,20 +204,22 @@ namespace DotA.Model.Enums
     }
 
     [Prefix("DOTA_ABILITY_BEHAVIOR_")]
+    [Flags]
     public enum EffectType //src: items.txt file
     {
         HIDDEN = 1,
-        PASSIVE = 2,
-        NO_TARGET = 4,
-        UNIT_TARGET = 8,
-        POINT = 16,
-        AOE = 32,
-        NOT_LEARNABLE = 64,
-        CHANNELLED = 128,
-        ITEM = 256,
-        TOGGLE = 512,
-        DIRECTIONAL = 1024,
-        IMMEDIATE = 2048
+        PASSIVE = 1 << 1,
+        NO_TARGET = 1 << 2,
+        UNIT_TARGET = 1 << 3,
+        POINT = 1 << 4,
+        AOE = 1 << 5,
+        NOT_LEARNABLE = 1 << 6,
+        CHANNELLED = 1 << 7,
+        ITEM = 1 << 8,
+        TOGGLE = 1 << 9,
+        DIRECTIONAL = 1 << 10,
+        IMMEDIATE = 1 << 11,
+        ROOT_DISABLES = 1 << 12
     }
 
     [Prefix("DOTA_UNIT_TARGET_")]

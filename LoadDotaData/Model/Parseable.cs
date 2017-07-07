@@ -14,6 +14,7 @@ namespace DotA.Model
     {
         private const string START_IND = "\t//=================================================================================================================";
         private const int MAX_ID = 255; //dota IDs only go up to 255
+        private const char BEHAVIOR_SEP = '|';
 
         public string Name { get; set; }
 
@@ -43,14 +44,27 @@ namespace DotA.Model
         public decimal Strength => Effects.Where(e => e.Class == EffectClass.Strength).Sum(e => e.Amount);
         public decimal Intelligence => Effects.Where(e => e.Class == EffectClass.Intelligence).Sum(e => e.Amount);
 
-        public Ability ActiveAbility { get; set; } = new Ability();
+        //public Ability ActiveAbility { get; set; } = new Ability();
         public List<Effect> Effects { get; set; } = new List<Effect>();
+        public EffectType Type { get; set; }
+
+        [JID("AbilityBahavior")]
+        public string AbilityBehavior
+        {
+            set
+            {
+                var prefix = typeof(EffectType).GetCustomAttribute<Prefix>().Value;
+                var behaviors = value.Split(BEHAVIOR_SEP).Select(s => prefix + s.Trim()).ToArray();
+                Type = (EffectType)behaviors.Select(a => (int)Enum.Parse(typeof(EffectType), a)).Sum();
+            }
+        }
+            
 
         public static T ParseItem<T>(Section data) where T : Parseable
         {
-            T retVal = Activator.CreateInstance<T>();
-            ApplyEntries(retVal, data); //set header-level entries
+            T retVal = Activator.CreateInstance<T>();            
             data.Sections.ForEach(s => ParseSection(retVal, s));
+            ApplyEntries(retVal, data); //set header-level entries
             return retVal;
         }
 
@@ -77,6 +91,11 @@ namespace DotA.Model
                     {
                         matchingProp.SetValue(item, e.Value);
                     }
+                }
+                else
+                {
+                    //Another possibility is that the tag actually applies the primary effect of the item. It can, however,
+                    //be deceptively hard to actually locate that effect.
                 }
             }
         }
@@ -109,6 +128,49 @@ namespace DotA.Model
         {
             var entries = s.GetAllEntries();
 
+            //Every entry with a JID will have it own effect.
+            foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
+            {
+                var effect = new Effect() {
+                    Class = entry.AssociatedEffectClass
+                };
+
+                //set property to the entry value
+                SetEffectProperty(effect, entry);
+
+                //Now, get any entries associated with it
+                foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
+                                                       .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
+                {
+                    associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest; //I'm not 100% sure I can do this
+                    SetEffectProperty(effect, associatedEntry);
+                }
+
+                //Add the entry
+                Effects.Add(effect);
+            }
+        }
+
+        public static void SetEffectProperty(Effect effect, Entry entry)
+        {
+            //set property to the entry value
+            var propName = entry.ValueDest ?? nameof(Effect.Amount);
+            var destProp = typeof(Effect).GetProperty(propName);
+            if (destProp.PropertyType.IsArray)
+            {
+                if (entry.IsNumericValue)
+                {
+                    decimal[] newVal = new decimal[] { entry.NumericValue };
+                    destProp.SetValue(effect, newVal);
+                }
+                else
+                {
+                    string[] newVal = new string[] { entry.Value };
+                    destProp.SetValue(effect, newVal);
+                }
+            }
+            else
+                destProp.SetValue(effect, entry.Value);
         }
     }
 
@@ -223,11 +285,11 @@ namespace DotA.Model
         }
         public string Value { get; set; }
 
-        public string ValueDest { get; set; } = string.Empty;
+        public string ValueDest { get; set; } = null;
         public decimal NumericValue { get; set; } = 0;
         public bool IsNumericValue { get; set; } = false;
         public bool IsPercentage { get; set; } = false;
-        public EffectClass AssociatedEffect { get; set; } = EffectClass.None;
+        public EffectClass AssociatedEffectClass { get; set; } = EffectClass.None;
         public bool ActiveEffect { get; set; } = false;
         public (string name, string dest)[] ExpectedEntries { get; set; }
         public bool IsDuration { get; set; } = false;
@@ -243,23 +305,23 @@ namespace DotA.Model
             //and if so, read the metadata
             if (matchingEffect != null)
             {
-                AssociatedEffect = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
+                AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
 
                 //get the property where the value should be assigned
-                ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty ?? string.Empty;                
+                ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty; 
 
-                //Parse the value if needed
-                if (decimal.TryParse(Value, out decimal d))
-                {
-                    IsNumericValue = true;
-                    NumericValue = d;
-                }
-                
                 IsPercentage = matchingEffect.GetCustomAttribute<PercentEffect>() != null;
                 ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
                 ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
             }
 
+            //Parse the value if needed
+            if (decimal.TryParse(Value, out decimal d))
+            {
+                IsNumericValue = true;
+                NumericValue = d;
+                if (IsPercentage) NumericValue = d / 100;
+            }
         }
     }
 }

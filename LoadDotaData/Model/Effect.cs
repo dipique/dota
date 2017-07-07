@@ -14,11 +14,6 @@ namespace DotA.Model
         /// </summary>
         public EffectClass Class { get; set; }
 
-        /// <summary>
-        /// Passive or active
-        /// </summary>
-        public EffectType Type { get; set; }
-
         public string Description { get; set; }
 
         /// <summary>
