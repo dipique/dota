@@ -188,6 +188,7 @@ namespace DotA.Model.Enums
 
         [ActiveEffect]
         [JID("stun_duration")]
+        [ValueDest(nameof(Effect.Duration))]
         Stun,
 
         [JID("true_sight_range")]

@@ -13,10 +13,13 @@ namespace LoadDotaData
     class Program
     {
         private const string itemLocation = "data\\items.txt";
+        private const string saveLocation = "dota.dat";
         static void Main(string[] args)
         {
             DotaData dd = new DotaData();
             dd.Items = Parseable.ParseItems<Item>(File.ReadAllLines(itemLocation));
+            DotaData.Save(dd, saveLocation);
+
         }
     }
 }

@@ -16,10 +16,10 @@ namespace DotA.Model
         private const int MAX_ID = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
-        public string Name { get; set; }
-
-        [JID("ID")]
+        public virtual string Name { get; set; }
+        
         private int id = -1;
+        [JID("ID")]
         public string ID
         {
             get => id.ToString();
@@ -62,7 +62,8 @@ namespace DotA.Model
 
         public static T ParseItem<T>(Section data) where T : Parseable
         {
-            T retVal = Activator.CreateInstance<T>();            
+            T retVal = Activator.CreateInstance<T>();
+            retVal.Name = data.Name;
             data.Sections.ForEach(s => ParseSection(retVal, s));
             ApplyEntries(retVal, data); //set header-level entries
             return retVal;

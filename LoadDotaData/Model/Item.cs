@@ -16,7 +16,7 @@ namespace DotA.Model
         public Item() { }
 
         private string name = string.Empty;
-        public new string Name
+        public override string Name
         {
             get => name;
             set
