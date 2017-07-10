@@ -118,8 +118,8 @@ namespace DotA.Model
 
         public static List<T> ParseItems<T>(string[] text) where T : Parseable
         {
-            //start by creating a hierarchal structure of all this data, discarding the top level structure
-            var data = new Section(typeof(T).Name, text)?.Sections;
+            //start by creating a hierarchal structure of all this data, discarding the top 2 levels of the structure
+            var data = new Section(typeof(T).Name, text)?.Sections?.FirstOrDefault()?.Sections;
             return data == null ? new List<T>() : data.Select(d => ParseItem<T>(d)).ToList();
         }
 
@@ -156,21 +156,19 @@ namespace DotA.Model
             //set property to the entry value
             var propName = entry.ValueDest ?? nameof(Effect.Amount);
             var destProp = typeof(Effect).GetProperty(propName);
+
+            //All arrays are numeric but they all represent scaling with levels
+            var destPropNumericArray = destProp.PropertyType.IsArray;
+
             if (destProp.PropertyType.IsArray)
             {
-                if (entry.IsNumericValue)
-                {
-                    decimal[] newVal = new decimal[] { entry.NumericValue };
-                    destProp.SetValue(effect, newVal);
-                }
-                else
-                {
-                    string[] newVal = new string[] { entry.Value };
-                    destProp.SetValue(effect, newVal);
-                }
+                decimal[] newVal = new decimal[] { entry.NumericValue };
+                destProp.SetValue(effect, newVal);
             }
             else
-                destProp.SetValue(effect, entry.Value);
+            {
+                destProp.SetValue(effect, entry.IsNumericValue ? (object)entry.NumericValue : entry.Value);
+            }
         }
     }
 
@@ -216,27 +214,27 @@ namespace DotA.Model
             foreach (string s in data)
             {
                 //remove/skip comments
-                string line = s.Replace("\"", ""); //no quotes
+                string line = s.Replace("\"", "").Trim(); //no quotes
                 int commentStart = s.IndexOf(COMMENT_IND);
                 if (commentStart == 0) continue;
                 if (commentStart > 0) line = s.Substring(0, commentStart).Trim();
                 if (line.Length == 0) continue;
 
-                //get non-blank line values
-                string[] values = line.Split('\t')
-                                      .Select(l => l.Trim())
-                                      .Where(l => string.IsNullOrEmpty(l))
-                                      .ToArray();
-
-                //create an entry for dual values
-                if (values.Count() == 2)
+                //If we're not just buffering a new section, create entries for data encountered
+                if (currentBracketLevel == 0)
                 {
-                    Entries.Add(new Entry()
+                    //get non-blank line values
+                    string[] values = line.Split('\t')
+                                          .Select(l => l.Trim())
+                                          .Where(l => !string.IsNullOrEmpty(l))
+                                          .ToArray();
+
+                    //create an entry for dual values
+                    if (values.Count() == 2)
                     {
-                        Title = values[0],
-                        Value = values[1]
-                    });
-                    continue;
+                        Entries.Add(new Entry(values[0], values[1]));
+                        continue;
+                    }
                 }
 
                 //deal with brackets
@@ -245,16 +243,17 @@ namespace DotA.Model
                     if (currentBracketLevel > 0) buffer.Add(line); //keep brackets that are inside sections
                     currentBracketLevel++;
                 }
-
-                if (line == "}")
+                else if (line == "}")
                 {
                     if (currentBracketLevel == 1)
                     {
-                        Sections.Add(new Section(bufferName, buffer.ToArray()));
+                        Sections.Add(new Section(bufferName, new List<string>(buffer).ToArray()));
                         buffer.Clear();
                     }
+                    else buffer.Add(line);
                     currentBracketLevel--;
                 }
+                else buffer.Add(line);
 
                 if (currentBracketLevel == 0) bufferName = line;
             }
@@ -273,26 +272,27 @@ namespace DotA.Model
 
     public class Entry
     {
-        private string title = string.Empty;
-        public string Title
-        {
-            get => title;
-            set
-            {
-                title = value;
-                ReadMeta();
-            }
-        }
-        public string Value { get; set; }
+        private const char NUM_SEP = ' '; //this is the character that separates numeric values in scaling attributes
+
+        public string Title { get; private set; }
+        public string Value { get; private set; }
 
         public string ValueDest { get; set; } = null;
-        public decimal NumericValue { get; set; } = 0;
+        public decimal NumericValue => NumericArray[0];
+        public decimal[] NumericArray { get; private set; } = new decimal[] { 0 };
         public bool IsNumericValue { get; set; } = false;
         public bool IsPercentage { get; set; } = false;
         public EffectClass AssociatedEffectClass { get; set; } = EffectClass.None;
         public bool ActiveEffect { get; set; } = false;
         public (string name, string dest)[] ExpectedEntries { get; set; }
         public bool IsDuration { get; set; } = false;
+
+        public Entry(string title, string value)
+        {
+            Title = title;
+            Value = value;
+            ReadMeta();
+        }
 
         /// <summary>
         /// Reads the attribute metadata associated with this enum entry
@@ -315,12 +315,26 @@ namespace DotA.Model
                 ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
             }
 
-            //Parse the value if needed
-            if (decimal.TryParse(Value, out decimal d))
+            //Parse the value if needed            
+            bool isNumeric = true;
+            List<decimal> numValues = new List<decimal>();
+            
+            foreach (string val in Value.Split(NUM_SEP))
             {
-                IsNumericValue = true;
-                NumericValue = d;
-                if (IsPercentage) NumericValue = d / 100;
+                if (decimal.TryParse(val, out decimal d))
+                {
+                    numValues.Add(IsPercentage ? d / 100 : d);
+                }
+                else //if we find a single non-numeric value, stop trying to look for one
+                {
+                    isNumeric = false;
+                    break;
+                }
+            }
+            IsNumericValue = isNumeric;
+            if (IsNumericValue)
+            {
+                NumericArray = numValues.ToArray();
             }
         }
     }
