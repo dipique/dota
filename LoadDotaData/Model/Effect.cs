@@ -21,7 +21,7 @@ namespace DotA.Model
         /// 
         /// Percentages will be decimals (e.g. 50%=.50).
         /// </summary>
-        public decimal Amount { get; set; }
+        public decimal[] Amount { get; set; } = new decimal[] { 0 };
 
         public TargetType TargetType { get; set; } = TargetType.NONE;
         public DamageType DamageType { get; set; } = DamageType.None;

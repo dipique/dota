@@ -40,10 +40,13 @@ namespace DotA.Model
         /// <summary>
         /// Stats provided
         /// </summary>
-        public decimal Agility => Effects.Where(e => e.Class == EffectClass.Agility).Sum(e => e.Amount);
-        public decimal Strength => Effects.Where(e => e.Class == EffectClass.Strength).Sum(e => e.Amount);
-        public decimal Intelligence => Effects.Where(e => e.Class == EffectClass.Intelligence).Sum(e => e.Amount);
+        public decimal Agility(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Agility, EffectClass.All_Stats }, lvl);
+        public decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
+        public decimal Intelligence(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Intelligence, EffectClass.All_Stats }, lvl);
 
+        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Effects.Where(e => classes.Any(c => c == e.Class))
+                                                                                      .Sum(e => e.Amount[lvl - 1]);
+        
         //public Ability ActiveAbility { get; set; } = new Ability();
         public List<Effect> Effects { get; set; } = new List<Effect>();
         public EffectType Type { get; set; }
@@ -95,8 +98,10 @@ namespace DotA.Model
                 }
                 else
                 {
-                    //Another possibility is that the tag actually applies the primary effect of the item. It can, however,
-                    //be deceptively hard to actually locate that effect.
+                //Another possibility is that the tag actually applies the primary effect of the item. It can, however,
+                //be deceptively hard to actually locate that effect. Luckily, most of them apply to active effects which makes life easier.
+
+                //TODO: Apply these attributes.
                 }
             }
         }
@@ -160,10 +165,9 @@ namespace DotA.Model
 
             //All arrays are numeric but they all represent scaling with levels
             var destPropNumericArray = destProp.PropertyType.IsArray;
-
-            if (destProp.PropertyType.IsArray)
+            if (destPropNumericArray)
             {
-                decimal[] newVal = new decimal[] { entry.NumericValue };
+                decimal[] newVal = entry.NumericArray;
                 destProp.SetValue(effect, newVal);
             }
             else
@@ -319,7 +323,7 @@ namespace DotA.Model
             //Parse the value if needed            
             bool isNumeric = true;
             List<decimal> numValues = new List<decimal>();
-            
+
             foreach (string val in Value.Split(NUM_SEP))
             {
                 if (decimal.TryParse(val, out decimal d))
