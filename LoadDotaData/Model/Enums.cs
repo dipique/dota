@@ -236,4 +236,27 @@ namespace DotA.Model.Enums
         ENEMY = 14,
         ALL = 15,
     }
+
+        public enum LineType
+    {
+        None,
+        NewItemIndTop,
+        ItemTitle,
+        NewItemIndBot,
+        ItemData,
+        EffectDataSection,
+        SpecificEffectData,
+        OpenItemBrace,
+        CloseItemBrace,
+
+    }
+
+    public enum SectionType
+    {
+        Numeric = 0,
+        Master,
+        Item,
+        ItemRequirements,
+        AbilitySpecial
+    }
 }

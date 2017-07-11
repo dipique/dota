@@ -4,15 +4,27 @@ using System.Linq;
 using System.Text;
 
 using DotA.Model.Enums;
+using DotA.Model.Attributes;
 
 namespace DotA.Model
 {
+    [DefaultEntryProperty(nameof(Amount))]
     public class Effect
     {
         /// <summary>
         /// Categorization of effect
         /// </summary>
-        public EffectClass Class { get; set; }
+        public EffectClass Class
+        {
+            get => effectClass;
+            set
+            {
+                effectClass = value;
+                IsActive = typeof(EffectClass).GetField(value.ToString()).GetCustomAttributes(typeof(ActiveEffect), false)?.FirstOrDefault() != null;
+            }
+        }
+        private EffectClass effectClass = EffectClass.None;
+        public bool IsActive { get; private set; }
 
         public string Description { get; set; }
 

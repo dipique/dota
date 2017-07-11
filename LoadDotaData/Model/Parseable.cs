@@ -63,6 +63,18 @@ namespace DotA.Model
         //public Ability ActiveAbility { get; set; } = new Ability();
         public List<Effect> Effects { get; set; } = new List<Effect>();
         public EffectType Type { get; set; }
+        public Effect ActiveEffect
+        {
+            get
+            {
+                var activeEffects = Effects.Where(e => e.IsActive);
+                if (activeEffects.Count() == 1) return activeEffects.First();
+                if (activeEffects.Count() == 0) return null;
+
+                //TODO: stiffen up these parameters
+                return activeEffects.FirstOrDefault();
+            }
+        }
 
         [JID("AbilityBahavior")]
         public string AbilityBehavior
@@ -81,42 +93,8 @@ namespace DotA.Model
             T retVal = Activator.CreateInstance<T>();
             retVal.Name = data.Name;
             data.Sections.ForEach(s => ParseSection(retVal, s));
-            ApplyEntries(retVal, data); //set header-level entries
+            data.Entries.ForEach(e => ApplyEntry(e, retVal, retVal.ActiveEffect)); //try applying the entry to the active effect if the item itself doesn't have a matching parameter
             return retVal;
-        }
-
-        public static void ApplyEntries<T>(T item, Section s) where T: Parseable
-        {
-            //get tagged properties
-            var taggedProperties = typeof(T).GetProperties()
-                                            .Where(p => p.GetCustomAttributes(typeof(JID))
-                                                         .Any());
-
-            //start by assigning any attributes available
-            foreach (Entry e in s.Entries)
-            {
-                //get a matching property
-                var matchingProp = taggedProperties.FirstOrDefault(p => (p.GetCustomAttribute<JID>()).IDs.Any(id => id == e.Title));
-                if (matchingProp != null)
-                {
-                    if (matchingProp.PropertyType == typeof(decimal))
-                    {
-                        decimal val = decimal.TryParse(e.Value, out decimal d) ? d : 0;
-                        matchingProp.SetValue(item, val);
-                    }
-                    else
-                    {
-                        matchingProp.SetValue(item, e.Value);
-                    }
-                }
-                else
-                {
-                //Another possibility is that the tag actually applies the primary effect of the item. It can, however,
-                //be deceptively hard to actually locate that effect. Luckily, most of them apply to active effects which makes life easier.
-
-                //TODO: Apply these attributes.
-                }
-            }
         }
 
         public static void ParseSection<T>(T item, Section s) where T: Parseable
@@ -154,15 +132,15 @@ namespace DotA.Model
                     Class = entry.AssociatedEffectClass
                 };
 
-                //set property to the entry value
-                ApplyEntry(effect, entry);
+                //set property to the entry value--effect frist, then the base item
+                ApplyEntry(entry, effect, this);
 
                 //Now, get any entries associated with it
                 foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
-                    ApplyEntry(effect, associatedEntry);
+                    ApplyEntry(entry, effect, this);
                 }
 
                 //Add the entry
@@ -170,58 +148,47 @@ namespace DotA.Model
             }
         }
 
-        public bool ApplyEntry<T>(T item, Entry entry)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objCandidates">A list of candidates for entry application in order of precedence</param>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public static bool ApplyEntry(Entry entry, params object[] objCandidates)
         {
-            //set property to the entry value
-            var propName = entry.ValueDest ?? nameof(Effect.Amount);
+            if (objCandidates?.Count() < 1) return false;
+            int ind = -1;
+            while (true)
+            {
+                ind++;
+                object obj = objCandidates[ind];
 
-            //if the destination property is null, it means this doesn't apply to the effect, but (hopefully) the Parseable item itself
-            bool effectProp = true;
-            var destProp = typeof(Effect).GetProperty(propName);
-            if (destProp == null)
-            {
-                effectProp = false;
-                destProp = typeof(Parseable).GetProperty(propName);
+                //set property to the entry value
+                var propName = entry.ValueDest;
+
+                //if it's null, see if there's a default that can be assigned
+                if (string.IsNullOrEmpty(propName))
+                {
+                    propName = obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
+                }
+                if (string.IsNullOrEmpty(propName)) continue;
+                try
+                {
+                    //Set the property
+                    var destProp = obj.GetType().GetProperty(propName);
+                    if (destProp == null) continue;
+                    if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
+                        destProp.SetValue(obj, entry.NumericArray);
+                    else
+                        destProp.SetValue(obj, entry.IsNumericValue ? (object)entry.NumericValue
+                                                                    : entry.Value);
+                    return true;
+                }
+                catch { continue; }
             }
 
-            //All arrays are numeric but they all represent scaling with levels
-            if (destProp.PropertyType.IsArray)
-            {
-                destProp.SetValue(effectProp ? (object)item
-                                             : this, 
-                         entry.NumericArray);
-            }
-            else
-            {
-                destProp.SetValue(effectProp ? (object)item 
-                                             : this, 
-                                 entry.IsNumericValue ? (object)entry.NumericValue 
-                                                      : entry.Value);
-            }
+            //if we're here, it means we never actually found a valid object
         }
-    }
-
-    public enum LineType
-    {
-        None,
-        NewItemIndTop,
-        ItemTitle,
-        NewItemIndBot,
-        ItemData,
-        EffectDataSection,
-        SpecificEffectData,
-        OpenItemBrace,
-        CloseItemBrace,
-
-    }
-
-    public enum SectionType
-    {
-        Numeric = 0,
-        Master,
-        Item,
-        ItemRequirements,
-        AbilitySpecial
     }
 
     public class Section
@@ -303,13 +270,63 @@ namespace DotA.Model
     {
         private const char NUM_SEP = ' '; //this is the character that separates numeric values in scaling attributes
 
-        public string Title { get; private set; }
-        public string Value { get; private set; }
+        private string title = null;
+        public string Title
+        {
+            get => title;
+            private set
+            {
+                title = value;
 
-        public string ValueDest { get; set; } = null;
+                //Check if there an enum about this entry title
+                var matchingEffect = typeof(EffectClass).GetFields()
+                                                        .FirstOrDefault(f => f.GetCustomAttribute<JID>()?.IDs?.Any(id => id == Title) ?? false);
+                //and if so, read the metadata
+                if (matchingEffect != null)
+                {
+                    AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
+                    IsPercentage = matchingEffect.GetCustomAttribute<PercentEffect>() != null;
+                    ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
+                    ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
+                    ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty;
+                }
+            }
+        }
+        private string value = null;
+        public string Value
+        {
+            get => value;
+            private set
+            {
+                Value = value;
+                //Parse the value if needed            
+                bool isNumeric = true;
+                List<decimal> numValues = new List<decimal>();
+
+                foreach (string val in Value.Split(NUM_SEP))
+                {
+                    if (decimal.TryParse(val, out decimal d))
+                    {
+                        numValues.Add(IsPercentage ? d / 100 : d);
+                    }
+                    else //if we find a single non-numeric value, stop trying to look for one
+                    {
+                        isNumeric = false;
+                        break;
+                    }
+                }
+                IsNumericValue = isNumeric;
+                if (IsNumericValue)
+                {
+                    NumericArray = numValues.ToArray();
+                }
+            }
+        }
+
+        public string ValueDest { get; set; }
         public decimal NumericValue => NumericArray[0];
         public decimal[] NumericArray { get; private set; } = new decimal[] { 0 };
-        public bool IsNumericValue { get; set; } = false;
+        public bool IsNumericValue { get; private set; } = false;
         public bool IsPercentage { get; set; } = false;
         public EffectClass AssociatedEffectClass { get; set; } = EffectClass.None;
         public bool ActiveEffect { get; set; } = false;
@@ -320,51 +337,6 @@ namespace DotA.Model
         {
             Title = title;
             Value = value;
-            ReadMeta();
-        }
-
-        /// <summary>
-        /// Reads the attribute metadata associated with this enum entry
-        /// </summary>
-        public void ReadMeta()
-        {
-            //First, check if there an enum about this entry
-            var matchingEffect = typeof(EffectClass).GetFields()
-                                                    .FirstOrDefault(f => f.GetCustomAttribute<JID>()?.IDs?.Any(id => id == Title) ?? false);
-            //and if so, read the metadata
-            if (matchingEffect != null)
-            {
-                AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
-
-                //get the property where the value should be assigned
-                ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty; 
-
-                IsPercentage = matchingEffect.GetCustomAttribute<PercentEffect>() != null;
-                ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
-                ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
-            }
-
-            //Parse the value if needed            
-            bool isNumeric = true;
-            List<decimal> numValues = new List<decimal>();
-
-            foreach (string val in Value.Split(NUM_SEP))
-            {
-                if (decimal.TryParse(val, out decimal d))
-                {
-                    numValues.Add(IsPercentage ? d / 100 : d);
-                }
-                else //if we find a single non-numeric value, stop trying to look for one
-                {
-                    isNumeric = false;
-                    break;
-                }
-            }
-            IsNumericValue = isNumeric;
-            if (IsNumericValue)
-            {
-                NumericArray = numValues.ToArray();
-            }
         }
     }
 }

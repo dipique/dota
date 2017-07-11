@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using DotA.Model.Enums;
+using DotA.Model.Attributes;
 
 namespace DotA.Model
 {

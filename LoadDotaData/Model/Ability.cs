@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using DotA.Model.Enums;
+using DotA.Model.Attributes;
 
 namespace DotA.Model
 {
@@ -12,7 +13,7 @@ namespace DotA.Model
     {
         public string Description { get; set; }
 
-        public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability?
+        public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability? //TODO: Should this just be read from attributes?
 
         public bool IsUltimate { get; set; } = false;
     }

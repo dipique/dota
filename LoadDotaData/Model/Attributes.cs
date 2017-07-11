@@ -118,4 +118,13 @@ namespace DotA.Model.Attributes
     {
         public PercentEffect() { }
     }
+
+    public sealed class DefaultEntryProperty : Attribute
+    {
+        public string PropertyName { get; set; }
+        public DefaultEntryProperty(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+    }
 }
