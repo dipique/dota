@@ -24,7 +24,7 @@ namespace DotA.Model
             }
         }
         private EffectClass effectClass = EffectClass.None;
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; set; }
 
         public string Description { get; set; }
 

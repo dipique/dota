@@ -60,7 +60,6 @@ namespace DotA.Model
         [JID("AbilityManaCost")]
         public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
 
-        //public Ability ActiveAbility { get; set; } = new Ability();
         public List<Effect> Effects { get; set; } = new List<Effect>();
         public EffectType Type { get; set; }
         public Effect ActiveEffect
@@ -113,12 +112,11 @@ namespace DotA.Model
             //we don't do anything if we don't know what the section does
         }
 
-        public static List<T> ParseItems<T>(string[] text) where T : Parseable
-        {
-            //start by creating a hierarchal structure of all this data, discarding the top 2 levels of the structure
-            var data = new Section(typeof(T).Name, text)?.Sections?.FirstOrDefault()?.Sections;
-            return data == null ? new List<T>() : data.Select(d => ParseItem<T>(d)).ToList();
-        }
+        public static List<T> ParseItems<T>(string[] text) where T : Parseable => 
+            new Section(typeof(T).Name, text)?.Sections?.FirstOrDefault() //discard the first section
+                                             ?.Sections
+                                             ?.Select(d => ParseItem<T>(d))
+                                             ?.ToList();
 
         [SpecialHandlerSectionMethod("AbilitySpecial")]
         public void ParseAbilitySpecial(Section s)
@@ -160,8 +158,10 @@ namespace DotA.Model
             int ind = -1;
             while (true)
             {
-                ind++;
+                if (++ind == objCandidates.Count()) break;
+                
                 object obj = objCandidates[ind];
+                if (obj == null) continue;
 
                 //set property to the entry value
                 var propName = entry.ValueDest;
@@ -188,6 +188,7 @@ namespace DotA.Model
             }
 
             //if we're here, it means we never actually found a valid object
+            return false;
         }
     }
 
@@ -292,18 +293,18 @@ namespace DotA.Model
                 }
             }
         }
-        private string value = null;
+        private string entryValue = null;
         public string Value
         {
-            get => value;
+            get => entryValue;
             private set
             {
-                Value = value;
+                entryValue = value;
                 //Parse the value if needed            
                 bool isNumeric = true;
                 List<decimal> numValues = new List<decimal>();
 
-                foreach (string val in Value.Split(NUM_SEP))
+                foreach (string val in value.Split(NUM_SEP))
                 {
                     if (decimal.TryParse(val, out decimal d))
                     {
@@ -315,11 +316,9 @@ namespace DotA.Model
                         break;
                     }
                 }
-                IsNumericValue = isNumeric;
-                if (IsNumericValue)
-                {
+
+                if (IsNumericValue = isNumeric)
                     NumericArray = numValues.ToArray();
-                }
             }
         }
 
