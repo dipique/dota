@@ -14,6 +14,8 @@ namespace DotA.Model
     public class Hero
     {
 
+        private const string HERO_NAME_TECHIES = "Techies";
+
         [InputHeader("HERO")] public string Name { get; set; }
         public string ImgName { get; set; }
 
@@ -28,7 +30,7 @@ namespace DotA.Model
 
         public decimal BaseHealth => 200;
         public decimal BaseMana => 75;
-        public decimal BaseManaRegen => Name == "Techies" ? .02m : .01m;   //src: http://dota2.gamepedia.com/Mana         
+        public decimal BaseManaRegen => Name == HERO_NAME_TECHIES ? .02m : .01m;   //src: http://dota2.gamepedia.com/Mana         
         [InputHeader("HP/S")] public decimal BaseHealthRegen { get; set; }
 
 

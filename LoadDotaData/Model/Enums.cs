@@ -71,18 +71,18 @@ namespace DotA.Model.Enums
         [JID("bash_change_melee")]
         [ValueDest(nameof(Effect.Chance))]
         [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("bash_cooldown", nameof(Effect.Cooldown))]
+        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
         [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
         Bash_Melee,
 
         [JID("bash_change_ranged")]
         [ValueDest(nameof(Effect.Chance))]
         [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("bash_cooldown", nameof(Effect.Cooldown))]
+        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
         [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
         Bash_Ranged,
 
-        [ValueDest(nameof(Effect.CastRange))]
+        [ValueDest(nameof(Parseable.CastRange))]
         [JID("blink_range")]
         Blink,
 
@@ -160,7 +160,7 @@ namespace DotA.Model.Enums
         GPM,
 
         [ActiveEffect]
-        [ValueDest(nameof(Effect.Cooldown))]
+        [ValueDest(nameof(Parseable.Cooldown))]
         [JID("bonus_gold")]
         [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
         Gold,

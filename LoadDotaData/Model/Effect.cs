@@ -35,16 +35,11 @@ namespace DotA.Model
 
         //Potential level-scaling properties
         public decimal[] Duration { get; set; } = new decimal[] { 0 };
-        public decimal[] CastRange { get; set; } = new decimal[] { 0 };
 
-        [JID("AbilityCastPoint")]
-        public decimal CastPoint { get; set; } = 0;
-
-        [JID("AbilityCooldown")]
-        public decimal[] Cooldown { get; set; } = new decimal[] { 0 };
-
-        [JID("AbilityManaCost")]
-        public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
+        /// <summary>
+        /// This applies to things like Jinada and Bash where the effect is automatically triggered, so not a true cooldown
+        /// </summary>
+        public decimal[] EffectResetTime { get; set; } = new decimal[] { 0 };
 
         public decimal[] Chance { get; set; } = new decimal[] { 1 };
         private decimal[] baseDamage = new decimal[] { 0 };
@@ -59,32 +54,6 @@ namespace DotA.Model
                 else
                     DamageType = DamageType.Physical;                
             }
-        }
-
-        /// <summary>
-        /// Effects can be "leveled up" for abilities, but not for items. These methods
-        /// offer an easy way to specify a level or omit it; the default gets the first value
-        /// in the array, which will be the only value if this is an item effect.
-        /// </summary>
-        public decimal GetCastRange(int points = 1)
-        {
-            if (CastRange.Count() < points) return 0;
-            return CastRange[points - 1];
-        }
-        public decimal GetBaseDamage(int points = 1)
-        {
-            if (BaseDamage.Count() < points) return 0;
-            return BaseDamage[points - 1];
-        }
-        public decimal GetCooldown(int points = 1)
-        {
-            if (Cooldown.Count() < points) return 0;
-            return Cooldown[points - 1];
-        }
-        public decimal GetDuration(int points = 1)
-        {
-            if (Duration.Count() < points) return 0;
-            return Duration[points - 1];
         }
 
         public bool HasAOE => AOE > 0;

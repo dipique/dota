@@ -46,7 +46,19 @@ namespace DotA.Model
 
         public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Effects.Where(e => classes.Any(c => c == e.Class))
                                                                                       .Sum(e => e.Amount[lvl - 1]);
-        
+
+        [JID("AbilityCastRange")]
+        public decimal[] CastRange { get; set; } = new decimal[] { 0 };
+
+        [JID("AbilityCastPoint")]
+        public decimal CastPoint { get; set; } = 0;
+
+        [JID("AbilityCooldown")]
+        public decimal[] Cooldown { get; set; } = new decimal[] { 0 };
+
+        [JID("AbilityManaCost")]
+        public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
+
         //public Ability ActiveAbility { get; set; } = new Ability();
         public List<Effect> Effects { get; set; } = new List<Effect>();
         public EffectType Type { get; set; }
@@ -157,22 +169,33 @@ namespace DotA.Model
             }
         }
 
-        public static void SetEffectProperty(Effect effect, Entry entry)
+        public void SetEffectProperty(Effect effect, Entry entry)
         {
             //set property to the entry value
             var propName = entry.ValueDest ?? nameof(Effect.Amount);
+
+            //if the destination property is null, it means this doesn't apply to the effect, but (hopefully) the Parseable item itself
+            bool effectProp = true;
             var destProp = typeof(Effect).GetProperty(propName);
+            if (destProp == null)
+            {
+                effectProp = false;
+                destProp = typeof(Parseable).GetProperty(propName);
+            }
 
             //All arrays are numeric but they all represent scaling with levels
-            var destPropNumericArray = destProp.PropertyType.IsArray;
-            if (destPropNumericArray)
+            if (destProp.PropertyType.IsArray)
             {
-                decimal[] newVal = entry.NumericArray;
-                destProp.SetValue(effect, newVal);
+                destProp.SetValue(effectProp ? (object)effect
+                                             : this, 
+                         entry.NumericArray);
             }
             else
             {
-                destProp.SetValue(effect, entry.IsNumericValue ? (object)entry.NumericValue : entry.Value);
+                destProp.SetValue(effectProp ? (object)effect 
+                                             : this, 
+                                 entry.IsNumericValue ? (object)entry.NumericValue 
+                                                      : entry.Value);
             }
         }
     }
