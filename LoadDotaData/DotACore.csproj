@@ -49,6 +49,7 @@
     <Compile Include="Flashcards\FlashcardMode.cs" />
     <Compile Include="Flashcards\QuestionResponse.cs" />
     <Compile Include="Model\Ability.cs" />
+    <Compile Include="Model\Attributes.cs" />
     <Compile Include="Model\DotaData.cs" />
     <Compile Include="Model\Effect.cs" />
     <Compile Include="Model\Enums.cs" />

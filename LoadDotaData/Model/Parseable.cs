@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 
 using DotA.Model.Enums;
+using DotA.Model.Attributes;
 
 namespace DotA.Model
 {
@@ -95,7 +96,7 @@ namespace DotA.Model
             foreach (Entry e in s.Entries)
             {
                 //get a matching property
-                var matchingProp = taggedProperties.FirstOrDefault(p => ((JID)p.GetCustomAttribute(typeof(JID))).IDs.Any(id => id == e.Title));
+                var matchingProp = taggedProperties.FirstOrDefault(p => (p.GetCustomAttribute<JID>()).IDs.Any(id => id == e.Title));
                 if (matchingProp != null)
                 {
                     if (matchingProp.PropertyType == typeof(decimal))
@@ -154,14 +155,14 @@ namespace DotA.Model
                 };
 
                 //set property to the entry value
-                SetEffectProperty(effect, entry);
+                ApplyEntry(effect, entry);
 
                 //Now, get any entries associated with it
                 foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
-                    associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest; //I'm not 100% sure I can do this
-                    SetEffectProperty(effect, associatedEntry);
+                    associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
+                    ApplyEntry(effect, associatedEntry);
                 }
 
                 //Add the entry
@@ -169,7 +170,7 @@ namespace DotA.Model
             }
         }
 
-        public void SetEffectProperty(Effect effect, Entry entry)
+        public bool ApplyEntry<T>(T item, Entry entry)
         {
             //set property to the entry value
             var propName = entry.ValueDest ?? nameof(Effect.Amount);
@@ -186,13 +187,13 @@ namespace DotA.Model
             //All arrays are numeric but they all represent scaling with levels
             if (destProp.PropertyType.IsArray)
             {
-                destProp.SetValue(effectProp ? (object)effect
+                destProp.SetValue(effectProp ? (object)item
                                              : this, 
                          entry.NumericArray);
             }
             else
             {
-                destProp.SetValue(effectProp ? (object)effect 
+                destProp.SetValue(effectProp ? (object)item 
                                              : this, 
                                  entry.IsNumericValue ? (object)entry.NumericValue 
                                                       : entry.Value);

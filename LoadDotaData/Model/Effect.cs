@@ -49,10 +49,8 @@ namespace DotA.Model
             set
             {
                 baseDamage = value;
-                if (value == null || value.Count() == 0 || value[0] == 0)
-                    DamageType = DamageType.None;
-                else
-                    DamageType = DamageType.Physical;                
+                DamageType = value?.Count() < 1 || value[0] == 0 ? DamageType.None
+                                                                 : DamageType.Physical;            
             }
         }
 
