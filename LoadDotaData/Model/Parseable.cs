@@ -17,9 +17,8 @@ namespace DotA.Model
         private const int MAX_ID = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
-        public virtual string Name { get; set; }
+        public virtual string Name { get; set; }       
         
-        private int id = -1;
         [JID("ID")]
         public string ID
         {
@@ -33,6 +32,7 @@ namespace DotA.Model
                 }
             }
         }
+        private int id = -1;
 
         public string ImgName { get; set; }
 
@@ -154,24 +154,20 @@ namespace DotA.Model
         /// <returns></returns>
         public static bool ApplyEntry(Entry entry, params object[] objCandidates)
         {
-            if (objCandidates?.Count() < 1) return false;
+            var validCandidates = objCandidates.Where(o => o != null).ToArray();
+            if (validCandidates?.Count() < 1) return false;
             int ind = -1;
             while (true)
             {
-                if (++ind == objCandidates.Count()) break;
-                
-                object obj = objCandidates[ind];
-                if (obj == null) continue;
+                if (++ind == validCandidates.Count()) break; //this is the loop end control             
+                object obj = validCandidates[ind];
 
-                //set property to the entry value
-                var propName = entry.ValueDest;
-
-                //if it's null, see if there's a default that can be assigned
-                if (string.IsNullOrEmpty(propName))
-                {
-                    propName = obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
-                }
+                //set property to the entry value, then a matching property value, then finally a default if available
+                var propName = entry.ValueDest ??
+                               obj.GetType().GetProperties().FirstOrDefault(p => p.GetCustomAttribute<JID>()?.IDs?.Contains(entry.Title) ?? false)?.Name ??
+                               obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
                 if (string.IsNullOrEmpty(propName)) continue;
+
                 try
                 {
                     //Set the property
@@ -180,8 +176,18 @@ namespace DotA.Model
                     if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
                         destProp.SetValue(obj, entry.NumericArray);
                     else
-                        destProp.SetValue(obj, entry.IsNumericValue ? (object)entry.NumericValue
-                                                                    : entry.Value);
+                    {
+                        //use the property type to determine how to assign the value
+                        if (destProp.PropertyType == typeof(decimal))
+                        {
+                            destProp.SetValue(obj, entry.NumericValue);
+                        }
+                        else
+                        {
+                            destProp.SetValue(obj, entry.Value);
+                        }
+                    }
+                        
                     return true;
                 }
                 catch { continue; }
