@@ -221,7 +221,14 @@ namespace DotA.Model.Enums
         TOGGLE = 1 << 9,
         DIRECTIONAL = 1 << 10,
         IMMEDIATE = 1 << 11,
-        ROOT_DISABLES = 1 << 12
+        ROOT_DISABLES = 1 << 12,
+        DONT_RESUME_ATTACK = 1 << 13,
+        OPTIONAL_UNIT_TARGET = 1 << 14,
+        NOASSIST = 1 << 15,
+        DONT_CANCEL_CHANNEL = 1 << 16,
+        IGNORE_CHANNEL = 1 << 17,
+        DONT_CANCEL_MOVEMENT = 1 << 18,
+        DONT_RESUME_MOVEMENT = 1 << 19
     }
 
     [Prefix("DOTA_UNIT_TARGET_")]
