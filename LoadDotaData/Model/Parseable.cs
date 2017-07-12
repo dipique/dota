@@ -92,7 +92,7 @@ namespace DotA.Model
             T retVal = Activator.CreateInstance<T>();
             retVal.Name = data.Name;
             data.Sections.ForEach(s => ParseSection(retVal, s));
-            data.Entries.ForEach(e => ApplyEntry(e, retVal, retVal.ActiveEffect)); //try applying the entry to the active effect if the item itself doesn't have a matching parameter
+            data.Entries.ForEach(e => e.Apply(retVal, retVal.ActiveEffect)); //apply to the active effect if the item doesn't have a matching parameter
             return retVal;
         }
 
@@ -131,70 +131,19 @@ namespace DotA.Model
                 };
 
                 //set property to the entry value--effect frist, then the base item
-                ApplyEntry(entry, effect, this);
+                entry.Apply(effect, this);
 
                 //Now, get any entries associated with it
                 foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
-                    ApplyEntry(entry, effect, this);
+                    entry.Apply(effect, this);
                 }
 
                 //Add the entry
                 Effects.Add(effect);
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="objCandidates">A list of candidates for entry application in order of precedence</param>
-        /// <param name="entry"></param>
-        /// <returns></returns>
-        public static bool ApplyEntry(Entry entry, params object[] objCandidates)
-        {
-            var validCandidates = objCandidates.Where(o => o != null).ToArray();
-            if (validCandidates?.Count() < 1) return false;
-            int ind = -1;
-            while (true)
-            {
-                if (++ind == validCandidates.Count()) break; //this is the loop end control             
-                object obj = validCandidates[ind];
-
-                //set property to the entry value, then a matching property value, then finally a default if available
-                var propName = entry.ValueDest ??
-                               obj.GetType().GetProperties().FirstOrDefault(p => p.GetCustomAttribute<JID>()?.IDs?.Contains(entry.Title) ?? false)?.Name ??
-                               obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
-                if (string.IsNullOrEmpty(propName)) continue;
-
-                try
-                {
-                    //Set the property
-                    var destProp = obj.GetType().GetProperty(propName);
-                    if (destProp == null) continue;
-                    if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
-                        destProp.SetValue(obj, entry.NumericArray);
-                    else
-                    {
-                        //use the property type to determine how to assign the value
-                        if (destProp.PropertyType == typeof(decimal))
-                        {
-                            destProp.SetValue(obj, entry.NumericValue);
-                        }
-                        else
-                        {
-                            destProp.SetValue(obj, entry.Value);
-                        }
-                    }
-                        
-                    return true;
-                }
-                catch { continue; }
-            }
-
-            //if we're here, it means we never actually found a valid object
-            return false;
         }
     }
 
@@ -342,6 +291,57 @@ namespace DotA.Model
         {
             Title = title;
             Value = value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objCandidates">A list of candidates for entry application in order of precedence</param>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public bool Apply(params object[] objCandidates)
+        {
+            var validCandidates = objCandidates.Where(o => o != null).ToArray();
+            if (validCandidates?.Count() < 1) return false;
+            int ind = -1;
+            while (true)
+            {
+                if (++ind == validCandidates.Count()) break; //this is the loop end control             
+                object obj = validCandidates[ind];
+
+                //set property to the entry value, then a matching property value, then finally a default if available
+                var propName = ValueDest ??
+                               obj.GetType().GetProperties().FirstOrDefault(p => p.GetCustomAttribute<JID>()?.IDs?.Contains(Title) ?? false)?.Name ??
+                               obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
+                if (string.IsNullOrEmpty(propName)) continue;
+
+                try
+                {
+                    //Set the property
+                    var destProp = obj.GetType().GetProperty(propName);
+                    if (destProp == null) continue;
+                    if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
+                        destProp.SetValue(obj, NumericArray);
+                    else
+                    {
+                        //use the property type to determine how to assign the value
+                        if (destProp.PropertyType == typeof(decimal))
+                        {
+                            destProp.SetValue(obj, NumericValue);
+                        }
+                        else
+                        {
+                            destProp.SetValue(obj, Value);
+                        }
+                    }
+
+                    return true;
+                }
+                catch { continue; }
+            }
+
+            //if we're here, it means we never actually found a valid object
+            return false;
         }
     }
 }
