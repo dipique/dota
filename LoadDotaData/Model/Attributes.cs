@@ -114,9 +114,17 @@ namespace DotA.Model.Attributes
     /// <summary>
     /// Indicates that a given value is a percentage
     /// </summary>
-    public sealed class IsPercentage : Attribute
+    public sealed class Percentage : Attribute
     {
-        public IsPercentage() { }
+        public Percentage() { }
+    }
+
+    /// <summary>
+    /// Indicates that this comes as a negative number that needs to be flipped to a positive one
+    /// </summary>
+    public sealed class FlipNegative : Attribute
+    {
+        public FlipNegative() { }
     }
 
     public sealed class DefaultEntryProperty : Attribute

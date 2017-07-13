@@ -35,11 +35,12 @@ namespace DotA.Model
         /// </summary>
         public decimal[] Amount { get; set; } = new decimal[] { 0 };
 
-        [JID("AbilityUnitTargetTeam")]
-        
 
         [JID("AbilityUnitTargetType")]
-        public TargetTeam TargetType { get; set; } = TargetTeam.NONE;
+        public TargetType TargetType { get; set; } = TargetType.NONE;
+
+        [JID("AbilityUnitTargetTeam")]
+        public TargetTeam TargetTeam { get; set; } = TargetTeam.NONE;
 
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
@@ -50,7 +51,6 @@ namespace DotA.Model
 
         [JID("SpellImmunityType")]
         public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.NO;
-        public LinkensInteraction LinkensInteraction { get; set; } = LinkensInteraction.None;
 
         //Potential level-scaling properties
         public decimal[] Duration { get; set; } = new decimal[] { 0 };
@@ -69,7 +69,7 @@ namespace DotA.Model
             {
                 baseDamage = value;
                 DamageType = value?.Count() < 1 || value[0] == 0 ? DamageType.None
-                                                                 : DamageType.Physical;            
+                                                                 : DamageType.PHYSICAL;            
             }
         }
 

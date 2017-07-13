@@ -89,6 +89,16 @@ namespace DotA.Model.Enums
     {
         None = 0,
 
+        [JID("corruption_armor", "negative_armor")]
+        [FlipNegative]
+        [ExpectedEntry("curruption_duration", nameof(Effect.Duration))]
+        Armor_Corruption,
+
+        [JID("attack_speed_bonus_pct")]
+        [Percentage]
+        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        Attack_Speed_Percent,
+
         [JID("bash_change_melee")]
         [ValueDest(nameof(Effect.Chance))]
         [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
@@ -103,7 +113,7 @@ namespace DotA.Model.Enums
         [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
         Bash_Ranged,
 
-        [ValueDest(nameof(Parseable.CastRange))]
+        [ValueDest(nameof(Ability.CastRange))]
         [JID("blink_range")]
         Blink,
 
@@ -114,20 +124,22 @@ namespace DotA.Model.Enums
         [JID("bonus_damage")]
         Damage,
 
+        [JID("sheep_duration")]
+        [ValueDest(nameof(Effect.Duration))]
+        Disable,
+
+        [Percentage]
         [JID("lifesteal_percent")]
         Lifesteal,
 
         [ValueDest()]
+        [Percentage]
         [JID("movement_speed_percent_bonus")]
         Movement_Speed_Pct,
 
         [JID("slow")]
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         Slow,
-
-        [JID("sheep_duration")]
-        [ValueDest(nameof(Effect.Duration))]
-        Disable,
 
         XP_Gain,
 
@@ -150,13 +162,13 @@ namespace DotA.Model.Enums
         All_Stats,
 
         [JID("bonus_evasion")]
-        [IsPercentage]
+        [Percentage]
         Evasion,
 
         [JID("bonus_armor")]
         Armor,
 
-        [IsPercentage]
+        [Percentage]
         [JID("spell_amp")]
         Spell_Amplification,
 
@@ -181,7 +193,7 @@ namespace DotA.Model.Enums
         GPM,
 
         [ActiveEffect]
-        [ValueDest(nameof(Parseable.Cooldown))]
+        [ValueDest(nameof(Ability.Cooldown))]
         [JID("bonus_gold")]
         [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
         Gold,
@@ -199,12 +211,12 @@ namespace DotA.Model.Enums
         [JID("health_restore")]
         Health_Regen,
 
-        [IsPercentage]
+        [Percentage]
         Spell_Lifesteal,
 
         [ActiveEffect]
         [JID("extra_spell_damage_precent")]
-        [IsPercentage]
+        [Percentage]
         Take_Extra_Magic_Damage,
 
         [ActiveEffect]
@@ -218,11 +230,7 @@ namespace DotA.Model.Enums
         [ActiveEffect]
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         [JID("fade_time", "fade_delay")]
-        Invisibility,
-
-        [JID("corruption_armor")]
-        [ExpectedEntry("curruption_duration", nameof(Effect.Duration))]
-        Armor_Reduction
+        Invisibility
     }
 
     [Prefix("DOTA_ABILITY_BEHAVIOR_")]
@@ -248,7 +256,15 @@ namespace DotA.Model.Enums
         DONT_CANCEL_CHANNEL = 1 << 16,
         IGNORE_CHANNEL = 1 << 17,
         DONT_CANCEL_MOVEMENT = 1 << 18,
-        DONT_RESUME_MOVEMENT = 1 << 19
+        DONT_RESUME_MOVEMENT = 1 << 19,
+        UNRESTRICTED = 1 << 20
+    }
+
+    [Prefix("DOTA_ABILITY_TYPE_")]
+    public enum AbilityType
+    {
+        BASIC,
+        ULTIMATE
     }
 
     [Prefix("DOTA_UNIT_TARGET_TEAM_")]
@@ -275,6 +291,7 @@ namespace DotA.Model.Enums
         HERO = 1 << 1,
         CREEP = 1 << 2,
         CUSTOM = 1 << 3,
+        BUILDING = 1 << 4
     }
 
     public enum LineType

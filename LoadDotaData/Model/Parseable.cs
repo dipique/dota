@@ -12,7 +12,7 @@ namespace DotA.Model
     //https://puppet-master.net/tutorials/source-engine/extract-content-from-vpk-files/
     public abstract class Parseable
     {
-        public virtual int MAX_ID { get; private set; } = 255; //dota IDs only go up to 255
+        public virtual int MAX_ID { get; set; } = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
         public virtual string Name { get; set; }       

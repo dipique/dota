@@ -103,7 +103,8 @@ namespace DotA.Model
                 if (matchingEffect != null)
                 {
                     AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
-                    IsPercentage = matchingEffect.GetCustomAttribute<IsPercentage>() != null;
+                    IsPercentage = matchingEffect.GetCustomAttribute<Percentage>() != null;
+                    FlipNegative = matchingEffect.GetCustomAttribute<FlipNegative>() != null;
                     ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
                     ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
                     ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty;
@@ -125,7 +126,7 @@ namespace DotA.Model
                 {
                     if (decimal.TryParse(val, out decimal d))
                     {
-                        numValues.Add(IsPercentage ? d / 100 : d);
+                        numValues.Add(IsPercentage ? d / 100 : d);  //get rid of negative numbers
                     }
                     else //if we find a single non-numeric value, stop trying to look for one
                     {
@@ -148,6 +149,7 @@ namespace DotA.Model
         public bool ActiveEffect { get; set; } = false;
         public (string name, string dest)[] ExpectedEntries { get; set; }
         public bool IsDuration { get; set; } = false;
+        public bool FlipNegative { get; set; } = false;
 
         public Entry(string title, string value)
         {
@@ -183,17 +185,27 @@ namespace DotA.Model
                     var destProp = obj.GetType().GetProperty(propName);
                     if (destProp == null) continue;
                     if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
-                        destProp.SetValue(obj, NumericArray);
+                    {
+                        if (FlipNegative)
+                        {
+                            destProp.SetValue(obj, NumericArray.Select(n => Math.Abs(n)).ToArray());
+                        }
+                        else
+                        {
+                            destProp.SetValue(obj, NumericArray);
+                        }                        
+                    }
                     else
                     {
                         //use the property type to determine how to assign the value
                         if (destProp.PropertyType == typeof(decimal))
                         {
                             //check if it a percentage
-                            var divisor = (!IsPercentage && destProp.GetCustomAttribute<IsPercentage>() != null) ? 100 : 1;
-                            destProp.SetValue(obj, NumericValue / divisor);
-                             
-                        } else if (destProp.PropertyType.IsEnum)
+                            var divisor = (!IsPercentage && destProp.GetCustomAttribute<Percentage>() != null) ? 100 : 1;
+                            destProp.SetValue(obj, (FlipNegative ? Math.Abs(NumericValue) : NumericValue) / divisor);
+
+                        }
+                        else if (destProp.PropertyType.IsEnum)
                         {
                             //for enums, first we need to see if there is a prefix
                             var prefix = destProp.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;

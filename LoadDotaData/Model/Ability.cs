@@ -52,5 +52,7 @@ namespace DotA.Model
                 return activeEffects.FirstOrDefault();
             }
         }
+
+        public Effect MainEffect => ActiveEffect ?? Effects.FirstOrDefault();
     }
 }

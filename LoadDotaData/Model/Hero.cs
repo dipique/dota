@@ -90,7 +90,7 @@ namespace DotA.Model
         [JID("ArmorPhysical")]
         public decimal BaseArmor { get; set; } = -1;
 
-        [IsPercentage]
+        [Percentage]
         [JID("MagicalResistance")]
         public decimal BaseMagicResistance { get; set; }
 
