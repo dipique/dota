@@ -14,8 +14,20 @@ namespace DotA.Model
     [ImageFolder("hero")]
     public class Hero : Parseable
     {
-
-        private const string HERO_NAME_TECHIES = "npc_dota_hero_techies";
+        [JID("HeroID")]
+        public override string ID
+        {
+            get => id.ToString();
+            set
+            {
+                if (int.TryParse(value, out int i))
+                {
+                    id = i;
+                    Valid = i < 0 || i > MAX_ID;
+                }
+            }
+        }
+        private int id = -1;
 
         [JID("AttackCapabilities")]
         public AttackType AttackType { get; set; }
@@ -125,9 +137,9 @@ namespace DotA.Model
         const decimal ARMOR_PER_AGI = .142857m;
         const decimal ATTACK_SPD_PER_AGI = 1;
 
-        public override decimal Strength(int level) => BaseStrength + (level * StrengthGain);
-        public override decimal Intelligence(int level) => BaseInt + (level * IntGain);
-        public override decimal Agility(int level) => BaseAgi + (level * AgiGain);
+        public decimal Strength(int level) => BaseStrength + (level * StrengthGain);
+        public decimal Intelligence(int level) => BaseInt + (level * IntGain);
+        public decimal Agility(int level) => BaseAgi + (level * AgiGain);
 
         public decimal MainAttributePoints(int level)
         {

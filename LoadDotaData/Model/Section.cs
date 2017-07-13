@@ -156,7 +156,7 @@ namespace DotA.Model
         }
 
         /// <summary>
-        /// 
+        /// This should automatically try the object, then specified candidate objects, then any parseable objects excepting arrays, and recursively go all the way down
         /// </summary>
         /// <param name="objCandidates">A list of candidates for entry application in order of precedence</param>
         /// <param name="entry"></param>
