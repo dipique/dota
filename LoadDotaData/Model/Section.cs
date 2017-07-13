@@ -86,6 +86,7 @@ namespace DotA.Model
     public class Entry
     {
         private const char NUM_SEP = ' '; //this is the character that separates numeric values in scaling attributes
+        private const char ENUM_SEP = '|';
 
         private string title = null;
         public string Title
@@ -189,6 +190,13 @@ namespace DotA.Model
                         if (destProp.PropertyType == typeof(decimal))
                         {
                             destProp.SetValue(obj, NumericValue);
+                        } else if (destProp.PropertyType.IsEnum)
+                        {
+                            //for enums, first we need to see if there is a prefix
+                            var prefix = destProp.PropertyType.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;
+                            var enumStrings = Value.Split(ENUM_SEP).Select(s => s.Trim().Replace(prefix, string.Empty)).ToArray();
+                            object enumValues = enumStrings.Select(a => (int)Enum.Parse(destProp.PropertyType, a)).Sum();
+                            destProp.SetValue(obj, enumValues);
                         }
                         else
                         {

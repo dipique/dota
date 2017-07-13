@@ -12,46 +12,56 @@ namespace DotA.Model
     ///  Located in the game\dota\scripts\npc folder inside your Dota 2 install directory
     /// </summary>
     [ImageFolder("hero")]
-    public class Hero
+    public class Hero : Parseable
     {
 
         private const string HERO_NAME_TECHIES = "Techies";
 
-        [InputHeader("HERO")] public string Name { get; set; }
-        public string ImgName { get; set; }
+        public AttackType AttackType { get; set; }
 
+        [JID("AttackRange")]
+        public AttackType AttackRange { get; set; }
 
-        [InputHeader("RTCL")] public AttackType AttackType { get; set; }
-        [InputHeader("RANG")] public AttackType AttackRange { get; set; }
-        [InputHeader("MSPD")] public AttackType MissileSpeed { get; set; }
+        [JID("ProjectileSpeed")]
+        public AttackType MissileSpeed { get; set; }
 
-
-        [InputHeader("MOVE")] public int MoveSpeed { get; set; }
-        [InputHeader("TURN")] public decimal TurnRate { get; set; }
+        public int MoveSpeed { get; set; } = 300;
+        public decimal TurnRate { get; set; }
 
         public decimal BaseHealth => 200;
         public decimal BaseMana => 75;
         public decimal BaseManaRegen => Name == HERO_NAME_TECHIES ? .02m : .01m;   //src: http://dota2.gamepedia.com/Mana         
-        [InputHeader("HP/S")] public decimal BaseHealthRegen { get; set; }
+        public decimal BaseHealthRegen { get; set; }
 
 
         /// <summary>
         /// Attibutes
         /// </summary>
-        [InputHeader("MAIN")] public MainAttribute MainAttribute { get; set; }
-        [InputHeader("STRB")] public decimal BaseStrength { get; set; }
-        [InputHeader("STR+")] public decimal StrengthGain { get; set; }
-        [InputHeader("AGIB")] public decimal BaseAgi { get; set; }
-        [InputHeader("AGI+")] public decimal AgiGain { get; set; }
-        [InputHeader("INTB")] public decimal BaseInt { get; set; }
-        [InputHeader("INT+")] public decimal IntGain { get; set; }
+        public MainAttribute MainAttribute { get; set; }
 
-        [InputHeader("VS-N")] public int BaseNightVision { get; set; }
-        [InputHeader("VS-D")] public int BaseDayVision { get; set; }
+        [JID("AttributePrimary")]
+        public string SetMainAttribute
+        {
+            set
+            {
 
-        [InputHeader("COLI")] public int CollisionSize { get; set; }
+            }
+        }
 
-        [InputHeader("BSAR")] public decimal BaseArmor { get; set; }
+        public decimal BaseStrength { get; set; }
+        public decimal StrengthGain { get; set; }
+        public decimal BaseAgi { get; set; }
+        public decimal AgiGain { get; set; }
+        public decimal BaseInt { get; set; }
+        public decimal IntGain { get; set; }
+
+        public decimal BaseNightVision { get; set; } = 800;
+        public decimal BaseDayVision { get; set; } = 1800;
+
+        public decimal CollisionSize { get; set; }
+
+        [JID("ArmorPhysical")]
+        public decimal BaseArmor { get; set; } = -1;
         public decimal BaseMagicResistance //src: http://dota2.gamepedia.com/Magic_resistance
         {
             get
@@ -65,16 +75,25 @@ namespace DotA.Model
             }
         }
 
-        [InputHeader("DMGM")] public int BaseDamageMin { get; set; }
-        [InputHeader("DMGX")] public int BaseDamageMax { get; set; }
+        [JID("AttackDamageMin")]
+        public decimal BaseDamageMin { get; set; }
+        [JID("AttackDamageMax")]
+        public decimal BaseDamageMax { get; set; }
 
-        [InputHeader("BAT_")] public decimal BaseAttackTime { get; set; }
-        [InputHeader("BAT_")] public decimal AttackAnimation { get; set; }
-        [InputHeader("BAT_")] public decimal AttackAnimationFollowThrough { get; set; }
+        [JID("AttackRate")]
+        public decimal BaseAttackTime { get; set; }
+
+        [JID("AttackAnimationPoint")]
+        public decimal AttackAnimation { get; set; }
+        public decimal AttackAnimationFollowThrough { get; set; }
         public decimal ProjectileSpeed { get; set; } = 0;
 
         public List<Ability> Abilities { get; set; } = new List<Ability>();
         public Talent[] Talents { get; set; } = new Talent[4];
+        public List<string> AbilityList { get; private set; } = new List<string>();
+
+        [JID("Ability1", "Ability2", "Ability3", "Ability4", "Ability 5", "Ability6", "Ability7", "Ability8", "Ability9")]
+        public string Ability { set => AbilityList.Add(value); } //accumulates all the different abilities
 
         //Constants to calculate attributes
         const decimal HP_REGEN_PER_STR = .03m;
@@ -100,8 +119,8 @@ namespace DotA.Model
         public decimal HealthRegen(int level) => BaseHealthRegen + (HP_REGEN_PER_STR * Strength(level));
         public decimal Health(int level) => BaseHealth + (HP_PER_STR * Strength(level));
 
-        public int AttackDamageMin(int level) => BaseDamageMin + (int)Math.Floor(MainAttributePoints(level));
-        public int AttackDamageMax(int level) => BaseDamageMax + (int)Math.Ceiling(MainAttributePoints(level));
+        public decimal AttackDamageMin(int level) => BaseDamageMin + Math.Floor(MainAttributePoints(level));
+        public decimal AttackDamageMax(int level) => BaseDamageMax + Math.Ceiling(MainAttributePoints(level));
     }
 
     public class Talent

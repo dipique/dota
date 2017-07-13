@@ -52,11 +52,12 @@ namespace DotA.Model.Enums
         Jump
     }
 
+    [Prefix("DOTA_ATTRIBUTE_")]
     public enum MainAttribute
     {
-        Strength,
-        Agility,
-        Intelligence
+        STRENGTH,
+        AGILITY,
+        INTELLIGENCE
     }
 
     public enum AttackType

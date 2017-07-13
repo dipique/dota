@@ -18,6 +18,8 @@ namespace LoadDotaData
         {
             DotaData dd = new DotaData();
             dd.Items = Parseable.ParseItems<Item>(File.ReadAllLines(itemLocation));
+
+
             DotaData.Save(dd, saveLocation);
 
         }

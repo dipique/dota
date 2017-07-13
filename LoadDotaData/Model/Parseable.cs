@@ -17,7 +17,7 @@ namespace DotA.Model
 
         public virtual string Name { get; set; }       
         
-        [JID("ID")]
+        [JID("ID", "HeroID")]
         public string ID
         {
             get => id.ToString();
