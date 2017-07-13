@@ -35,14 +35,21 @@ namespace DotA.Model
         /// </summary>
         public decimal[] Amount { get; set; } = new decimal[] { 0 };
 
-        public TargetType TargetType { get; set; } = TargetType.NONE;
+        [JID("AbilityUnitTargetTeam")]
+        
+
+        [JID("AbilityUnitTargetType")]
+        public TargetTeam TargetType { get; set; } = TargetTeam.NONE;
+
+        [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
         public DamageScalingType ScalingType { get; set; } = DamageScalingType.None;
 
         public DisableType DisableType { get; set; } = DisableType.None;        
         public bool DisjointsProjectiles { get; set; } = false;
 
-        public bool PiercesSpellImmunity { get; set; } = false;
+        [JID("SpellImmunityType")]
+        public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.NO;
         public LinkensInteraction LinkensInteraction { get; set; } = LinkensInteraction.None;
 
         //Potential level-scaling properties

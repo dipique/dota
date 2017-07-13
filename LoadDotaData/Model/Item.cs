@@ -41,6 +41,8 @@ namespace DotA.Model
 
         public Ability Ability { get; set; } = new Ability();
 
+        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability, Ability.ActiveEffect));
+
         public Item() { }
 
         private string name = string.Empty;

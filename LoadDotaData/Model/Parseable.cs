@@ -12,7 +12,7 @@ namespace DotA.Model
     //https://puppet-master.net/tutorials/source-engine/extract-content-from-vpk-files/
     public abstract class Parseable
     {
-        public const int MAX_ID = 255; //dota IDs only go up to 255
+        public virtual int MAX_ID { get; private set; } = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
         public virtual string Name { get; set; }       
@@ -24,8 +24,6 @@ namespace DotA.Model
 
         public bool Valid { get; set; } = true;
 
-        public virtual object[] ParseableCandidates { get; }
-
         public static T ParseItem<T>(Section data) where T : Parseable
         {
             T retVal = Activator.CreateInstance<T>();
@@ -33,10 +31,15 @@ namespace DotA.Model
             data.Sections.ForEach(s => ParseSection(retVal, s));
 
             //apply all the top level entries. We do this after the section application because sometimes these entries
-            //need to be applied to effects created by those sections.
-            foreach (var entry in data.Entries.Where(e => !e.IsNumericValue || e.NumericValue != 0))
-                entry.Apply(retVal, retVal.ParseableCandidates); //apply to the active effect if the item doesn't have a matching parameter
+            //need to be applied to objects effects created by those sections.
+            retVal.ApplyHeaderLevelEntries(data.Entries.Where(e => !e.IsNumericValue || e.NumericValue != 0).ToList());
+
             return retVal;
+        }
+
+        public virtual void ApplyHeaderLevelEntries(List<Entry> entries)
+        {
+            entries.ForEach(e => e.Apply(this));
         }
 
         public static void ParseSection<T>(T item, Section s) where T: Parseable

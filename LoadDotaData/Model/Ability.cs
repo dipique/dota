@@ -12,6 +12,8 @@ namespace DotA.Model
     [ImageFolder("ability")]
     public class Ability : Parseable
     {
+        public override int MAX_ID => 9999;
+
         public string Description { get; set; }
 
         public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability? //TODO: Should this just be read from attributes?
@@ -30,7 +32,8 @@ namespace DotA.Model
         [JID("AbilityManaCost")]
         public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
 
-        public override object[] ParseableCandidates { get => new object[] { ActiveEffect }; }
+        [JID("AbilityChannelTime")]
+        public decimal[] AbilityChannelTime { get; set; } = new decimal[] { 0 };
 
         public List<Effect> Effects { get; set; } = new List<Effect>();
 

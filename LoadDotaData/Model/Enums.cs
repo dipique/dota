@@ -20,12 +20,30 @@ namespace DotA.Model.Enums
         Stun
     }
 
+    [Prefix("DAMAGE_TYPE_")]
     public enum DamageType
     {
         None,
-        Physical,
-        Magical,
-        Pure
+        PHYSICAL,
+        MAGICAL,
+        PURE
+    }
+
+    [Prefix("SPELL_IMMUNITY_ENEMIES_")]
+    public enum SpellImmunityPiercingType
+    {
+        NO,
+        YES
+    }
+
+    [Prefix("SPELL_DISPELLABLE_")]
+    public enum DispellableType
+    {
+        None,
+        YES,
+        YES_STRONG,
+        NO
+        
     }
 
     public enum LinkensInteraction
@@ -233,9 +251,10 @@ namespace DotA.Model.Enums
         DONT_RESUME_MOVEMENT = 1 << 19
     }
 
-    [Prefix("DOTA_UNIT_TARGET_")]
-    public enum TargetType //src: npc_abilities.txt
-    {
+    [Prefix("DOTA_UNIT_TARGET_TEAM_")]
+    [Flags]
+    public enum TargetTeam
+    { 
         NONE = 0,
         FRIENDLY_HERO = 5,
         FRIENDLY_BASIC = 9,
@@ -244,9 +263,21 @@ namespace DotA.Model.Enums
         ENEMY_BASIC = 10,
         ENEMY = 14,
         ALL = 15,
+        BOTH,
+        CUSTOM
     }
 
-        public enum LineType
+    [Prefix("DOTA_UNIT_TARGET_")]
+    public enum TargetType
+    {
+        NONE = 0,
+        BASIC = 1,
+        HERO = 1 << 1,
+        CREEP = 1 << 2,
+        CUSTOM = 1 << 3,
+    }
+
+    public enum LineType
     {
         None,
         NewItemIndTop,
