@@ -112,11 +112,11 @@ namespace DotA.Model.Attributes
     }
 
     /// <summary>
-    /// Indicates that a given effect value is a percentage
+    /// Indicates that a given value is a percentage
     /// </summary>
-    public sealed class PercentEffect : Attribute
+    public sealed class IsPercentage : Attribute
     {
-        public PercentEffect() { }
+        public IsPercentage() { }
     }
 
     public sealed class DefaultEntryProperty : Attribute

@@ -103,7 +103,7 @@ namespace DotA.Model
                 if (matchingEffect != null)
                 {
                     AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
-                    IsPercentage = matchingEffect.GetCustomAttribute<PercentEffect>() != null;
+                    IsPercentage = matchingEffect.GetCustomAttribute<IsPercentage>() != null;
                     ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
                     ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
                     ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty;
@@ -189,11 +189,14 @@ namespace DotA.Model
                         //use the property type to determine how to assign the value
                         if (destProp.PropertyType == typeof(decimal))
                         {
-                            destProp.SetValue(obj, NumericValue);
+                            //check if it a percentage
+                            var divisor = (!IsPercentage && destProp.GetCustomAttribute<IsPercentage>() != null) ? 100 : 1;
+                            destProp.SetValue(obj, NumericValue / divisor);
+                             
                         } else if (destProp.PropertyType.IsEnum)
                         {
                             //for enums, first we need to see if there is a prefix
-                            var prefix = destProp.PropertyType.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;
+                            var prefix = destProp.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;
                             var enumStrings = Value.Split(ENUM_SEP).Select(s => s.Trim().Replace(prefix, string.Empty)).ToArray();
                             object enumValues = enumStrings.Select(a => (int)Enum.Parse(destProp.PropertyType, a)).Sum();
                             destProp.SetValue(obj, enumValues);

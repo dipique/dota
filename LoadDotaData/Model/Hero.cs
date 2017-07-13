@@ -15,65 +15,72 @@ namespace DotA.Model
     public class Hero : Parseable
     {
 
-        private const string HERO_NAME_TECHIES = "Techies";
+        private const string HERO_NAME_TECHIES = "npc_dota_hero_techies";
 
+        [JID("AttackCapabilities")]
         public AttackType AttackType { get; set; }
 
         [JID("AttackRange")]
-        public AttackType AttackRange { get; set; }
+        public decimal AttackRange { get; set; }
 
         [JID("ProjectileSpeed")]
-        public AttackType MissileSpeed { get; set; }
+        public decimal MissileSpeed { get; set; }
 
+        [JID("MovementSpeed")]
         public int MoveSpeed { get; set; } = 300;
+
+        [JID("MovementTurnRate")]
         public decimal TurnRate { get; set; }
 
         public decimal BaseHealth => 200;
         public decimal BaseMana => 75;
-        public decimal BaseManaRegen => Name == HERO_NAME_TECHIES ? .02m : .01m;   //src: http://dota2.gamepedia.com/Mana         
+
+        [JID("StatusManaRegen")]
+        public decimal BaseManaRegen { get; set; } = .01m;
+        
+        [JID("StatusHealthRegen")]
         public decimal BaseHealthRegen { get; set; }
 
 
         /// <summary>
         /// Attibutes
         /// </summary>
-        public MainAttribute MainAttribute { get; set; }
-
         [JID("AttributePrimary")]
-        public string SetMainAttribute
-        {
-            set
-            {
+        public StatType MainAttribute { get; set; }
 
-            }
-        }
-
+        [JID("AttributeBaseStrength")]
         public decimal BaseStrength { get; set; }
+
+        [JID("AttributeStrengthGain")]
         public decimal StrengthGain { get; set; }
+
+        [JID("AttributeBaseAgility")]
         public decimal BaseAgi { get; set; }
+
+        [JID("AttributeAgilityGain")]
         public decimal AgiGain { get; set; }
+
+        [JID("AttributeBaseIntelligence")]
         public decimal BaseInt { get; set; }
+
+        [JID("AttributeIntelligenceGain")]
         public decimal IntGain { get; set; }
 
+        [JID("VisionNighttimeRange")]
         public decimal BaseNightVision { get; set; } = 800;
+
+        [JID("VisionDaytimeRange")]
         public decimal BaseDayVision { get; set; } = 1800;
 
+        [JID("RingRadius")]
         public decimal CollisionSize { get; set; }
 
         [JID("ArmorPhysical")]
         public decimal BaseArmor { get; set; } = -1;
-        public decimal BaseMagicResistance //src: http://dota2.gamepedia.com/Magic_resistance
-        {
-            get
-            {
-                switch (Name)
-                {
-                    case "Meepo": return .35m;
-                    case "Visage": return .1m;
-                    default: return .25m;
-                }
-            }
-        }
+
+        [IsPercentage]
+        [JID("MagicalResistance")]
+        public decimal BaseMagicResistance { get; set; }
 
         [JID("AttackDamageMin")]
         public decimal BaseDamageMin { get; set; }
@@ -85,15 +92,32 @@ namespace DotA.Model
 
         [JID("AttackAnimationPoint")]
         public decimal AttackAnimation { get; set; }
-        public decimal AttackAnimationFollowThrough { get; set; }
+
+        [JID("ProjectileSpeed")]
         public decimal ProjectileSpeed { get; set; } = 0;
 
-        public List<Ability> Abilities { get; set; } = new List<Ability>();
-        public Talent[] Talents { get; set; } = new Talent[4];
-        public List<string> AbilityList { get; private set; } = new List<string>();
-
+        /// <summary>
+        /// We just use this to collect a list of abilities and make parsing the ability file easier later
+        /// </summary>
         [JID("Ability1", "Ability2", "Ability3", "Ability4", "Ability 5", "Ability6", "Ability7", "Ability8", "Ability9")]
         public string Ability { set => AbilityList.Add(value); } //accumulates all the different abilities
+        public List<string> AbilityList { get; private set; } = new List<string>();
+        public List<Ability> Abilities { get; set; } = new List<Ability>();
+
+        /// <summary>
+        /// This one is a little different because the order of the talents matters:
+        /// 
+        /// Ability 10: Lvl 10 Opt 1
+        /// Ability 11: Lvl 10 Opt 2
+        /// Ability 12: Lvl 15 Opt 1
+        /// Ability 13: lvl 20 Opt 2
+        /// 
+        /// ....and so on
+        /// </summary>
+        [JID("Ability10", "Ability12", "Ability13", "Ability14", "Ability 15", "Ability16", "Ability17", "Ability11")]
+        public string Talent { set => TalentList.Add(value); } //accumulates all the different abilities
+        public List<string> TalentList { get; private set; } = new List<string>();
+        public Talent[] Talents { get; set; } = new Talent[4];
 
         //Constants to calculate attributes
         const decimal HP_REGEN_PER_STR = .03m;
@@ -101,17 +125,17 @@ namespace DotA.Model
         const decimal ARMOR_PER_AGI = .142857m;
         const decimal ATTACK_SPD_PER_AGI = 1;
 
-        public decimal Strength(int level) => BaseStrength + (level * StrengthGain);
-        public decimal Intelligence(int level) => BaseInt + (level * IntGain);
-        public decimal Agility(int level) => BaseAgi + (level * AgiGain);
+        public override decimal Strength(int level) => BaseStrength + (level * StrengthGain);
+        public override decimal Intelligence(int level) => BaseInt + (level * IntGain);
+        public override decimal Agility(int level) => BaseAgi + (level * AgiGain);
 
         public decimal MainAttributePoints(int level)
         {
             switch (MainAttribute)
             {
-                case MainAttribute.Strength: return Strength(level);
-                case MainAttribute.Agility: return Agility(level);
-                case MainAttribute.Intelligence: return Intelligence(level);
+                case StatType.STRENGTH: return Strength(level);
+                case StatType.AGILITY: return Agility(level);
+                case StatType.INTELLIGENCE: return Intelligence(level);
                 default: return 0m;
             }
         }

@@ -53,17 +53,18 @@ namespace DotA.Model.Enums
     }
 
     [Prefix("DOTA_ATTRIBUTE_")]
-    public enum MainAttribute
+    public enum StatType
     {
         STRENGTH,
         AGILITY,
         INTELLIGENCE
     }
 
+    [Prefix("DOTA_UNIT_CAP_")]
     public enum AttackType
     {
-        Melee,
-        Ranged
+        MELEE_ATTACK,
+        RANGED_ATTACK
     }
 
     public enum EffectClass
@@ -131,13 +132,13 @@ namespace DotA.Model.Enums
         All_Stats,
 
         [JID("bonus_evasion")]
-        [PercentEffect]
+        [IsPercentage]
         Evasion,
 
         [JID("bonus_armor")]
         Armor,
 
-        [PercentEffect]
+        [IsPercentage]
         [JID("spell_amp")]
         Spell_Amplification,
 
@@ -180,12 +181,12 @@ namespace DotA.Model.Enums
         [JID("health_restore")]
         Health_Regen,
 
-        [PercentEffect]
+        [IsPercentage]
         Spell_Lifesteal,
 
         [ActiveEffect]
         [JID("extra_spell_damage_precent")]
-        [PercentEffect]
+        [IsPercentage]
         Take_Extra_Magic_Damage,
 
         [ActiveEffect]
