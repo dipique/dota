@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 using DotA.Model.Enums;
 using DotA.Model.Attributes;
@@ -14,21 +15,6 @@ namespace DotA.Model
     [ImageFolder("hero")]
     public class Hero : Parseable
     {
-        [JID("HeroID")]
-        public override string ID
-        {
-            get => id.ToString();
-            set
-            {
-                if (int.TryParse(value, out int i))
-                {
-                    id = i;
-                    Valid = i > 0 && i < MAX_ID;
-                }
-            }
-        }
-        private int id = -1;
-
         [JID("AttackCapabilities")]
         public AttackType AttackType { get; set; }
 

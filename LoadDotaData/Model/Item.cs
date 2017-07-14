@@ -14,21 +14,6 @@ namespace DotA.Model
         private const string RECIPE_IND = "item_recipe_";
         private const char RECIPE_SEP = ';';
 
-        [JID("ID")]
-        public override string ID
-        {
-            get => id.ToString();
-            set
-            {
-                if (int.TryParse(value, out int i))
-                {
-                    id = i;
-                    Valid = i > 0 && i < MAX_ID;
-                }
-            }
-        }
-        private int id = -1;
-
         /// <summary>
         /// Stats provided
         /// </summary>

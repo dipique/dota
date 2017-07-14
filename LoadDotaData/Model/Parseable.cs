@@ -16,14 +16,19 @@ namespace DotA.Model
         public virtual int MAX_ID { get; set; } = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
-        public virtual string Name { get; set; }       
-        
-        [JID("ID")]
-        public virtual string ID { get; set; }
+        public virtual string Name { get; set; }
+
+        [JID("ID","HeroID")]
+        public string ID
+        {
+            get => id.ToString();
+            set => id = int.TryParse(value, out int i) ? i : -1;
+        }
+        private int id = -1;
 
         public string ImgName { get; set; }
 
-        public bool Valid { get; set; } = true;
+        public virtual bool Valid => id > 0 && id < MAX_ID;
 
         public static T ParseItem<T>(Section data) where T : Parseable
         {

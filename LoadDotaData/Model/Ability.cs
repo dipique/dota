@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 using DotA.Model.Enums;
 using DotA.Model.Attributes;
@@ -12,6 +13,7 @@ namespace DotA.Model
     [ImageFolder("ability")]
     public class Ability : Parseable
     {
+        [IgnoreDataMember]
         public override int MAX_ID => 9999;
 
         public string Description { get; set; }
