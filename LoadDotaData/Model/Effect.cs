@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using DotA.Model.Enums;
 using DotA.Model.Attributes;
@@ -9,6 +7,7 @@ using DotA.Model.Attributes;
 namespace DotA.Model
 {
     [DefaultEntryProperty(nameof(Amount))]
+    [Serializable]
     public class Effect
     {
         /// <summary>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DotA.Flashcards
+﻿namespace DotA.Flashcards
 {
     public class CustomQuestion
     {

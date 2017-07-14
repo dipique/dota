@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
 using DotA;
@@ -32,28 +30,30 @@ namespace LoadDotaData
                 //Try to assign the talents as well
                 if (h.TalentList.Count() != 8) return; // 8 is what it should be
 
-                h.Talents = new Talent[] {
-                    new Talent() {
-                        Level = 10,
-                        Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[0])?.MainEffect,
-                        Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[1])?.MainEffect
-                    },
-                    new Talent() {
-                        Level = 15,
-                        Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[2])?.MainEffect,
-                        Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[3])?.MainEffect
-                    },
-                    new Talent() {
-                        Level = 20,
-                        Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[4])?.MainEffect,
-                        Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[5])?.MainEffect
-                    },
-                    new Talent() {
-                        Level = 25,
-                        Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[6])?.MainEffect,
-                        Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[7])?.MainEffect
-                    }
-                };
+                h.Talents.Add(new Talent() {
+                    Level = 10,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[0])?.MainEffect,
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[1])?.MainEffect
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 15,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[2])?.MainEffect,
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[3])?.MainEffect
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 20,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[4])?.MainEffect,
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[5])?.MainEffect
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 25,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[6])?.MainEffect,
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[7])?.MainEffect
+                });
+
             });
 
 

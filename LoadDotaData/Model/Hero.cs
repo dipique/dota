@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 
 using DotA.Model.Enums;
@@ -13,6 +11,7 @@ namespace DotA.Model
     ///  Located in the game\dota\scripts\npc folder inside your Dota 2 install directory
     /// </summary>
     [ImageFolder("hero")]
+    [Serializable]
     public class Hero : Parseable
     {
         [JID("AttackCapabilities")]
@@ -111,7 +110,8 @@ namespace DotA.Model
         [JID("Ability10", "Ability12", "Ability13", "Ability14", "Ability15", "Ability16", "Ability17", "Ability11")]
         public string Talent { set => TalentList.Add(value); } //accumulates all the different abilities
         [IgnoreDataMember] public List<string> TalentList { get; private set; } = new List<string>();
-        public Talent[] Talents { get; set; } = new Talent[4];
+
+        public List<Talent> Talents { get; set; } = new List<Talent>();
 
         //Constants to calculate attributes
         const decimal HP_REGEN_PER_STR = .03m;
@@ -141,6 +141,7 @@ namespace DotA.Model
         public decimal AttackDamageMax(int level) => BaseDamageMax + Math.Ceiling(MainAttributePoints(level));
     }
 
+    [Serializable]
     public class Talent
     {
         public int Level { get; set; }
