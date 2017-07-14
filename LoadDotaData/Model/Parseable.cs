@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 
-using DotA.Model.Enums;
 using DotA.Model.Attributes;
 
 namespace DotA.Model
@@ -12,6 +12,7 @@ namespace DotA.Model
     //https://puppet-master.net/tutorials/source-engine/extract-content-from-vpk-files/
     public abstract class Parseable
     {
+        [IgnoreDataMember]
         public virtual int MAX_ID { get; set; } = 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 

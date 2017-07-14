@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using DotA;
 using DotA.Model;
@@ -19,8 +17,8 @@ namespace LoadDotaData
         static void Main(string[] args)
         {
             DotaData dd = new DotaData();
-            dd.Items = Parseable.ParseItems<Item>(File.ReadAllLines(itemLocation));
-            dd.Heroes = Parseable.ParseItems<Hero>(File.ReadAllLines(heroLocation));
+            dd.Items = Parseable.ParseItems<Item>(File.ReadAllLines(itemLocation)).Where(i => i.Valid).ToList();
+            dd.Heroes = Parseable.ParseItems<Hero>(File.ReadAllLines(heroLocation)).Where(h => h.Valid).ToList();
 
             //get the abilities and try to assign them to the heroes
             var abilities = Parseable.ParseItems<Ability>(File.ReadAllLines(abilityLocation));

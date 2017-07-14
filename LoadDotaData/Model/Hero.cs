@@ -23,7 +23,7 @@ namespace DotA.Model
                 if (int.TryParse(value, out int i))
                 {
                     id = i;
-                    Valid = i < 0 || i > MAX_ID;
+                    Valid = i > 0 && i < MAX_ID;
                 }
             }
         }
