@@ -133,6 +133,9 @@ namespace DotA.Model.Enums
         [JID("lifesteal_percent")]
         Lifesteal,
 
+        [JID("mana_per_hit")]
+        Mana_Burn,
+
         [ValueDest()]
         [Percentage]
         [JID("movement_speed_percent_bonus")]
