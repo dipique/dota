@@ -14,9 +14,6 @@ namespace DotA.Model
         private const string RECIPE_IND = "item_recipe_";
         private const char RECIPE_SEP = ';';
 
-        /// <summary>
-        /// Stats provided
-        /// </summary>
         public virtual decimal Agility(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Agility, EffectClass.All_Stats }, lvl);
         public virtual decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
         public virtual decimal Intelligence(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Intelligence, EffectClass.All_Stats }, lvl);
@@ -28,21 +25,11 @@ namespace DotA.Model
 
         public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability, Ability.ActiveEffect));
 
-        public Item() { }
-
-        private string name = string.Empty;
-        public override string Name
-        {
-            get => name;
-            set
-            {
-                IsRecipe = value.StartsWith(RECIPE_IND);
-                name = value;
-            }
-        }
-
-        public bool IsRecipe { get; set; }
+        public bool IsRecipe => (Recipe?.Count() ?? 0) > 0;
         
+        /// <summary>
+        /// Not yet fully implemented because other than actual recipe items, the component items aren't present in the files we're parsing
+        /// </summary>
         public decimal FullItemCost => Recipe.Count() > 0 ? GetRecipeItems.Sum(i => i.ItemCost) + ItemCost 
                                                           : ItemCost;
 
@@ -60,7 +47,6 @@ namespace DotA.Model
         public void AddRecipe(Section s)
         {
             if (s.Entries.Count == 0) return;
-            IsRecipe = true;
             Recipe = s.Entries.First().Value.Split(RECIPE_SEP);
         }
 
@@ -72,8 +58,7 @@ namespace DotA.Model
             //Every entry with a JID will have it own effect.
             foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
             {
-                var effect = new Effect()
-                {
+                var effect = new Effect() {
                     Class = entry.AssociatedEffectClass
                 };
 

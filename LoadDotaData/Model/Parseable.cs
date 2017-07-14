@@ -13,8 +13,10 @@ namespace DotA.Model
     public abstract class Parseable
     {
         [IgnoreDataMember]
-        public virtual int MAX_ID { get; set; } = 255; //dota IDs only go up to 255
+        public virtual int MAX_ID => 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
+
+        public virtual bool RequiresID => true;
 
         public virtual string Name { get; set; }
 
@@ -28,7 +30,7 @@ namespace DotA.Model
 
         public string ImgName { get; set; }
 
-        public virtual bool Valid => id > 0 && id < MAX_ID;
+        public virtual bool Valid => !RequiresID || (id > 0 && id < MAX_ID);
 
         public static T ParseItem<T>(Section data) where T : Parseable
         {

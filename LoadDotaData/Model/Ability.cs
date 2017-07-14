@@ -15,6 +15,7 @@ namespace DotA.Model
     {
         [IgnoreDataMember]
         public override int MAX_ID => 9999;
+        public override bool RequiresID => false;
 
         public string Description { get; set; }
 
