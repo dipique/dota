@@ -39,10 +39,6 @@ namespace DotA.Model
         [JID("StatusHealthRegen")]
         public decimal BaseHealthRegen { get; set; }
 
-
-        /// <summary>
-        /// Attibutes
-        /// </summary>
         [JID("AttributePrimary")]
         public StatType MainAttribute { get; set; }
 
@@ -97,7 +93,7 @@ namespace DotA.Model
         /// <summary>
         /// We just use this to collect a list of abilities and make parsing the ability file easier later
         /// </summary>
-        [JID("Ability1", "Ability2", "Ability3", "Ability4", "Ability 5", "Ability6", "Ability7", "Ability8", "Ability9")]
+        [JID("Ability1", "Ability2", "Ability3", "Ability4", "Ability5", "Ability6", "Ability7", "Ability8", "Ability9")]
         public string Ability { set => AbilityList.Add(value); } //accumulates all the different abilities
         [IgnoreDataMember] public List<string> AbilityList { get; private set; } = new List<string>();
         public List<Ability> Abilities { get; set; } = new List<Ability>();
@@ -112,9 +108,9 @@ namespace DotA.Model
         /// 
         /// ....and so on
         /// </summary>
-        [JID("Ability10", "Ability12", "Ability13", "Ability14", "Ability 15", "Ability16", "Ability17", "Ability11")]
+        [JID("Ability10", "Ability12", "Ability13", "Ability14", "Ability15", "Ability16", "Ability17", "Ability11")]
         public string Talent { set => TalentList.Add(value); } //accumulates all the different abilities
-        public List<string> TalentList { get; private set; } = new List<string>();
+        [IgnoreDataMember] public List<string> TalentList { get; private set; } = new List<string>();
         public Talent[] Talents { get; set; } = new Talent[4];
 
         //Constants to calculate attributes
