@@ -18,10 +18,33 @@ namespace DotA.Model
 
         public string Description { get; set; }
 
-        public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability? //TODO: Should this just be read from attributes?
+        public int MaxLevels
+        {
+            get
+            {
+                //Check the properties here for the highest upper bound
+                int maxCount = 1;
+                foreach (var p in typeof(Ability).GetProperties().Where(p => p.PropertyType.IsArray))
+                {
+                    var countMethod = ((decimal[])p.GetValue(this))?.Count() ?? 0;
+                    if (countMethod > maxCount) maxCount = countMethod;
+                }
+
+                //Now check the effects
+                foreach (var p in typeof(Effect).GetProperties().Where(p => p.PropertyType.IsArray))
+                {                    
+                    Effects.ForEach(e => {
+                        var countMethod = ((decimal[])p.GetValue(e))?.Count() ?? 0;
+                        if (countMethod > maxCount) maxCount = countMethod;
+                    });
+                }
+
+                return maxCount;
+            }
+        }
 
         [JID("AbilityType")]
-        public AbilityType Ultimate { get; set; } = AbilityType.BASIC;
+        public AbilityType AbilityType { get; set; } = AbilityType.BASIC;
 
         [JID("AbilityCastRange")]
         public decimal[] CastRange { get; set; } = new decimal[] { 0 };
@@ -41,7 +64,7 @@ namespace DotA.Model
         public List<Effect> Effects { get; set; } = new List<Effect>();
 
         [JID("AbilityBehavior")]
-        public EffectType Type { get; set; }
+        public EffectType EffectType { get; set; }
 
         public Effect ActiveEffect
         {
