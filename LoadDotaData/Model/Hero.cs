@@ -25,7 +25,7 @@ namespace DotA.Model
         public decimal MissileSpeed { get; set; }
 
         [JID("MovementSpeed")]
-        public int MoveSpeed { get; set; } = 300;
+        public decimal MoveSpeed { get; set; } = 300;
 
         [JID("MovementTurnRate")]
         public decimal TurnRate { get; set; }
@@ -71,7 +71,7 @@ namespace DotA.Model
         public decimal BaseDayVision { get; set; } = 1800;
 
         [JID("RingRadius")]
-        public decimal CollisionSize { get; set; }
+        public decimal CollisionSize { get; set; } = 70;
 
         [JID("ArmorPhysical")]
         public decimal BaseArmor { get; set; } = -1;
@@ -99,7 +99,7 @@ namespace DotA.Model
         /// </summary>
         [JID("Ability1", "Ability2", "Ability3", "Ability4", "Ability 5", "Ability6", "Ability7", "Ability8", "Ability9")]
         public string Ability { set => AbilityList.Add(value); } //accumulates all the different abilities
-        public List<string> AbilityList { get; private set; } = new List<string>();
+        [IgnoreDataMember] public List<string> AbilityList { get; private set; } = new List<string>();
         public List<Ability> Abilities { get; set; } = new List<Ability>();
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace DotA.Model
             {
                 case StatType.STRENGTH: return Strength(level);
                 case StatType.AGILITY: return Agility(level);
-                case StatType.INTELLIGENCE: return Intelligence(level);
+                case StatType.INTELLECT: return Intelligence(level);
                 default: return 0m;
             }
         }

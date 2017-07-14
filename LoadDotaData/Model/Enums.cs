@@ -75,14 +75,15 @@ namespace DotA.Model.Enums
     {
         STRENGTH,
         AGILITY,
-        INTELLIGENCE
+        INTELLECT
     }
 
     [Prefix("DOTA_UNIT_CAP_")]
     public enum AttackType
     {
         MELEE_ATTACK,
-        RANGED_ATTACK
+        RANGED_ATTACK,
+        NO_ATTACK
     }
 
     public enum EffectClass
@@ -237,6 +238,7 @@ namespace DotA.Model.Enums
     [Flags]
     public enum EffectType //src: items.txt file
     {
+        NONE = 0,
         HIDDEN = 1,
         PASSIVE = 1 << 1,
         NO_TARGET = 1 << 2,
@@ -257,14 +259,24 @@ namespace DotA.Model.Enums
         IGNORE_CHANNEL = 1 << 17,
         DONT_CANCEL_MOVEMENT = 1 << 18,
         DONT_RESUME_MOVEMENT = 1 << 19,
-        UNRESTRICTED = 1 << 20
+        UNRESTRICTED = 1 << 20,
+        IGNORE_BACKSWING = 1 << 21,
+        IGNORE_PSEUDO_QUEUE = 1 << 22,
+        AUTOCAST = 1 << 23,
+        ATTACK = 1 << 24,
+        AURA = 1 << 27,
+        NORMAL_WHEN_STOLEN = 1 << 26,
+        RUNE_TARGET = 1 << 27,
+        DONT_ALERT_TARGET = 1 << 28,
+        DOTA_ABILITY_TYPE_ULTIMATE = 1 << 29 //this randomly shows up in lone druid's battle cry
     }
 
     [Prefix("DOTA_ABILITY_TYPE_")]
     public enum AbilityType
     {
         BASIC,
-        ULTIMATE
+        ULTIMATE,
+        ATTRIBUTES
     }
 
     [Prefix("DOTA_UNIT_TARGET_TEAM_")]
@@ -284,6 +296,7 @@ namespace DotA.Model.Enums
     }
 
     [Prefix("DOTA_UNIT_TARGET_")]
+    [Flags]
     public enum TargetType
     {
         NONE = 0,

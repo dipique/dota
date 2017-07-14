@@ -20,7 +20,8 @@ namespace DotA.Model
 
         public int MaxLevels { get; set; } = 1; //how many ability points can be placed in this ability? //TODO: Should this just be read from attributes?
 
-        public bool IsUltimate { get; set; } = false;
+        [JID("AbilityType")]
+        public AbilityType Ultimate { get; set; } = AbilityType.BASIC;
 
         [JID("AbilityCastRange")]
         public decimal[] CastRange { get; set; } = new decimal[] { 0 };

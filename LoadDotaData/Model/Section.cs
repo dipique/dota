@@ -179,49 +179,57 @@ namespace DotA.Model
                                obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
                 if (string.IsNullOrEmpty(propName)) continue;
 
-                try
+                //try
+                //{
+                //Set the property
+                var destProp = obj.GetType().GetProperty(propName);
+                if (destProp == null) continue;
+                if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
                 {
-                    //Set the property
-                    var destProp = obj.GetType().GetProperty(propName);
-                    if (destProp == null) continue;
-                    if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
+                    if (FlipNegative)
                     {
-                        if (FlipNegative)
-                        {
-                            destProp.SetValue(obj, NumericArray.Select(n => Math.Abs(n)).ToArray());
-                        }
-                        else
-                        {
-                            destProp.SetValue(obj, NumericArray);
-                        }                        
+                        destProp.SetValue(obj, NumericArray.Select(n => Math.Abs(n)).ToArray());
                     }
                     else
                     {
-                        //use the property type to determine how to assign the value
-                        if (destProp.PropertyType == typeof(decimal))
-                        {
-                            //check if it a percentage
-                            var divisor = (!IsPercentage && destProp.GetCustomAttribute<Percentage>() != null) ? 100 : 1;
-                            destProp.SetValue(obj, (FlipNegative ? Math.Abs(NumericValue) : NumericValue) / divisor);
+                        destProp.SetValue(obj, NumericArray);
+                    }
+                }
+                else
+                {
+                    //use the property type to determine how to assign the value
+                    if (destProp.PropertyType == typeof(decimal))
+                    {
+                        //check if it a percentage
+                        var divisor = (!IsPercentage && destProp.GetCustomAttribute<Percentage>() != null) ? 100 : 1;
+                        destProp.SetValue(obj, (FlipNegative ? Math.Abs(NumericValue) : NumericValue) / divisor);
 
-                        }
-                        else if (destProp.PropertyType.IsEnum)
+                    }
+                    else if (destProp.PropertyType.IsEnum)
+                    {
+                        //for enums, first we need to see if there is a prefix
+                        var prefix = destProp.PropertyType.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;
+                        var enumStrings = string.IsNullOrEmpty(prefix) ? Value.Split(ENUM_SEP).Select(s => s.Trim())
+                                                                       : Value.Split(ENUM_SEP).Select(s => s.Trim().Replace(prefix, string.Empty));
+                        var enumStringsWithValues = enumStrings.Where(s => !string.IsNullOrEmpty(s));
+                        if (enumStringsWithValues.Count() > 0)
                         {
-                            //for enums, first we need to see if there is a prefix
-                            var prefix = destProp.GetCustomAttribute<Prefix>()?.Value ?? string.Empty;
-                            var enumStrings = Value.Split(ENUM_SEP).Select(s => s.Trim().Replace(prefix, string.Empty)).ToArray();
-                            object enumValues = enumStrings.Select(a => (int)Enum.Parse(destProp.PropertyType, a)).Sum();
+                            object enumValues = enumStringsWithValues.Select(a => (int)Enum.Parse(destProp.PropertyType, a)).Sum();
                             destProp.SetValue(obj, enumValues);
                         }
-                        else
-                        {
-                            destProp.SetValue(obj, Value);
-                        }
                     }
-
-                    return true;
+                    else
+                    {
+                        destProp.SetValue(obj, Value);
+                    }
                 }
-                catch { continue; }
+
+                return true;
+                //}
+                //catch
+                //{
+                //    throw;
+                //}
             }
 
             //if we're here, it means we never actually found a valid object
