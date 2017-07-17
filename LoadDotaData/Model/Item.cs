@@ -16,20 +16,21 @@ namespace DotA.Model
         public virtual decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
         public virtual decimal Intelligence(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Intelligence, EffectClass.All_Stats }, lvl);
 
-        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Ability.Effects.Where(e => classes.Any(c => c == e.Class))
+        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Active.Effects.Where(e => classes.Any(c => c == e.Class))
                                                                                               .Sum(e => e.Amount[lvl - 1]);
 
-        public Ability Ability { get; set; } = new Ability();
+        public Ability Active { get; set; } = new Ability();
+        public List<Effect> Passives { get; set; } = new List<Effect>(); //TODO: Save passives in a separate list
 
-        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability, Ability.ActiveEffect));
+        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Active, Active.ActiveEffect));
 
         public bool IsRecipe => (Recipe?.Count() ?? 0) > 0;
         
         /// <summary>
         /// Not yet fully implemented because other than actual recipe items, the component items aren't present in the files we're parsing
         /// </summary>
-        public decimal FullItemCost => Recipe.Count() > 0 ? GetRecipeItems.Sum(i => i.ItemCost) + ItemCost 
-                                                          : ItemCost;
+        public decimal FullItemCost(List<Item> allItems) => Recipe.Count() > 0 ? GetRecipeItems(allItems).Sum(i => i.ItemCost) + ItemCost 
+                                                                               : ItemCost;
 
         [JID("ItemCost")]
         public decimal ItemCost { get; set; }
@@ -39,7 +40,7 @@ namespace DotA.Model
         /// </summary>
         public string[] Recipe { get; set; }
 
-        public List<Item> GetRecipeItems { get; set; } //TODO this should do a lookup to get all the items from the strings
+        public List<Item> GetRecipeItems(List<Item> allItems) => allItems.Where(a => Recipe.Any(r => r == a.Name)).ToList();
 
         [SpecialHandlerSectionMethod("ItemRequirements")]
         public void AddRecipe(Section s)
@@ -61,18 +62,18 @@ namespace DotA.Model
                 };
 
                 //set property to the entry value--effect frist, then the base item
-                entry.Apply(effect, Ability, this);
+                entry.Apply(effect, Active, this);
 
                 //Now, get any entries associated with it
                 foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
-                    entry.Apply(effect, Ability, this);
+                    entry.Apply(effect, Active, this);
                 }
 
                 //Add the entry
-                Ability.Effects.Add(effect);
+                Active.Effects.Add(effect);
             }
         }
 

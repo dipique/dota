@@ -18,6 +18,7 @@ namespace DotA.Model
 
         public virtual bool RequiresID => true;
 
+        public string DisplayName { get; set; }
         public virtual string Name { get; set; }
 
         [JID("ID","HeroID")]

@@ -60,6 +60,12 @@ namespace DotA.Model
         [JID("AbilityChannelTime")]
         public decimal[] AbilityChannelTime { get; set; } = new decimal[] { 0 };
 
+        [JID("AbilityUnitTargetType")]
+        public TargetType TargetType { get; set; } = TargetType.NONE;
+
+        [JID("AbilityUnitTargetTeam")]
+        public TargetTeam TargetTeam { get; set; } = TargetTeam.NONE;
+
         public List<Effect> Effects { get; set; } = new List<Effect>();
 
         [JID("AbilityBehavior")]

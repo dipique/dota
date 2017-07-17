@@ -145,6 +145,7 @@ namespace DotA.Model.Enums
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         Slow,
 
+        [JID("xp_bonus")]
         XP_Gain,
 
         [JID("bonus_cooldown")]
@@ -194,8 +195,6 @@ namespace DotA.Model.Enums
         [JID("bonus_magical_armor")]
         Magic_Resistance,
 
-        GPM,
-
         [ActiveEffect]
         [ValueDest(nameof(Ability.Cooldown))]
         [JID("bonus_gold")]
@@ -242,35 +241,72 @@ namespace DotA.Model.Enums
     public enum EffectType //src: items.txt file
     {
         NONE = 0,
+
         HIDDEN = 1,
+
         PASSIVE = 1 << 1,
+
         NO_TARGET = 1 << 2,
+
+        [ActiveEffect]
         UNIT_TARGET = 1 << 3,
+
+        [ActiveEffect]
         POINT = 1 << 4,
+
         AOE = 1 << 5,
+
         NOT_LEARNABLE = 1 << 6,
+
+        [ActiveEffect]
         CHANNELLED = 1 << 7,
+
         ITEM = 1 << 8,
+
+        [ActiveEffect]
         TOGGLE = 1 << 9,
+
         DIRECTIONAL = 1 << 10,
+
         IMMEDIATE = 1 << 11,
+
+        [ActiveEffect]
         ROOT_DISABLES = 1 << 12,
+
         DONT_RESUME_ATTACK = 1 << 13,
+
+        [ActiveEffect]
         OPTIONAL_UNIT_TARGET = 1 << 14,
+
         NOASSIST = 1 << 15,
+
         DONT_CANCEL_CHANNEL = 1 << 16,
+
         IGNORE_CHANNEL = 1 << 17,
+
         DONT_CANCEL_MOVEMENT = 1 << 18,
+
         DONT_RESUME_MOVEMENT = 1 << 19,
+
         UNRESTRICTED = 1 << 20,
+
         IGNORE_BACKSWING = 1 << 21,
+
         IGNORE_PSEUDO_QUEUE = 1 << 22,
+
+        [ActiveEffect]
         AUTOCAST = 1 << 23,
+
         ATTACK = 1 << 24,
+
         AURA = 1 << 27,
+
         NORMAL_WHEN_STOLEN = 1 << 26,
+
         RUNE_TARGET = 1 << 27,
+
         DONT_ALERT_TARGET = 1 << 28,
+
         DOTA_ABILITY_TYPE_ULTIMATE = 1 << 29 //this randomly shows up in lone druid's battle cry
     }
 

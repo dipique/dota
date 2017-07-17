@@ -34,13 +34,6 @@ namespace DotA.Model
         /// </summary>
         public decimal[] Amount { get; set; } = new decimal[] { 0 };
 
-
-        [JID("AbilityUnitTargetType")]
-        public TargetType TargetType { get; set; } = TargetType.NONE;
-
-        [JID("AbilityUnitTargetTeam")]
-        public TargetTeam TargetTeam { get; set; } = TargetTeam.NONE;
-
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
         public DamageScalingType ScalingType { get; set; } = DamageScalingType.None;
@@ -74,8 +67,5 @@ namespace DotA.Model
 
         public bool HasAOE => AOE > 0;
         public decimal AOE { get; set; } = 0;
-
-        public decimal CastAnimation { get; set; }
-        public decimal CastAnimationFollowThrough { get; set; }
     }
 }
