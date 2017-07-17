@@ -1,0 +1,37 @@
+﻿
+@{
+    Layout = null;
+}
+
+@model DotA.WebEdit.Models.DynMultiView<DotA.Model.Hero>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Hero</title>
+</head>
+<body>
+    <table>        
+        <tr>
+            @{
+                foreach (var dv in Model.DisplayValues)
+                {
+                    @:<td>@dv.PropertyName</td>
+                }
+            }
+        </tr>
+        @{ 
+            foreach (var o in Model.Objects)
+            {
+                @:<tr>
+                foreach(var dv in Model.DisplayValues)
+                {
+                    @:<td>@dv.GetValue(o)</td>
+                }
+                @:</tr>
+            }
+        }
+    </table>
+</body>
+</html>
