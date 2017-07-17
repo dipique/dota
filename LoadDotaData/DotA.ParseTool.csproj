@@ -46,18 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Flashcards\CustomQuestion.cs" />
-    <Compile Include="Flashcards\FlashcardMode.cs" />
-    <Compile Include="Flashcards\QuestionResponse.cs" />
-    <Compile Include="Model\Ability.cs" />
-    <Compile Include="Model\Attributes.cs" />
-    <Compile Include="Model\DotaData.cs" />
-    <Compile Include="Model\Effect.cs" />
-    <Compile Include="Model\Enums.cs" />
-    <Compile Include="Model\Hero.cs" />
-    <Compile Include="Model\Item.cs" />
-    <Compile Include="Model\Parseable.cs" />
-    <Compile Include="Model\Section.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -66,9 +54,7 @@
     <None Include="data\Attack Time and Hero Stats 7.06.xlsb" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Parsing\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="data\gcfscape186.exe" />
     <Content Include="data\img\ability\120px-Acid_Spray_icon.png" />
@@ -995,6 +981,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="data\npc_units.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotA.Model\DotA.Model.csproj">
+      <Project>{088a68ce-8de0-43a3-a16c-5d8ffc6ded98}</Project>
+      <Name>DotA.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -323,15 +323,15 @@ namespace DotA.Model.Enums
     public enum TargetTeam
     { 
         NONE = 0,
-        FRIENDLY_HERO = 5,
-        FRIENDLY_BASIC = 9,
-        FRIENDLY = 13,
-        ENEMY_HERO = 6,
-        ENEMY_BASIC = 10,
-        ENEMY = 14,
-        ALL = 15,
-        BOTH,
-        CUSTOM
+        FRIENDLY_HERO = 1,
+        FRIENDLY_BASIC = 1 << 1,
+        FRIENDLY = 1 << 2,
+        ENEMY_HERO = 1 << 3,
+        ENEMY_BASIC = 1 << 4,
+        ENEMY = 1 << 5,
+        ALL = 1 << 6,
+        BOTH = 1 << 7,
+        CUSTOM = 1 << 8
     }
 
     [Prefix("DOTA_UNIT_TARGET_")]
@@ -343,7 +343,8 @@ namespace DotA.Model.Enums
         HERO = 1 << 1,
         CREEP = 1 << 2,
         CUSTOM = 1 << 3,
-        BUILDING = 1 << 4
+        BUILDING = 1 << 4,
+        TREE = 1 << 5
     }
 
     public enum LineType

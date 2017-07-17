@@ -7,9 +7,11 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DotA", "DotA Flashcards\Dot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotA.Android", "DotA Flashcards\DotA_Flashcards.Android\DotA.Android.csproj", "{B7C823B5-445E-4787-BDDA-374B1C33DC39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotACore", "LoadDotaData\DotACore.csproj", "{5D89B20F-9B98-458C-A313-C92770C78D32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotA.ParseTool", "LoadDotaData\DotA.ParseTool.csproj", "{5D89B20F-9B98-458C-A313-C92770C78D32}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotA.WebEdit", "Data Editor\DotA.WebEdit.csproj", "{93ED8006-6579-45C5-9794-A13C84C76EE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotA.Model", "DotA.Model\DotA.Model.csproj", "{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -115,6 +117,30 @@ Global
 		{93ED8006-6579-45C5-9794-A13C84C76EE5}.Release|iPhone.Build.0 = Release|Any CPU
 		{93ED8006-6579-45C5-9794-A13C84C76EE5}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{93ED8006-6579-45C5-9794-A13C84C76EE5}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Ad-Hoc|iPhoneSimulator.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.AppStore|iPhoneSimulator.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|iPhone.Build.0 = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{088A68CE-8DE0-43A3-A16C-5D8FFC6DED98}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,9 @@
 ﻿@model DotA.WebEdit.Models.DynMultiView<DotA.Model.Hero>
+
+@{
+    Layout = null;
+}
+
 <!DOCTYPE html>
 
 <html>
@@ -13,7 +18,7 @@
             @{
                 foreach (var dv in Model.DisplayValues)
                 {
-                    <td>@dv.PropertyName</td>
+                    <td><strong>@dv.PropertyName</strong></td>
                 }
             }
         </tr>
@@ -21,9 +26,17 @@
             foreach (var o in Model.Objects)
             {
                 @:<tr>
-                foreach (var dv in Model.DisplayValues)
+                foreach (var dv in Model.DisplayValues.OrderByDescending(dv => dv.PropertyName == "Name"))
                 {
-                    <td>@dv.GetValue(o)</td>
+                    if (dv.PropertyName == "Name")
+                    {
+                        var heroName = dv.GetValue(o);
+                        <td>@Html.ActionLink(dv.GetValue(o), "Hero", "Hero", new { heroName }, null)</td>
+                    }
+                    else
+                    {
+                        <td>@dv.GetValue(o)</td>
+                    }
                 }
                 @:</tr>
             }

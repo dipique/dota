@@ -3,7 +3,7 @@
     Layout = null;
 }
 
-@model DotA.WebEdit.Models.DynMultiView<DotA.Model.Hero>
+@model DotA.WebEdit.Models.DynSingleView<DotA.Model.Hero>
 <!DOCTYPE html>
 
 <html>
@@ -21,17 +21,12 @@
                 }
             }
         </tr>
-        @{ 
-            foreach (var o in Model.Objects)
-            {
-                @:<tr>
-                foreach(var dv in Model.DisplayValues)
-                {
-                    @:<td>@dv.GetValue(o)</td>
-                }
-                @:</tr>
-            }
+        <tr>
+        @foreach (var dv in Model.DisplayValues)
+        {
+            <td>@dv.GetValue(Model.Object)</td>
         }
+    </tr>
     </table>
 </body>
 </html>

@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
 
-using DotA;
 using DotA.Model;
 
-namespace LoadDotaData
+namespace DotA.ParseTool
 {
     class Program
     {

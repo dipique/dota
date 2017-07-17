@@ -188,7 +188,7 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Hero\Hero.cshtml" />
+    <Content Include="Views\Hero\HeroView.cshtml" />
     <Content Include="Views\Hero\Heroes.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -205,15 +205,22 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LoadDotaData\DotACore.csproj">
+    <ProjectReference Include="..\DotA.Model\DotA.Model.csproj">
+      <Project>{088a68ce-8de0-43a3-a16c-5d8ffc6ded98}</Project>
+      <Name>DotA.Model</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
+    <ProjectReference Include="..\LoadDotaData\DotA.ParseTool.csproj">
       <Project>{5d89b20f-9b98-458c-a313-c92770c78d32}</Project>
-      <Name>DotACore</Name>
+      <Name>DotA.ParseTool</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

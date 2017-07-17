@@ -16,7 +16,9 @@ namespace DotA.WebEdit.Models
         {
             srcType = typeof(T);
             Objects = objects;
-            DisplayValues = srcType.GetProperties().Select(p => new DisplayValue(p)).ToList();
+            DisplayValues = srcType.GetProperties().Where(p => p.CanRead)
+                                                   .Where(p => !p.PropertyType.IsGenericType)
+                                                   .Select(p => new DisplayValue(p)).ToList();
         }
     }
 
@@ -30,7 +32,8 @@ namespace DotA.WebEdit.Models
         {
             srcType = typeof(T);
             Object = obj;
-            DisplayValues = srcType.GetProperties().Select(p => new DisplayValue(p)).ToList();
+            DisplayValues = srcType.GetProperties().Where(p => p.CanRead)
+                                                   .Select(p => new DisplayValue(p)).ToList();
         }
     }
 
@@ -68,7 +71,7 @@ namespace DotA.WebEdit.Models
             switch (Type)
             {                
                 case DisplayValueType.DecimalArray: return string.Join(" ", (decimal[])value);
-                default: return value.ToString();    //TODO: Handle flags
+                default: return value?.ToString();    //TODO: Handle flags
             }
         }
     }

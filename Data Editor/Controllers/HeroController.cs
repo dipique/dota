@@ -12,17 +12,19 @@ namespace Data_Editor.Controllers
 {
     public class HeroController : Controller
     {
+        const string dataLocation = @"c:\users\dkaschel\desktop\dota.dat";
+
         // GET: Hero
         public ActionResult Index()
         {
-            DotaData data = DotaData.Load();
+            DotaData data = DotaData.Load(dataLocation);
             return View("Heroes", new DynMultiView<Hero>(data.Heroes));
         }
 
-        public ActionResult HeroView(string heroName)
+        public ActionResult Hero(string heroName)
         {
-            DotaData data = DotaData.Load();
-            return View("Hero", new DynSingleView<Hero>(data.Heroes.FirstOrDefault(h => h.Name == heroName)));
+            DotaData data = DotaData.Load(dataLocation);
+            return View("HeroView", new DynSingleView<Hero>(data.Heroes.FirstOrDefault(h => h.Name == heroName)));
         }
     }
 }
