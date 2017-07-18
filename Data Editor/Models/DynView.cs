@@ -8,22 +8,22 @@ namespace DotA.WebEdit.Models
 {
     public class DynMultiView<T> : DynView<T> where T : class
     {
-        public List<T> Objects { get; set; }
+        public List<T> Items { get; set; }
 
         public DynMultiView(List<T> objects)
         {
             srcType = typeof(T);
-            Objects = objects;
+            Items = objects;
         }
     }
 
     public class DynSingleView<T> : DynView<T> where T: class
     {        
-        public T Object { get; set; }
+        public T Item { get; set; }
         public DynSingleView(T obj)
         {
             srcType = typeof(T);
-            Object = obj;
+            Item = obj;
         }
     }
 
