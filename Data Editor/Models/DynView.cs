@@ -6,34 +6,46 @@ using System.Web;
 
 namespace DotA.WebEdit.Models
 {
-    public class DynMultiView<T> where T : class
+    public class DynMultiView<T> : DynView<T> where T : class
     {
-        private Type srcType = null;
-        public List<DisplayValue> DisplayValues { get; private set; }
         public List<T> Objects { get; set; }
 
         public DynMultiView(List<T> objects)
         {
             srcType = typeof(T);
             Objects = objects;
-            DisplayValues = srcType.GetProperties().Where(p => p.CanRead)
-                                                   .Where(p => !p.PropertyType.IsGenericType)
-                                                   .Select(p => new DisplayValue(p)).ToList();
         }
     }
 
-    public class DynSingleView<T> where T : class
-    {
-        private Type srcType = null;
-        public List<DisplayValue> DisplayValues { get; private set; }
+    public class DynSingleView<T> : DynView<T> where T: class
+    {        
         public T Object { get; set; }
-
         public DynSingleView(T obj)
         {
             srcType = typeof(T);
             Object = obj;
-            DisplayValues = srcType.GetProperties().Where(p => p.CanRead)
-                                                   .Select(p => new DisplayValue(p)).ToList();
+        }
+    }
+
+    /// <summary>
+    /// The inheritance is mostly to make sure the displayvalue generation code
+    /// won't be repeated.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class DynView<T> where T : class
+    {
+        protected Type srcType = null;
+
+        private List<DisplayValue> displayValues = null;
+        public List<DisplayValue> DisplayValues
+        {
+            get
+            {
+                if (displayValues == null)
+                    displayValues = srcType.GetProperties().Where(p => p.CanRead)
+                                                           .Select(p => new DisplayValue(p)).ToList();
+                return displayValues;
+            }
         }
     }
 
