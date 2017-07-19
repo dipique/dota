@@ -18,9 +18,31 @@ namespace DotA.Model
 
         public virtual bool RequiresID => true;
 
-        public string DisplayName { get; set; }
+        [FieldOrder(1)]
+        public string DisplayName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(displayName))
+                {
+                    string prefix = GetType().GetCustomAttribute<Prefix>()?.Value;
+                    string working = string.IsNullOrEmpty(prefix) ? Name : Name.Replace(prefix, string.Empty);
+                    var words = working.Split(new char[] { '_', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(s => s.Trim().ToLower())
+                                       .Select(s => s[0].ToString().ToUpper() + (s.Length > 1 ? s.Substring(1) : string.Empty));
+                    displayName = string.Join(" ", words);
+                }
+                return displayName;
+            }
+            set => displayName = value;
+        }
+        private string displayName = string.Empty;
+
+
+        [FieldOrder(2)]
         public virtual string Name { get; set; }
 
+        [FieldOrder(0)]
         [JID("ID","HeroID")]
         public string ID
         {

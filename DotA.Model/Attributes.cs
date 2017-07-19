@@ -131,4 +131,19 @@ namespace DotA.Model.Attributes
             PropertyName = propertyName;
         }
     }
+
+    /// <summary>
+    /// Indicates in what order the field should be arranged. Items of the same Order can also
+    /// be grouped, causing them to have visually distinguishable display characteristics.
+    /// </summary>
+    public sealed class FieldOrder : Attribute
+    {
+        public int Order { get; set; }
+        public string GroupName { get; set; }
+        public FieldOrder(int val, string group = null)
+        {
+            Order = val;
+            GroupName = group;
+        }
+    }
 }

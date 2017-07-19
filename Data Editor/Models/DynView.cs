@@ -50,7 +50,8 @@ namespace DotA.WebEdit.Models
                 if (displayValues == null)
                     displayValues = srcType.GetProperties().Where(p => p.CanRead)
                                                            .Where(p => !p.PropertyType.IsGenericType)
-                                                           .Select(p => new DisplayValue(p)).ToList();
+                                                           .Select(p => new DisplayValue(p))
+                                                           .OrderBy(dv => dv.DisplayOrder).ToList();
                 return displayValues;
             }
         }
@@ -89,6 +90,7 @@ namespace DotA.WebEdit.Models
         private PropertyInfo srcProperty = null;
         public string PropertyName => srcProperty?.Name;
         public bool Editable { get; set; } = true;
+        public int FieldOrder { get; set; }
 
         public DisplayValue(PropertyInfo property)
         {
@@ -137,6 +139,33 @@ namespace DotA.WebEdit.Models
                     return value?.ToString();    //TODO: Handle flags
             }
         }
+
+
+        public int DisplayOrder
+        {
+            get
+            {
+                if (displayOrder == int.MaxValue)
+                {
+                    displayOrder = srcProperty.GetCustomAttribute<FieldOrder>(true)?.Order ?? int.MaxValue - 1; //the subtraction here is purely to mark it as attempted
+                }
+                return displayOrder;
+            }
+        }
+
+        public string DisplayGroup
+        {
+            get
+            {
+                if (displayGroup == null)
+                {
+                    displayGroup = srcProperty.GetCustomAttribute<FieldOrder>(true)?.GroupName ?? string.Empty; //null is unchecked, string.empty is checked
+                }
+                return displayGroup;
+            }
+        }
+        private string displayGroup = null;
+        private int displayOrder = int.MaxValue;
     }
 
     public enum DisplayValueType
