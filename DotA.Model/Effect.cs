@@ -36,7 +36,6 @@ namespace DotA.Model
 
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
-        public DamageScalingType ScalingType { get; set; } = DamageScalingType.None;
 
         public DisableType DisableType { get; set; } = DisableType.None;        
         public bool DisjointsProjectiles { get; set; } = false;

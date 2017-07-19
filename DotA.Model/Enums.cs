@@ -3,16 +3,6 @@ using DotA.Model.Attributes;
 
 namespace DotA.Model.Enums
 {
-    /// <summary>
-    /// Indicates whether the ability damage is predicated on right click damage
-    /// </summary>
-    public enum DamageScalingType
-    {
-        None,
-        HeroDamagePartial,  //base damage + normal attack
-        HeroDamageFull      //only increases based on normal attack
-    }
-
     public enum DisableType
     {
         None,
