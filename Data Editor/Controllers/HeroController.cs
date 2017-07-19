@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -31,6 +32,12 @@ namespace Data_Editor.Controllers
         {
             DotaData data = DotaData.Load(dataLocation);
             return View("HeroView", new DynSingleView<Hero>(db.Heroes.FirstOrDefault(h => h.Name == heroName)));
+        }
+
+        public ActionResult Image(string dir, string filename)
+        {
+            var path = Path.Combine(dir, filename);
+            return File(path, "image/png");
         }
     }
 }

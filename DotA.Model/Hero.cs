@@ -12,6 +12,7 @@ namespace DotA.Model
     /// </summary>
     [ImageFolder("hero")]
     [Serializable]
+    [Prefix("npc_dota_hero_")]
     public class Hero : Parseable
     {
         [JID("AttackCapabilities")]

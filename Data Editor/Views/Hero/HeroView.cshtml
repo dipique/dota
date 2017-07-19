@@ -12,11 +12,16 @@
     <title>Hero</title>
 </head>
 <body>
+    @Html.ActionLink("Back to hero list", "Index")
     @using (Html.BeginForm())
     {
         Html.AntiForgeryToken();
 
     <table border="1">
+        <tr>
+            <td>Image</td>
+            <td><img src="@Model.GetImage(Model.Item.ImgName)" alt="Image" /></td>
+        </tr>
         @{
             foreach (var dv in Model.DisplayValues)
             {
@@ -35,7 +40,7 @@
                         @Html.DropDownList(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
                         break;
                     case DisplayValueType.DecimalArray:
-                        //Create 5 text boxes (this is the max number of levels that can be had (only invoker uses this)
+                        //Create 7 text boxes (this is the max number of levels that can be had (only invoker uses this)
                         var vals = dv.GetValue(Model.Item).Split(' ');
                         for (int x = 0; x < 7; x++)
                         {

@@ -29,7 +29,22 @@ namespace DotA.Model
         }
         private int id = -1;
 
-        public string ImgName { get; set; }
+        private string imgName = string.Empty;
+        public string ImgName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(imgName))
+                {
+                    string prefix = GetType().GetCustomAttribute<Prefix>()?.Value;
+                    string working = string.IsNullOrEmpty(prefix) ? Name : Name.Replace(prefix, string.Empty);
+                    imgName = $"120px-{working}_icon.png";
+                }
+                return imgName;
+            }
+            set => imgName = value;
+        }
+
 
         public virtual bool Valid => !RequiresID || (id > 0 && id < MAX_ID);
 

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
+
+using DotA.Model.Attributes;
 
 namespace DotA.WebEdit.Models
 {
@@ -35,6 +38,8 @@ namespace DotA.WebEdit.Models
     /// <typeparam name="T"></typeparam>
     public abstract class DynView<T> where T : class
     {
+        private const string IMAGE_FOLDER = @"C:\o\OneDrive - Inspired\dev\DotA Flashcards\LoadDotaData\data\img\"; //todo: add to web.config
+
         protected Type srcType = null;
         public string Title { get; set; }
         private List<DisplayValue> displayValues = null;
@@ -48,6 +53,34 @@ namespace DotA.WebEdit.Models
                                                            .Select(p => new DisplayValue(p)).ToList();
                 return displayValues;
             }
+        }
+
+        private string imageFolder = string.Empty;
+        public string ImageFolder
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(imageFolder))
+                {
+                    string working = IMAGE_FOLDER;
+                    string subFolder = typeof(T).GetCustomAttribute<ImageFolder>()?.FolderName;
+                    if (!string.IsNullOrEmpty(subFolder))
+                        working += subFolder + "\\";
+                    imageFolder = working;
+                }
+                return imageFolder;
+            }
+            set
+            {
+                imageFolder = value;
+            }
+        }
+
+        public string GetImage(string filename)
+        {
+            var base64 = Convert.ToBase64String(File.ReadAllBytes(ImageFolder + filename));
+            var imgSrc = String.Format($"data:image/png;base64,{base64}");
+            return imgSrc;
         }
     }
 

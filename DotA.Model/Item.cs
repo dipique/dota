@@ -7,6 +7,7 @@ using DotA.Model.Enums;
 namespace DotA.Model
 {
     [ImageFolder("item")]
+    [Prefix("item_")]
     public class Item : Parseable
     {
         private const string RECIPE_IND = "item_recipe_";

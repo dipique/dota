@@ -16,7 +16,7 @@
     <table border="1">
         <tr>
             @{
-                foreach (var dv in Model.DisplayValues)
+                foreach (var dv in Model.DisplayValues.OrderByDescending(dv => dv.PropertyName == "Name"))
                 {
                     <td><strong>@dv.PropertyName</strong></td>
                 }
