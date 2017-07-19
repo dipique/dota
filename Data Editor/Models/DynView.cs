@@ -96,9 +96,10 @@ namespace DotA.WebEdit.Models
             switch (Type)
             {                
                 case DisplayValueType.DecimalArray:
-                    return string.Join(" ", (decimal[])value);
+                    return string.Join(" ", ((decimal[])value).Select(d => string.Format("{0:N}", d)));
+                case DisplayValueType.Decimal:
+                    return string.Format("{0:N}", value);
                 case DisplayValueType.PickList_Multi:
-                    
                 default:
                     return value?.ToString();    //TODO: Handle flags
             }
