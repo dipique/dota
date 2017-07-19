@@ -1,4 +1,4 @@
-﻿
+﻿@using DotA.WebEdit.Models;
 @{
     Layout = null;
 }
@@ -12,21 +12,43 @@
     <title>Hero</title>
 </head>
 <body>
-    <table>        
-        <tr>
-            @{
-                foreach (var dv in Model.DisplayValues)
+    @using (Html.BeginForm())
+    {
+        Html.AntiForgeryToken();
+
+    <table border="1">
+        @{
+            foreach (var dv in Model.DisplayValues)
+            {
+                @:<tr><td>@dv.PropertyName</td><td>
+                switch (dv.Type)
                 {
-                    @:<td>@dv.PropertyName</td>
+                    case DisplayValueType.Decimal:
+                    case DisplayValueType.String:
+                    case DisplayValueType.Other:
+                        @Html.TextBox(dv.PropertyName, dv.GetValue(Model.Item), new { @class = "form-control" });
+                        break;
+                    case DisplayValueType.PickList_Multi:
+                        @Html.ListBox(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
+                        break;
+                    case DisplayValueType.PickList:
+                        @Html.DropDownList(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
+                        break;
+                    case DisplayValueType.DecimalArray:
+                        //Create 5 text boxes (this is the max number of levels that can be had (only invoker uses this)
+                        var vals = dv.GetValue(Model.Item).Split(' ');
+                        for (int x = 0; x < 7; x++)
+                        {
+                            var val = (vals.Count() - 1) < x ? vals[x] : string.Empty;
+                            @Html.TextBox($"{dv.PropertyName}[{x}]", val);
+                        }
+                        break;
                 }
+                @:</td></tr>
             }
-        </tr>
-        <tr>
-        @foreach (var dv in Model.DisplayValues)
-        {
-            <td>@dv.GetValue(Model.Item)</td>
         }
-    </tr>
+        <tr></tr>
     </table>
+            }
 </body>
 </html>

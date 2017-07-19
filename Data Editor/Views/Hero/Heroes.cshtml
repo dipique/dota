@@ -23,7 +23,7 @@
             }
         </tr>
         @{
-            foreach (var o in Model.Objects)
+            foreach (var o in Model.Items)
             {
                 @:<tr>
                 foreach (var dv in Model.DisplayValues.OrderByDescending(dv => dv.PropertyName == "Name"))
