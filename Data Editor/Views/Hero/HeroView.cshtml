@@ -3,7 +3,7 @@
     Layout = null;
 }
 
-@model DotA.WebEdit.Models.DynSingleView<DotA.Model.Hero>
+@model DynSingleView<Hero>
 <!DOCTYPE html>
 
 <html>
@@ -50,5 +50,12 @@
         <tr></tr>
     </table>
             }
+    <h1>Abilities</h1>
+    @{ 
+        foreach(var ability in Model.Item.Abilities)
+        {
+            @Html.Partial("Ability", new DynSingleView<Ability>(ability))
+        }
+    }
 </body>
 </html>

@@ -190,6 +190,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Hero\HeroView.cshtml" />
     <Content Include="Views\Hero\Heroes.cshtml" />
+    <Content Include="Views\Hero\Ability.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
