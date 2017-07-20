@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Web.Mvc;
 
 using DotA.Model.Attributes;
+using DotA.Model;
 
 namespace DotA.WebEdit.Models
 {
@@ -51,7 +52,8 @@ namespace DotA.WebEdit.Models
                     displayValues = srcType.GetProperties().Where(p => p.CanRead)
                                                            .Where(p => !p.PropertyType.IsGenericType)
                                                            .Select(p => new DisplayValue(p))
-                                                           .OrderBy(dv => dv.DisplayOrder).ToList();
+                                                           .OrderBy(dv => dv.DisplayOrder)
+                                                           .ThenBy(dv => dv.DisplayGroup).ToList();
                 return displayValues;
             }
         }
@@ -79,6 +81,8 @@ namespace DotA.WebEdit.Models
 
         public string GetImage(string filename)
         {
+            if (!File.Exists(ImageFolder + filename)) return string.Empty;
+
             var base64 = Convert.ToBase64String(File.ReadAllBytes(ImageFolder + filename));
             var imgSrc = String.Format($"data:image/png;base64,{base64}");
             return imgSrc;
@@ -137,6 +141,21 @@ namespace DotA.WebEdit.Models
                 case DisplayValueType.PickList_Multi:
                 default:
                     return value?.ToString();    //TODO: Handle flags
+            }
+        }
+
+        private string propertyDisplayName = string.Empty;
+        public string PropertyDisplayName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(propertyDisplayName))
+                {
+                    //first try to get it from the attribute, then by capital separation
+                    var attrText = srcProperty.GetCustomAttribute<DisplayText>()?.Text;
+                    propertyDisplayName = attrText ?? Utils.SeparateByCapital(srcProperty.Name);
+                }
+                return propertyDisplayName;
             }
         }
 

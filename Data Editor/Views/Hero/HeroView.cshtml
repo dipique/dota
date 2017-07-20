@@ -25,7 +25,7 @@
         @{
             foreach (var dv in Model.DisplayValues)
             {
-                @:<tr><td>@dv.PropertyName</td><td>
+                @:<tr><td>@dv.PropertyDisplayName</td><td>
                 switch (dv.Type)
                 {
                     case DisplayValueType.Decimal:

@@ -7,12 +7,12 @@ namespace DotA.Model.Attributes
     /// separated by underscore. Optionally, other text can be added for display. These
     /// are also separated by underscore if hierarchical.
     /// </summary>
-    public sealed class OptionText : Attribute
+    public sealed class DisplayText : Attribute
     {
-        public string Description { get; set; }
-        public OptionText(string desc)
+        public string Text { get; set; }
+        public DisplayText(string desc)
         {
-            Description = desc;
+            Text = desc;
         }
     }
 

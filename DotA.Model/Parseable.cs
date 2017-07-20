@@ -16,6 +16,7 @@ namespace DotA.Model
         public virtual int MAX_ID => 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
+        [IgnoreDataMember]
         public virtual bool RequiresID => true;
 
         [FieldOrder(1)]
@@ -66,7 +67,6 @@ namespace DotA.Model
             }
             set => imgName = value;
         }
-
 
         public virtual bool Valid => !RequiresID || (id > 0 && id < MAX_ID);
 
