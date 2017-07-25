@@ -13,48 +13,70 @@
 </head>
 <body>
     @Html.ActionLink("Back to hero list", "Index")
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("HeroUpdate", "Hero"))
     {
-        Html.AntiForgeryToken();
 
     <table border="1">
         <tr>
             <td>Image</td>
-            <td><img src="@Model.GetImage(Model.Item.ImgName)" alt="Image" /></td>
+            <td>@*<img src="@Model.GetImage(Model.Item.ImgName)" alt="Image" />*@</td>
         </tr>
         @{
             foreach (var dv in Model.DisplayValues)
             {
                 @:<tr><td>@dv.PropertyDisplayName</td><td>
-                switch (dv.Type)
+                if (!dv.Editable)
                 {
-                    case DisplayValueType.Decimal:
-                    case DisplayValueType.String:
-                    case DisplayValueType.Other:
-                        @Html.TextBox(dv.PropertyName, dv.GetValue(Model.Item), new { @class = "form-control" });
-                        break;
-                    case DisplayValueType.PickList_Multi:
-                        @Html.ListBox(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
-                        break;
-                    case DisplayValueType.PickList:
-                        @Html.DropDownList(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
-                        break;
-                    case DisplayValueType.DecimalArray:
-                        //Create 7 text boxes (this is the max number of levels that can be had (only invoker uses this)
-                        var vals = dv.GetValue(Model.Item).Split(' ');
-                        for (int x = 0; x < 7; x++)
-                        {
-                            var val = (vals.Count() - 1) < x ? vals[x] : string.Empty;
-                            @Html.TextBox($"{dv.PropertyName}[{x}]", val);
-                        }
-                        break;
+                    switch (dv.Type)
+                    {
+                        case DisplayValueType.Decimal:
+                            @Html.DisplayFor(Model.GetExpression<decimal>(dv));
+                            break;
+                        case DisplayValueType.PickList_Multi:
+                            @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
+                            break;
+                        case DisplayValueType.PickList:
+                            @Html.DropDownList("Item." + dv.PropertyName)
+                            break;
+                        default:
+                            @Html.DisplayFor(Model.GetExpression<object>(dv));
+                            break;
+                    }
+
+                }
+                else
+                {
+                    switch (dv.Type)
+                    {
+                        case DisplayValueType.Decimal:
+                        @Html.EditorFor(Model.GetExpression<decimal>(dv));
+                            break;
+                        case DisplayValueType.PickList_Multi:
+                        @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
+                            break;
+                        case DisplayValueType.PickList:
+                            //@Html.EnumDropDownListFor(Model.GetExpression<Enum>(dv));
+                        @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
+                            break;
+                        case DisplayValueType.DecimalArray:
+                        @Html.EditorFor(Model.GetExpression<decimal>(dv));
+                            break;
+                        default:
+                            @Html.EditorFor(Model.GetExpression<object>(dv));
+                            break;
+                    }
                 }
                 @:</td></tr>
             }
         }
         <tr></tr>
     </table>
+
+
+    @*@Html.ActionLink("Update", "Hero", "HeroUpdate", Model)*@
+                <input type="submit" name="Update" />
             }
+            @*}*@
     <h1>Abilities</h1>
     @{ 
         foreach(var ability in Model.Item.Abilities)
@@ -63,4 +85,9 @@
         }
     }
 </body>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
 </html>

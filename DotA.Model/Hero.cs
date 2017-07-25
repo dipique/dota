@@ -16,7 +16,7 @@ namespace DotA.Model
     public class Hero : Parseable
     {
         [JID("AttackCapabilities")]
-        public AttackType AttackType { get; set; }
+        public AttackType? AttackType { get; set; }
 
         [JID("AttackRange")]
         public decimal AttackRange { get; set; }
@@ -30,7 +30,10 @@ namespace DotA.Model
         [JID("MovementTurnRate")]
         public decimal TurnRate { get; set; }
 
+        [DisplayOnly]
         public decimal BaseHealth => 200;
+
+        [DisplayOnly]
         public decimal BaseMana => 75;
 
         [JID("StatusManaRegen")]
@@ -120,9 +123,9 @@ namespace DotA.Model
         const decimal ARMOR_PER_AGI = .142857m;
         const decimal ATTACK_SPD_PER_AGI = 1;
 
-        public decimal Strength(int level) => BaseStrength + (level * StrengthGain);
-        public decimal Intelligence(int level) => BaseInt + (level * IntGain);
-        public decimal Agility(int level) => BaseAgi + (level * AgiGain);
+        [NoDisplay] public decimal Strength(int level) => BaseStrength + (level * StrengthGain);
+        [NoDisplay] public decimal Intelligence(int level) => BaseInt + (level * IntGain);
+        [NoDisplay] public decimal Agility(int level) => BaseAgi + (level * AgiGain);
 
         public decimal MainAttributePoints(int level)
         {

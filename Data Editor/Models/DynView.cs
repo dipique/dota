@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Web.Mvc;
 
 using DotA.Model.Attributes;
@@ -30,6 +32,59 @@ namespace DotA.WebEdit.Models
             Item = obj;
         }
 
+        public DynSingleView()
+        {
+            srcType = typeof(T);
+            Item = Activator.CreateInstance<T>();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dv"></param>
+        /// <param name="index">Index of the array, if applicable</param>
+        /// <returns></returns>
+        public Expression<Func<DynSingleView<T>, TType>> GetExpression<TType>(DisplayValue dv, int index = 0)
+        {
+            var param = Expression.Parameter(typeof(DynSingleView<T>));
+            var instance = Expression.Property(param, nameof(DynSingleView<T>.Item));
+            var propertyCall = Expression.Property(instance, dv.PropertyName);
+
+            if (typeof(TType) == typeof(Enum))
+            {
+                var convert = Expression.Convert(propertyCall, typeof(TType));
+                var lambda2 = Expression.Lambda<Func<DynSingleView<T>, TType>>(convert, param);
+                var o = new {
+                    Name = (TType)lambda2.Compile()(this)
+                };
+                var anonParam = Expression.Constant(o, o.GetType());
+                var anonProperty = Expression.Property(anonParam, nameof(o.Name));
+                var lambda3 = Expression.Lambda<Func<DynSingleView<T>, TType>>(anonProperty, param);
+                return lambda3;
+            }
+
+            var lambda = !dv.SrcProperty.PropertyType.IsArray ? Expression.Lambda<Func<DynSingleView<T>, TType>>(propertyCall, param)
+                                                              : Expression.Lambda<Func<DynSingleView<T>, TType>>(Expression.ArrayIndex(propertyCall, Expression.Constant(index)), param);
+            return lambda;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dv"></param>
+        /// <param name="index">Index of the array, if applicable</param>
+        /// <returns></returns>
+        public Expression<Func<DynSingleView<T>, Enum>> GetExpressionEnum(DisplayValue dv)
+        {
+            var param = Expression.Parameter(typeof(DynSingleView<T>));
+            var instance = Expression.Property(param, nameof(DynSingleView<T>.Item));
+            var propertyCall = Expression.Property(instance, dv.PropertyName);
+
+            var lambda = Expression.Lambda<Func<DynSingleView<T>, Enum>>(propertyCall, param);
+            return lambda;
+        }
+
     }
 
     /// <summary>
@@ -51,6 +106,7 @@ namespace DotA.WebEdit.Models
                 if (displayValues == null)
                     displayValues = srcType.GetProperties().Where(p => p.CanRead)
                                                            .Where(p => !p.PropertyType.IsGenericType)
+                                                           .Where(p => p.GetCustomAttribute<NoDisplay>() == null)
                                                            .Select(p => new DisplayValue(p))
                                                            .OrderBy(dv => dv.DisplayOrder)
                                                            .ThenBy(dv => dv.DisplayGroup).ToList();
@@ -91,31 +147,32 @@ namespace DotA.WebEdit.Models
 
     public class DisplayValue
     {
-        private PropertyInfo srcProperty = null;
-        public string PropertyName => srcProperty?.Name;
+        public PropertyInfo SrcProperty { get; set; } = null;
+        public string PropertyName => SrcProperty?.Name;
         public bool Editable { get; set; } = true;
         public int FieldOrder { get; set; }
 
         public DisplayValue(PropertyInfo property)
         {
-            srcProperty = property;
+            SrcProperty = property;
+            Editable = property.GetCustomAttribute<DisplayOnly>() == null;
         }
 
         public DisplayValueType Type
         {
             get
             {
-                if (srcProperty.PropertyType == typeof(string)) return DisplayValueType.String;
-                if (srcProperty.PropertyType == typeof(decimal)) return DisplayValueType.Decimal;
-                if (srcProperty.PropertyType.IsArray) return DisplayValueType.DecimalArray;
-                if (srcProperty.PropertyType.IsEnum) return srcProperty.GetCustomAttribute<FlagsAttribute>() == null ? DisplayValueType.PickList
+                if (SrcProperty.PropertyType == typeof(string)) return DisplayValueType.String;
+                if (SrcProperty.PropertyType == typeof(decimal)) return DisplayValueType.Decimal;
+                if (SrcProperty.PropertyType.IsArray) return DisplayValueType.DecimalArray;
+                if (SrcProperty.PropertyType.IsEnum) return SrcProperty.GetCustomAttribute<FlagsAttribute>() == null ? DisplayValueType.PickList
                                                                                                                      : DisplayValueType.PickList_Multi;
                 return DisplayValueType.Other;
             }
         }
 
         public string[] GetPicklistOptions() => Type != DisplayValueType.PickList ? null
-                                                                                  : Enum.GetNames(srcProperty.PropertyType);
+                                                                                  : Enum.GetNames(SrcProperty.PropertyType);
         public List<SelectListItem> PicklistOptionsAsListItems(object src)
         {
             var selections = GetValue(src).Split(',').Select(s => s.Trim());
@@ -129,7 +186,7 @@ namespace DotA.WebEdit.Models
         {
             object value = null;
             //try {
-            value = srcProperty.GetValue(src);
+            value = SrcProperty.GetValue(src);
             //} catch { }
 
             switch (Type)
@@ -144,6 +201,36 @@ namespace DotA.WebEdit.Models
             }
         }
 
+        public bool SetValue(object item, string val)
+        {
+            object value = null;
+
+            try
+            {
+                switch (Type)
+                {
+                    case DisplayValueType.DecimalArray:
+                        value = val.Split(' ').Select(s => decimal.Parse(s)).ToArray();
+                        break;
+                    case DisplayValueType.Decimal:
+                        value = decimal.Parse(val);
+                        break;
+                    case DisplayValueType.PickList:
+                    case DisplayValueType.PickList_Multi:
+                        value = Enum.Parse(SrcProperty.PropertyType, val);
+                        break;
+                    default:
+                        value = val;
+                        break;
+                }
+
+                //If we have a value, set it
+                SrcProperty.SetValue(item, value);
+                return true;
+            }
+            catch { return false; } //conversion unsuccessful
+        }
+
         private string propertyDisplayName = string.Empty;
         public string PropertyDisplayName
         {
@@ -152,8 +239,8 @@ namespace DotA.WebEdit.Models
                 if (string.IsNullOrEmpty(propertyDisplayName))
                 {
                     //first try to get it from the attribute, then by capital separation
-                    var attrText = srcProperty.GetCustomAttribute<DisplayText>()?.Text;
-                    propertyDisplayName = attrText ?? Utils.SeparateByCapital(srcProperty.Name);
+                    var attrText = SrcProperty.GetCustomAttribute<DisplayText>()?.Text;
+                    propertyDisplayName = attrText ?? Utils.SeparateByCapital(SrcProperty.Name);
                 }
                 return propertyDisplayName;
             }
@@ -166,7 +253,7 @@ namespace DotA.WebEdit.Models
             {
                 if (displayOrder == int.MaxValue)
                 {
-                    displayOrder = srcProperty.GetCustomAttribute<FieldOrder>(true)?.Order ?? int.MaxValue - 1; //the subtraction here is purely to mark it as attempted
+                    displayOrder = SrcProperty.GetCustomAttribute<FieldOrder>(true)?.Order ?? int.MaxValue - 1; //the subtraction here is purely to mark it as attempted
                 }
                 return displayOrder;
             }
@@ -178,7 +265,7 @@ namespace DotA.WebEdit.Models
             {
                 if (displayGroup == null)
                 {
-                    displayGroup = srcProperty.GetCustomAttribute<FieldOrder>(true)?.GroupName ?? string.Empty; //null is unchecked, string.empty is checked
+                    displayGroup = SrcProperty.GetCustomAttribute<FieldOrder>(true)?.GroupName ?? string.Empty; //null is unchecked, string.empty is checked
                 }
                 return displayGroup;
             }

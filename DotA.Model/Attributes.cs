@@ -123,6 +123,23 @@ namespace DotA.Model.Attributes
         public FlipNegative() { }
     }
 
+    /// <summary>
+    /// Indicates that this should not be displayed
+    /// </summary>
+    public sealed class NoDisplay : Attribute
+    {
+        public NoDisplay() { }
+    }
+
+    /// <summary>
+    /// Indicates that this cannot be edited
+    /// </summary>
+    public sealed class DisplayOnly : Attribute
+    {
+        public DisplayOnly() { }
+    }
+
+
     public sealed class DefaultEntryProperty : Attribute
     {
         public string PropertyName { get; set; }

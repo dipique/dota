@@ -13,12 +13,15 @@ namespace DotA.Model
     public abstract class Parseable
     {
         [IgnoreDataMember]
+        [NoDisplay]
         public virtual int MAX_ID => 255; //dota IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
+        [NoDisplay]
         [IgnoreDataMember]
         public virtual bool RequiresID => true;
 
+        [DisplayOnly]
         [FieldOrder(1)]
         public string DisplayName
         {
@@ -26,6 +29,7 @@ namespace DotA.Model
             {
                 if (string.IsNullOrEmpty(displayName))
                 {
+                    if (string.IsNullOrEmpty(Name)) return string.Empty;
                     string prefix = GetType().GetCustomAttribute<Prefix>()?.Value;
                     string working = string.IsNullOrEmpty(prefix) ? Name : Name.Replace(prefix, string.Empty);
                     var words = working.Split(new char[] { '_', ' ' }, StringSplitOptions.RemoveEmptyEntries)
@@ -68,6 +72,7 @@ namespace DotA.Model
             set => imgName = value;
         }
 
+        [NoDisplay]
         public virtual bool Valid => !RequiresID || (id > 0 && id < MAX_ID);
 
         public static T ParseItem<T>(Section data) where T : Parseable
