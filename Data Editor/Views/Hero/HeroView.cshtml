@@ -33,7 +33,7 @@
                             @Html.DisplayFor(Model.GetExpression<decimal>(dv));
                             break;
                         case DisplayValueType.PickList_Multi:
-                            @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
+                            @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
                             break;
                         case DisplayValueType.PickList:
                             @Html.DropDownList("Item." + dv.PropertyName)

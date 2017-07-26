@@ -165,21 +165,22 @@ namespace DotA.WebEdit.Models
                 if (SrcProperty.PropertyType == typeof(string)) return DisplayValueType.String;
                 if (SrcProperty.PropertyType == typeof(decimal)) return DisplayValueType.Decimal;
                 if (SrcProperty.PropertyType.IsArray) return DisplayValueType.DecimalArray;
-                if (SrcProperty.PropertyType.IsEnum) return SrcProperty.GetCustomAttribute<FlagsAttribute>() == null ? DisplayValueType.PickList
-                                                                                                                     : DisplayValueType.PickList_Multi;
+                if (SrcProperty.PropertyType.IsEnum) return SrcProperty.PropertyType.GetCustomAttribute<FlagsAttribute>() == null ? DisplayValueType.PickList
+                                                                                                                                  : DisplayValueType.PickList_Multi;
                 return DisplayValueType.Other;
             }
         }
 
-        public string[] GetPicklistOptions() => Type != DisplayValueType.PickList ? null
-                                                                                  : Enum.GetNames(SrcProperty.PropertyType);
+        public string[] GetPicklistOptions() => Type != DisplayValueType.PickList 
+                                             && Type != DisplayValueType.PickList_Multi ? null
+                                                                                        : Enum.GetNames(SrcProperty.PropertyType);
         public List<SelectListItem> PicklistOptionsAsListItems(object src)
         {
             var selections = GetValue(src).Split(',').Select(s => s.Trim());
             return GetPicklistOptions().Select(s => new SelectListItem() {
                 Selected = selections.Any(sel => sel == s),
                 Text = s
-            }).ToList();
+            }).OrderByDescending(sl => sl.Selected).ToList();
         }
 
         public string GetValue(object src)
