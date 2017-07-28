@@ -39,7 +39,6 @@ namespace DotA.WebEdit.Models
             Item = Activator.CreateInstance<T>();
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -55,23 +54,6 @@ namespace DotA.WebEdit.Models
             var lambda = Expression.Lambda<Func<DynSingleView<T>, TType>>(propertyCall, param);
             return lambda;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dv"></param>
-        /// <param name="index">Index of the array, if applicable</param>
-        /// <returns></returns>
-        public Expression<Func<DynSingleView<T>, Enum>> GetExpressionEnum(DisplayValue dv)
-        {
-            var param = Expression.Parameter(typeof(DynSingleView<T>));
-            var instance = Expression.Property(param, nameof(DynSingleView<T>.Item));
-            var propertyCall = Expression.Property(instance, dv.PropertyName);
-
-            var lambda = Expression.Lambda<Func<DynSingleView<T>, Enum>>(propertyCall, param);
-            return lambda;
-        }
-
     }
 
     /// <summary>
