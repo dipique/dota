@@ -1,4 +1,5 @@
 ﻿@using DotA.WebEdit.Models;
+@using DotA.Model.Extensions;
 @{
     Layout = null;
 }
@@ -32,6 +33,15 @@
                         case DisplayValueType.Decimal:
                             @Html.DisplayFor(Model.GetExpression<decimal>(dv));
                             break;
+                        case DisplayValueType.DecimalList:
+                            {
+                                for (int x = 0; x <= dv.GetMaxIndex(Model.Item); x++)
+                                {
+                                    @Html.Label($"Lvl {x + 1}: ")
+                                    @Html.Label(dv.SrcProperty.GetValue<List<decimal>>(Model.Item)[x].ToString());
+                                }
+                                break;
+                            }
                         case DisplayValueType.PickList_Multi:
                             @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
                             break;
@@ -52,15 +62,21 @@
                         @Html.EditorFor(Model.GetExpression<decimal>(dv));
                             break;
                         case DisplayValueType.PickList_Multi:
-                        @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
+                        @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
                             break;
                         case DisplayValueType.PickList:
                             //@Html.EnumDropDownListFor(Model.GetExpression<Enum>(dv));
                         @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
                             break;
-                        case DisplayValueType.DecimalArray:
-                        @Html.EditorFor(Model.GetExpression<decimal>(dv));
-                            break;
+                        case DisplayValueType.DecimalList:
+                            {
+                                for (int x = 0; x <= dv.GetMaxIndex(Model.Item); x++)
+                                {
+                                    @Html.Label($"Lvl {x + 1}: ")
+                                    @Html.Editor($"Item.{dv.PropertyName}[{x}]");
+                                }
+                                break;
+                            }
                         default:
                             @Html.EditorFor(Model.GetExpression<object>(dv));
                             break;
@@ -71,9 +87,6 @@
         }
         <tr></tr>
     </table>
-
-
-    @*@Html.ActionLink("Update", "Hero", "HeroUpdate", Model)*@
                 <input type="submit" name="Update" />
             }
             @*}*@

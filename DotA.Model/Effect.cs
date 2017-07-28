@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using DotA.Model.Enums;
@@ -32,7 +33,7 @@ namespace DotA.Model
         /// 
         /// Percentages will be decimals (e.g. 50%=.50).
         /// </summary>
-        public decimal[] Amount { get; set; } = new decimal[] { 0 };
+        public List<decimal> Amount { get; set; } = new List<decimal>();
 
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
@@ -44,16 +45,16 @@ namespace DotA.Model
         public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.NO;
 
         //Potential level-scaling properties
-        public decimal[] Duration { get; set; } = new decimal[] { 0 };
+        public List<decimal> Duration { get; set; } = new List<decimal>();
 
         /// <summary>
         /// This applies to things like Jinada and Bash where the effect is automatically triggered, so not a true cooldown
         /// </summary>
-        public decimal[] EffectResetTime { get; set; } = new decimal[] { 0 };
+        public List<decimal> EffectResetTime = new List<decimal>();
 
-        public decimal[] Chance { get; set; } = new decimal[] { 1 };
-        private decimal[] baseDamage = new decimal[] { 0 };
-        public decimal[] BaseDamage //defaults to physical
+        public List<decimal> Chance = new List<decimal>() { 1 };
+        private List<decimal> baseDamage = new List<decimal>();
+        public List<decimal> BaseDamage //defaults to physical
         {
             get => baseDamage;
             set

@@ -16,6 +16,7 @@ namespace DotA.Model
 
         public string Description { get; set; }
 
+        [NoDisplay]
         public int MaxLevels
         {
             get
@@ -46,19 +47,19 @@ namespace DotA.Model
         public AbilityType AbilityType { get; set; } = AbilityType.BASIC;
 
         [JID("AbilityCastRange")]
-        public decimal[] CastRange { get; set; } = new decimal[] { 0 };
+        public List<decimal> CastRange { get; set; } = new List<decimal>();
 
         [JID("AbilityCastPoint")]
         public decimal CastPoint { get; set; } = 0;
 
         [JID("AbilityCooldown")]
-        public decimal[] Cooldown { get; set; } = new decimal[] { 0 };
+        public List<decimal> Cooldown { get; set; } = new List<decimal>();
 
         [JID("AbilityManaCost")]
-        public decimal[] ManaCost { get; set; } = new decimal[] { 0 };
+        public List<decimal> ManaCost { get; set; } = new List<decimal>();
 
         [JID("AbilityChannelTime")]
-        public decimal[] AbilityChannelTime { get; set; } = new decimal[] { 0 };
+        public List<decimal> AbilityChannelTime { get; set; } = new List<decimal>();
 
         [JID("AbilityUnitTargetType")]
         public TargetType TargetType { get; set; } = TargetType.NONE;
@@ -71,6 +72,7 @@ namespace DotA.Model
         [JID("AbilityBehavior")]
         public EffectType EffectType { get; set; }
 
+        [NoDisplay]
         public Effect ActiveEffect
         {
             get
@@ -84,6 +86,7 @@ namespace DotA.Model
             }
         }
 
+        [NoDisplay]
         public Effect MainEffect => ActiveEffect ?? Effects.FirstOrDefault();
 
         [SpecialHandlerSectionMethod("AbilitySpecial")]

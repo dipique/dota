@@ -1,11 +1,13 @@
 ﻿@using DotA.WebEdit.Models;
+@using DotA.Model.Extensions;
+@using DotA.WebEdit.Helpers;
 @{
     Layout = null;
 }
 
 @model DynSingleView<Ability>
 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("AbilityUpdate", "Hero"))
     {
         Html.AntiForgeryToken();
 
@@ -14,34 +16,66 @@
                 foreach (var dv in Model.DisplayValues)
                 {
                     @:<tr><td>@dv.PropertyDisplayName</td><td>
-                    switch (dv.Type)
+                    if (!dv.Editable)
                     {
-                        case DisplayValueType.Decimal:
-                        case DisplayValueType.String:
-                        case DisplayValueType.Other:
-                            @Html.TextBox(dv.PropertyName, dv.GetValue(Model.Item), new { @class = "form-control" });
-                            break;
-                        case DisplayValueType.PickList_Multi:
-                            @Html.ListBox(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
-                            break;
-                        case DisplayValueType.PickList:
-                            @Html.DropDownList(dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
-                            break;
-                        case DisplayValueType.DecimalArray:
-                            @Html.TextBox(dv.PropertyName, dv.GetValue(Model.Item), new { @class = "form-control" });
-                            break;
-                            @*//Create 7 text boxes (this is the max number of levels that can be had (only invoker uses this)
-                            var vals = dv.GetValue(Model.Item).Split(' ');
-                            for (int x = 0; x < 7; x++)
-                            {
-                                var val = (vals.Count() - 1) > x ? vals[x] : string.Empty;
-                                @Html.TextBox($"{dv.PropertyName}[{x}]", val);
-                            }
-                            break;*@
+                        switch (dv.Type)
+                        {
+                            case DisplayValueType.Decimal:
+                                @Html.DisplayFor(Model.GetExpression<decimal>(dv));
+                                break;
+                            case DisplayValueType.PickList_Multi:
+                                @Html.ListBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item))
+                                break;
+                            case DisplayValueType.PickList:
+                                @Html.DropDownList($"{nameof(Model.Item)}.{dv.PropertyName}")
+                                break;
+                            case DisplayValueType.DecimalList:
+                                @Html.DisplayFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to disply with levels
+                                break;
+                            default:
+                                @Html.DisplayFor(Model.GetExpression<object>(dv));
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (dv.Type)
+                        {
+                            case DisplayValueType.Decimal:
+                            case DisplayValueType.String:
+                            case DisplayValueType.Other:
+                            @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValue(Model.Item), new { @class = "form-control" });
+                                break;
+                            case DisplayValueType.PickList_Multi:
+                                @Html.Editor($"{nameof(Model.Item)}.{dv.PropertyName}", new { Name = dv.PropertyName });
+                            @*@Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));*@
+                                break;
+                            case DisplayValueType.PickList:
+                            @Html.DropDownList($"{nameof(Model.Item)}.{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item));
+                                break;
+                            case DisplayValueType.DecimalList:
+                                @Html.EditorFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to disply with levels
+                                @*@*int itemCount = dv.GetMaxIndex(Model.Item);
+                                for (int x = 0; x <= itemCount; x++)
+                                {
+                                    if (itemCount > 0)
+                                    {
+                                @Html.Label($" Lvl {x + 1}: ")
+                                    }
+                                @Html.Editor($"Item.{dv.PropertyName}[{x}]");
+                                    if (itemCount > 0)
+                                    {
+                                    <br />
+                                    }
+                                }*@
+                                break;
+                        }
                     }
                     @:</td></tr>
                     }
                 }
             <tr></tr>
-        </table>
+        </table>        
+        <input type="submit" name="Update" />
+        <p />
                 }

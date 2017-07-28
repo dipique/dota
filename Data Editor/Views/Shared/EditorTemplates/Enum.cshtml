@@ -1,0 +1,47 @@
+﻿@using System;
+@using System.Linq;
+@using System.Reflection;
+
+@model Enum
+@using System.ComponentModel.DataAnnotations
+
+@* Credits: http://odetocode.com/blogs/scott/archive/2012/09/04/working-with-enums-and-templates-in-asp-net-mvc.aspx *@
+
+@{
+
+    Func<object, string> GetDisplayName = o =>
+    {
+        var result = null as string;
+        var display = o.GetType()
+                       .GetMember(o.ToString()).First()
+                       .GetCustomAttributes(false)
+                       .OfType<DisplayAttribute>()
+                       .LastOrDefault();
+        if (display != null)
+        {
+            result = display.GetName();
+        }
+
+        return result ?? o.ToString();
+    };
+
+    var values = Enum.GetValues(ViewData.ModelMetadata.ModelType).Cast<object>().Where(o => o.ToString().ToUpper() != "NONE")
+             .Select(v => new SelectListItem {
+                 Selected = Model.HasFlag((Enum)v),
+                 Text = v.ToString(),
+                 Value = ((int)v).ToString()
+             });
+
+    var name = ViewData["Name"].ToString();
+    var nameArr = $"{name}[]";
+
+    foreach (var value in values)
+    {
+        string chk = value.Selected ? " checked" : "";
+
+        <label>
+            <input type="checkbox" name="@nameArr" value="@value.Value" @chk />
+            @value.Text
+        </label>
+    }
+}

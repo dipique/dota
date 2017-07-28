@@ -7,8 +7,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Web.Mvc;
 
-using DotA.Model.Attributes;
 using DotA.Model;
+using DotA.Model.Attributes;
+using DotA.Model.Extensions;
 
 namespace DotA.WebEdit.Models
 {
@@ -43,29 +44,15 @@ namespace DotA.WebEdit.Models
         /// 
         /// </summary>
         /// <param name="dv"></param>
-        /// <param name="index">Index of the array, if applicable</param>
         /// <returns></returns>
-        public Expression<Func<DynSingleView<T>, TType>> GetExpression<TType>(DisplayValue dv, int index = 0)
+        public Expression<Func<DynSingleView<T>, TType>> GetExpression<TType>(DisplayValue dv)
         {
+            //if (dv.Type == DisplayValueType.DecimalList) throw new Exception("Cannot get expression for lists. Not here, anyway.");
+
             var param = Expression.Parameter(typeof(DynSingleView<T>));
             var instance = Expression.Property(param, nameof(DynSingleView<T>.Item));
             var propertyCall = Expression.Property(instance, dv.PropertyName);
-
-            if (typeof(TType) == typeof(Enum))
-            {
-                var convert = Expression.Convert(propertyCall, typeof(TType));
-                var lambda2 = Expression.Lambda<Func<DynSingleView<T>, TType>>(convert, param);
-                var o = new {
-                    Name = (TType)lambda2.Compile()(this)
-                };
-                var anonParam = Expression.Constant(o, o.GetType());
-                var anonProperty = Expression.Property(anonParam, nameof(o.Name));
-                var lambda3 = Expression.Lambda<Func<DynSingleView<T>, TType>>(anonProperty, param);
-                return lambda3;
-            }
-
-            var lambda = !dv.SrcProperty.PropertyType.IsArray ? Expression.Lambda<Func<DynSingleView<T>, TType>>(propertyCall, param)
-                                                              : Expression.Lambda<Func<DynSingleView<T>, TType>>(Expression.ArrayIndex(propertyCall, Expression.Constant(index)), param);
+            var lambda = Expression.Lambda<Func<DynSingleView<T>, TType>>(propertyCall, param);
             return lambda;
         }
 
@@ -105,7 +92,8 @@ namespace DotA.WebEdit.Models
             {
                 if (displayValues == null)
                     displayValues = srcType.GetProperties().Where(p => p.CanRead)
-                                                           .Where(p => !p.PropertyType.IsGenericType)
+                                                           .Where(p => !p.PropertyType.IsGenericType ||
+                                                                        p.PropertyType.GetGenericArguments()?.FirstOrDefault() == typeof(decimal))
                                                            .Where(p => p.GetCustomAttribute<NoDisplay>() == null)
                                                            .Select(p => new DisplayValue(p))
                                                            .OrderBy(dv => dv.DisplayOrder)
@@ -152,6 +140,9 @@ namespace DotA.WebEdit.Models
         public bool Editable { get; set; } = true;
         public int FieldOrder { get; set; }
 
+        public const int DEC_ARR_MAX = 7;
+        public int GetMaxIndex(object obj) => Type == DisplayValueType.DecimalList ? (((SrcProperty.GetValue<List<decimal>>(obj)))?.Count() ?? 0) - 1 : 0;
+
         public DisplayValue(PropertyInfo property)
         {
             SrcProperty = property;
@@ -164,7 +155,7 @@ namespace DotA.WebEdit.Models
             {
                 if (SrcProperty.PropertyType == typeof(string)) return DisplayValueType.String;
                 if (SrcProperty.PropertyType == typeof(decimal)) return DisplayValueType.Decimal;
-                if (SrcProperty.PropertyType.IsArray) return DisplayValueType.DecimalArray;
+                if (SrcProperty.PropertyType.GetGenericArguments()?.FirstOrDefault() == typeof(decimal)) return DisplayValueType.DecimalList;
                 if (SrcProperty.PropertyType.IsEnum) return SrcProperty.PropertyType.GetCustomAttribute<FlagsAttribute>() == null ? DisplayValueType.PickList
                                                                                                                                   : DisplayValueType.PickList_Multi;
                 return DisplayValueType.Other;
@@ -186,19 +177,17 @@ namespace DotA.WebEdit.Models
         public string GetValue(object src)
         {
             object value = null;
-            //try {
             value = SrcProperty.GetValue(src);
-            //} catch { }
 
             switch (Type)
             {                
-                case DisplayValueType.DecimalArray:
-                    return string.Join(" ", ((decimal[])value).Select(d => string.Format("{0:N}", d)));
+                case DisplayValueType.DecimalList:
+                    return string.Join(" ", ((List<decimal>)value).Select(d => string.Format("{0:N}", d)));
                 case DisplayValueType.Decimal:
                     return string.Format("{0:N}", value);
                 case DisplayValueType.PickList_Multi:
                 default:
-                    return value?.ToString();    //TODO: Handle flags
+                    return value?.ToString();
             }
         }
 
@@ -210,8 +199,8 @@ namespace DotA.WebEdit.Models
             {
                 switch (Type)
                 {
-                    case DisplayValueType.DecimalArray:
-                        value = val.Split(' ').Select(s => decimal.Parse(s)).ToArray();
+                    case DisplayValueType.DecimalList:
+                        value = val.Split(' ').Select(s => decimal.Parse(s)).ToList();
                         break;
                     case DisplayValueType.Decimal:
                         value = decimal.Parse(val);
@@ -279,7 +268,7 @@ namespace DotA.WebEdit.Models
     {
         Other = 0,
         Decimal,
-        DecimalArray,
+        DecimalList,
         String,
         PickList, //enum
         PickList_Multi //flags

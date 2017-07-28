@@ -50,6 +50,7 @@
     <Compile Include="DotaData.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Flashcards\CustomQuestion.cs" />
     <Compile Include="Flashcards\FlashcardMode.cs" />
     <Compile Include="Flashcards\QuestionResponse.cs" />

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 using DotA.Model;
@@ -11,6 +12,10 @@ namespace DotA
     {
         public List<Hero> Heroes { get; set; } = new List<Hero>();
         public List<Item> Items { get; set; } = new List<Item>();
+        public IEnumerable<Ability> Abilities
+        {
+            get => Heroes.SelectMany(h => h.Abilities);
+        }
 
         public List<QuestionResponse> QuestionResponses { get; set; } = new List<QuestionResponse>();
         public List<FlashcardMode> Modes { get; set; } = new List<FlashcardMode>();

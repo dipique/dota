@@ -1,0 +1,21 @@
+﻿@using DotA.Model;
+@using DotA.WebEdit.Models;
+@model DynSingleView<Ability>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+    @*@Html.ListBoxFor(m => m.Item.TargetType, Model.DisplayValues.First(dv => dv.PropertyName == "TargetType").PicklistOptionsAsListItems(Model.Item))*@
+        @Html.ListBox(Model.DisplayValues.First(dv => dv.PropertyName == "TargetType").PropertyName, Model.DisplayValues.First(dv => dv.PropertyName == "TargetType").PicklistOptionsAsListItems(Model.Item))
+    </div>
+</body>
+</html>
