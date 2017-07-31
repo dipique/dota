@@ -14,17 +14,12 @@ namespace DotA.Model
         /// <summary>
         /// Categorization of effect
         /// </summary>
-        public EffectClass Class
-        {
-            get => effectClass;
-            set
-            {
-                effectClass = value;
-                IsActive = typeof(EffectClass).GetField(value.ToString()).GetCustomAttributes(typeof(ActiveEffect), false)?.FirstOrDefault() != null;
-            }
-        }
-        private EffectClass effectClass = EffectClass.None;
-        public bool IsActive { get; set; }
+        public EffectClass Class { get; set; }
+
+        [NoDisplay]
+        public bool IsActive => typeof(EffectClass).GetField(Class.ToString())
+                                                   .GetCustomAttributes(typeof(ActiveEffect), false)
+                                                  ?.FirstOrDefault() != null;
 
         public string Description { get; set; }
 
@@ -37,9 +32,6 @@ namespace DotA.Model
 
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.None;
-
-        public DisableType DisableType { get; set; } = DisableType.None;        
-        public bool DisjointsProjectiles { get; set; } = false;
 
         [JID("SpellImmunityType")]
         public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.NO;

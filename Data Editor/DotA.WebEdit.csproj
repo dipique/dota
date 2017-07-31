@@ -194,6 +194,7 @@
     <Content Include="Views\Hero\Ability.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Enum.cshtml" />
     <Content Include="Views\Hero\Test.cshtml" />
+    <Content Include="Views\Shared\Effect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

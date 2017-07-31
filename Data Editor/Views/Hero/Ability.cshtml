@@ -15,8 +15,8 @@
             @{
                 foreach (var dv in Model.DisplayValues)
                 {
-                    @:<tr><td>@dv.PropertyDisplayName</td><td>
-                    if (!dv.Editable)
+                    <tr><td>@dv.PropertyDisplayName</td><td>
+                    @if (!dv.Editable)
                     {
                         switch (dv.Type)
                         {
@@ -48,34 +48,25 @@
                                 break;
                             case DisplayValueType.PickList_Multi:
                                 @Html.Editor($"{nameof(Model.Item)}.{dv.PropertyName}", new { Name = dv.PropertyName });
-                            @*@Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));*@
                                 break;
                             case DisplayValueType.PickList:
                             @Html.DropDownList($"{nameof(Model.Item)}.{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item));
                                 break;
                             case DisplayValueType.DecimalList:
-                                @Html.EditorFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to disply with levels
-                                @*@*int itemCount = dv.GetMaxIndex(Model.Item);
-                                for (int x = 0; x <= itemCount; x++)
-                                {
-                                    if (itemCount > 0)
-                                    {
-                                @Html.Label($" Lvl {x + 1}: ")
-                                    }
-                                @Html.Editor($"Item.{dv.PropertyName}[{x}]");
-                                    if (itemCount > 0)
-                                    {
-                                    <br />
-                                    }
-                                }*@
+                                @Html.EditorFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to display with levels
                                 break;
                         }
                     }
-                    @:</td></tr>
+                    </td></tr>
                     }
                 }
             <tr></tr>
         </table>        
         <input type="submit" name="Update" />
+        <h4>Effects</h4>
+            foreach(Effect effect in Model.Item.Effects)
+            {
+                @Html.Partial("Effect", new DynSingleView<Effect>(effect))
+            }
         <p />
-                }
+               }
