@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 using DotA.Model.Enums;
 using DotA.Model.Attributes;
+using DotA.Model;
 
 namespace DotA.Model
 {
@@ -135,14 +137,14 @@ namespace DotA.Model
                     }
                 }
 
-                if (IsNumericValue = isNumeric)
-                    NumericArray = numValues.ToArray();
+                if (IsNumericValue = isNumeric) //if isNumeric
+                    NumericList = numValues;
             }
         }
 
         public string ValueDest { get; set; }
-        public decimal NumericValue => NumericArray[0];
-        public decimal[] NumericArray { get; private set; } = new decimal[] { 0 };
+        public decimal NumericValue => NumericList[0];
+        public List<decimal> NumericList { get; private set; } = new List<decimal>() { 0m };
         public bool IsNumericValue { get; private set; } = false;
         public bool IsPercentage { get; set; } = false;
         public EffectClass AssociatedEffectClass { get; set; } = EffectClass.None;
@@ -184,15 +186,15 @@ namespace DotA.Model
                 //Set the property
                 var destProp = obj.GetType().GetProperty(propName);
                 if (destProp == null) continue;
-                if (destProp.PropertyType.IsArray) //All arrays are numeric and represent scaling with levels
+                if (destProp.PropertyType.IsList()) //All lists are numeric and represent scaling with levels
                 {
                     if (FlipNegative)
                     {
-                        destProp.SetValue(obj, NumericArray.Select(n => Math.Abs(n)).ToArray());
+                        destProp.SetValue(obj, NumericList.Select(n => Math.Abs(n)).ToList());
                     }
                     else
                     {
-                        destProp.SetValue(obj, NumericArray);
+                        destProp.SetValue(obj, NumericList);
                     }
                 }
                 else

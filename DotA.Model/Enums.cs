@@ -13,17 +13,19 @@ namespace DotA.Model.Enums
     [Prefix("DAMAGE_TYPE_")]
     public enum DamageType
     {
-        None,
+        NONE,
         PHYSICAL,
         MAGICAL,
         PURE
     }
 
-    [Prefix("SPELL_IMMUNITY_ENEMIES_")]
+    [Prefix("SPELL_IMMUNITY_")]
     public enum SpellImmunityPiercingType
     {
-        NO,
-        YES
+        ENEMIES_NO,
+        ENEMIES_YES,
+        ALLIES_NO,
+        ALLIES_YES
     }
 
     [Prefix("SPELL_DISPELLABLE_")]

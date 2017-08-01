@@ -46,6 +46,12 @@ namespace DotA.Model
         [JID("AbilityType")]
         public AbilityType AbilityType { get; set; } = AbilityType.BASIC;
 
+        [JID("AbilityUnitDamageType")]
+        public DamageType DamageType { get; set; } = DamageType.NONE;
+
+        [JID("SpellImmunityType")]
+        public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.ENEMIES_NO;
+
         [JID("AbilityCastRange")]
         public List<decimal> CastRange { get; set; } = new List<decimal>();
 
@@ -98,7 +104,8 @@ namespace DotA.Model
             foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
             {
                 var effect = new Effect() {
-                    Class = entry.AssociatedEffectClass
+                    Class = entry.AssociatedEffectClass,
+                    ParentName = Name
                 };
 
                 //set property to the entry value--effect frist, then the base item

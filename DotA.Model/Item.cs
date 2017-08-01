@@ -59,7 +59,8 @@ namespace DotA.Model
             foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
             {
                 var effect = new Effect() {
-                    Class = entry.AssociatedEffectClass
+                    Class = entry.AssociatedEffectClass,
+                    ParentName = Name
                 };
 
                 //set property to the entry value--effect frist, then the base item

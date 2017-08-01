@@ -16,7 +16,7 @@ namespace DotA.Model
     public class Hero : Parseable
     {
         [JID("AttackCapabilities")]
-        public AttackType? AttackType { get; set; }
+        public AttackType AttackType { get; set; } = AttackType.NO_ATTACK;
 
         [JID("AttackRange")]
         public decimal AttackRange { get; set; }

@@ -16,6 +16,8 @@ namespace DotA.Model
         /// </summary>
         public EffectClass Class { get; set; }
 
+        public string ParentName { get; set; }
+
         [NoDisplay]
         public bool IsActive => typeof(EffectClass).GetField(Class.ToString())
                                                    .GetCustomAttributes(typeof(ActiveEffect), false)
@@ -30,12 +32,6 @@ namespace DotA.Model
         /// </summary>
         public List<decimal> Amount { get; set; } = new List<decimal>();
 
-        [JID("AbilityUnitDamageType")]
-        public DamageType DamageType { get; set; } = DamageType.None;
-
-        [JID("SpellImmunityType")]
-        public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.NO;
-
         //Potential level-scaling properties
         public List<decimal> Duration { get; set; } = new List<decimal>();
 
@@ -45,18 +41,10 @@ namespace DotA.Model
         public List<decimal> EffectResetTime = new List<decimal>();
 
         public List<decimal> Chance = new List<decimal>() { 1 };
-        private List<decimal> baseDamage = new List<decimal>();
-        public List<decimal> BaseDamage //defaults to physical
-        {
-            get => baseDamage;
-            set
-            {
-                baseDamage = value;
-                DamageType = value?.Count() < 1 || value[0] == 0 ? DamageType.None
-                                                                 : DamageType.PHYSICAL;            
-            }
-        }
+        
+        public List<decimal> BaseDamage { get; set; }
 
+        [NoDisplay]
         public bool HasAOE => AOE > 0;
         public decimal AOE { get; set; } = 0;
     }

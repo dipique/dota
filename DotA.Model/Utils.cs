@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,5 +30,8 @@ namespace DotA.Model
             }
             return new string(retVal.ToArray()).Trim();
         }
+
+        public static bool IsList(this Type type) => type.IsGenericType &&
+                                                     typeof(IEnumerable).IsAssignableFrom(type);
     }
 }
