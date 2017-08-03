@@ -82,21 +82,50 @@ namespace DotA.Model.Enums
     {
         None = 0,
 
+        [JID("bonus_agility")]
+        Agility,
+
+        [JID("bonus_all_stats")]
+        All_Stats,
+
+        [JID("bonus_armor")]
+        Armor,
+
         [JID("corruption_armor", "negative_armor")]
         [FlipNegative]
         [ExpectedEntry("curruption_duration", nameof(Effect.Duration))]
         Armor_Corruption,
+
+        [JID("enfeeble_attack_reduction")]
+        Attack_Reduction,
+
+        [JID("base_attack_range")]
+        Attack_Range,
+
+        [JID("bonus_attack_speed")]
+        Attack_Speed,
 
         [JID("attack_speed_bonus_pct")]
         [Percentage]
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         Attack_Speed_Percent,
 
-        [JID("bash_change_melee")]
+        [JID("bash_chance")]
         [ValueDest(nameof(Effect.Chance))]
         [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
+        [ExpectedEntry("stun_duration", nameof(Effect.Duration))]
         [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
         [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
+        [ExpectedEntry("bonus_damage", nameof(Effect.BaseDamage))]
+        Bash,
+
+        [JID("bash_chance_melee")]
+        [ValueDest(nameof(Effect.Chance))]
+        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
+        [ExpectedEntry("stun_duration", nameof(Effect.Duration))]
+        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
+        [ExpectedEntry("bonus_chance_damage", nameof(Effect.BaseDamage))]
+        [ExpectedEntry("bonus_damage", nameof(Effect.BaseDamage))]
         Bash_Melee,
 
         [JID("bash_change_ranged")]
@@ -110,6 +139,15 @@ namespace DotA.Model.Enums
         [JID("blink_range")]
         Blink,
 
+        [JID("cast_range_bonus")]
+        Cast_Range,
+
+        [JID("damage_cleanse")]
+        Debuff_On_Damage,
+
+        [JID("bonus_cooldown")]
+        Cooldown_Reduction,
+
         [JID("crit_chance")]
         Crit,
 
@@ -117,16 +155,64 @@ namespace DotA.Model.Enums
         [JID("bonus_damage")]
         Damage,
 
+        [JID("damage_reduction")]
+        [FlipNegative]
+        [ExpectedEntry("reduction_duration", nameof(Effect.Duration))]
+        Damage_Reduction,
+
         [JID("sheep_duration")]
         [ValueDest(nameof(Effect.Duration))]
         Disable,
+
+        [JID("bonus_evasion")]
+        [Percentage]
+        Evasion,
+
+        [ActiveEffect]
+        [ValueDest(nameof(Ability.Cooldown))]
+        [JID("bonus_gold")]
+        [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
+        Gold,
+
+        [JID("health_bonus")]
+        Health,
+
+        [ActiveEffect]
+        [JID("health_restore")]
+        Health_Regen,
+
+        [JID("health_restore")]
+        Health_Restore,
+
+        [JID("bonus_intellect", "bonus_intelligence")]
+        Intelligence,
+
+        [ActiveEffect]
+        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        [JID("fade_time", "fade_delay")]
+        Invisibility,
 
         [Percentage]
         [JID("lifesteal_percent")]
         Lifesteal,
 
+        [JID("bonus_magical_armor")]
+        Magic_Resistance,
+
+        [JID("bonus_mana")]
+        Mana,
+
         [JID("mana_per_hit")]
         Mana_Burn,
+
+        [JID("mana_restore")]
+        Mana_Regen,
+
+        [JID("mana_restore")]
+        Mana_Restore,
+
+        [JID("bonus_movement")]
+        Movement_Speed,
 
         [ValueDest()]
         [Percentage]
@@ -137,95 +223,31 @@ namespace DotA.Model.Enums
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         Slow,
 
-        [JID("xp_bonus")]
-        XP_Gain,
-
-        [JID("bonus_cooldown")]
-        Cooldown_Reduction,
-
-        [JID("bonus_movement")]
-        Movement_Speed,
-
-        [JID("health_bonus")]
-        Health,
-
-        [JID("health_restore")]
-        Health_Restore,
-
-        [JID("mana_restore")]
-        Mana_Restore,
-
-        [JID("bonus_all_stats")]
-        All_Stats,
-
-        [JID("bonus_evasion")]
-        [Percentage]
-        Evasion,
-
-        [JID("bonus_armor")]
-        Armor,
-
         [Percentage]
         [JID("spell_amp")]
         Spell_Amplification,
 
-        [JID("bonus_attack_speed")]
-        Attack_Speed,
-
-        [JID("mana_restore")]
-        Mana_Regen,
-
-        [JID("bonus_mana")]
-        Mana,
-
-        [JID("bonus_intellect", "bonus_intelligence")]
-        Intelligence,
-
-        [JID("cast_range_bonus")]
-        Cast_Range,
-
-        [JID("bonus_magical_armor")]
-        Magic_Resistance,
-
-        [ActiveEffect]
-        [ValueDest(nameof(Ability.Cooldown))]
-        [JID("bonus_gold")]
-        [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
-        Gold,
-
         [JID("bonus_strength")]
         Strength,
 
-        [JID("base_attack_range")]
-        Attack_Range,
-
-        [JID("bonus_agility")]
-        Agility,
-
-        [ActiveEffect]
-        [JID("health_restore")]
-        Health_Regen,
-
         [Percentage]
         Spell_Lifesteal,
-
-        [ActiveEffect]
-        [JID("extra_spell_damage_precent")]
-        [Percentage]
-        Take_Extra_Magic_Damage,
 
         [ActiveEffect]
         [JID("stun_duration")]
         [ValueDest(nameof(Effect.Duration))]
         Stun,
 
+        [ActiveEffect]
+        [JID("extra_spell_damage_precent")]
+        [Percentage]
+        Take_Extra_Magic_Damage,
+
         [JID("true_sight_range")]
         True_Sight,
 
-        [ActiveEffect]
-        [ExpectedEntry("duration", nameof(Effect.Duration))]
-        [JID("fade_time", "fade_delay")]
-        Invisibility
+        [JID("xp_bonus")]
+        XP_Gain
     }
 
     [Prefix("DOTA_ABILITY_BEHAVIOR_")]
