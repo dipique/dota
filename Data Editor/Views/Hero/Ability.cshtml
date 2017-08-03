@@ -70,3 +70,8 @@
             }
         <p />
                }
+
+@using (Html.BeginForm("CreateEffect", "Hero", new { parentName = Model.Item.Name }))
+{
+    <input type="submit" name="New Effect" />
+}

@@ -94,5 +94,12 @@ namespace DotA.WebEdit.Controllers
 
             return DefaultView(model.Item.ParentName);
         }
+
+        public ActionResult CreateEffect(string parentName)
+        {
+            var item = new Effect() { ParentName = parentName };
+            var model = new DynSingleView<Effect>(item);
+            return View("CreateEffect", model);
+        }
     }
 }
