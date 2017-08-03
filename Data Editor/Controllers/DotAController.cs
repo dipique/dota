@@ -9,6 +9,7 @@ using DotA;
 using DotA.Model;
 using DotA.WebEdit.Models;
 using DotA.WebEdit.Helpers;
+using DotA.Model.Extensions;
 
 namespace DotA.WebEdit.Controllers
 {
@@ -74,6 +75,24 @@ namespace DotA.WebEdit.Controllers
 
             //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
             return DefaultView(model.Item.Name);
+        }
+
+        public ActionResult CreateEffect(DynSingleView<Effect> model)
+        {
+            string parentName = model.Item.ParentName;
+            if (string.IsNullOrEmpty(parentName)) return View();
+
+            var parentItem = db.GetParseablebyName(parentName);
+            if (parentItem == null) return View();
+
+            //Get the list of effects that this will be added to
+            var effectList = parentItem.GetType().GetProperties().FirstOrDefault(p => p.PropertyType == typeof(List<Effect>)).GetValue<List<Effect>>(parentItem);
+
+            //Add it and save
+            effectList.Add(model.Item);
+            DotaData.Save(db, dataLocation);
+
+            return DefaultView(model.Item.ParentName);
         }
     }
 }

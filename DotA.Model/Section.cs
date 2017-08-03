@@ -6,7 +6,7 @@ using System.Reflection;
 
 using DotA.Model.Enums;
 using DotA.Model.Attributes;
-using DotA.Model;
+using DotA.Model.Extensions;
 
 namespace DotA.Model
 {

@@ -17,6 +17,10 @@ namespace DotA
             get => Heroes.SelectMany(h => h.Abilities);
         }
 
+        public IEnumerable<Parseable> GetParseableObjects => Heroes.Cast<Parseable>().Concat(Items);
+        public Parseable GetParseablebyName(string name) => GetParseableObjects.FirstOrDefault(o => o.Name == name);
+                                                                    
+
         public List<QuestionResponse> QuestionResponses { get; set; } = new List<QuestionResponse>();
         public List<FlashcardMode> Modes { get; set; } = new List<FlashcardMode>();
         public List<CustomQuestion> CustomQuestions { get; set; } = new List<CustomQuestion>();

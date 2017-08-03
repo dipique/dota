@@ -30,8 +30,5 @@ namespace DotA.Model
             }
             return new string(retVal.ToArray()).Trim();
         }
-
-        public static bool IsList(this Type type) => type.IsGenericType &&
-                                                     typeof(IEnumerable).IsAssignableFrom(type);
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 
 using DotA.Model.Attributes;
+using DotA.Model.Extensions;
 
 namespace DotA.Model
 {
@@ -69,6 +70,29 @@ namespace DotA.Model
                 return imgName;
             }
             set => imgName = value;
+        }
+
+        /// <summary>
+        /// Gets an item by name whether it's this item, an item that is one of its properties, or an item contained in a
+        /// list. As long as it's parseable.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Parseable GetItemByName(string name)
+        {
+            if (Name == name) return this; //hey it's me!
+
+            //see if it's in a property that is a list
+            return GetType().GetProperties()
+                            .Where(p => p.PropertyType.IsList())
+                            .Where(p => p.PropertyType.GetGenericArguments()[0].IsSubclassOf(typeof(Parseable)))
+                            .SelectMany(p => p.GetValue<List<Parseable>>(this))
+                            .FirstOrDefault(prop => prop.Name == name) ??
+                   //if not, try a normal property
+                   GetType().GetProperties()  
+                            .Where(p => p.PropertyType.IsSubclassOf(typeof(Parseable)))
+                            .Select(p => p.GetValue<Parseable>(this))
+                            .FirstOrDefault(prop => prop.Name == name);
         }
 
         [NoDisplay]
