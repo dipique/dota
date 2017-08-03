@@ -140,6 +140,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DotAController.cs" />
     <Compile Include="Controllers\HeroController.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Global.asax.cs">
@@ -147,6 +148,7 @@
     </Compile>
     <Compile Include="Helpers\CustomModelMetadataProvider.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
+    <Compile Include="Models\CreateViewModel.cs" />
     <Compile Include="Models\DynView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -195,9 +197,12 @@
     <Content Include="Views\Shared\EditorTemplates\Enum.cshtml" />
     <Content Include="Views\Hero\Test.cshtml" />
     <Content Include="Views\Shared\Effect.cshtml" />
+    <Content Include="Views\Hero\Create.cshtml" />
+    <Content Include="Views\Shared\CreateEffect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\DotA\" />
     <Folder Include="Views\Item\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
