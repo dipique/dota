@@ -68,10 +68,10 @@
             {
                 @Html.Partial("Effect", new DynSingleView<Effect>(effect))
             }
-        <p />
                }
 
-@using (Html.BeginForm("CreateEffect", "Hero", new { parentName = Model.Item.Name }))
+@using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
 {
-    <input type="submit" name="New Effect" />
+    <input type="submit" name="newEffect" value="New Effect"/>
 }
+<p />

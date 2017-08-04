@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -86,7 +87,8 @@ namespace DotA.Model
             return GetType().GetProperties()
                             .Where(p => p.PropertyType.IsList())
                             .Where(p => p.PropertyType.GetGenericArguments()[0].IsSubclassOf(typeof(Parseable)))
-                            .SelectMany(p => p.GetValue<List<Parseable>>(this))
+                            .SelectMany(p => p.GetListValue<Parseable>(this))
+                            .Cast<Parseable>()
                             .FirstOrDefault(prop => prop.Name == name) ??
                    //if not, try a normal property
                    GetType().GetProperties()  

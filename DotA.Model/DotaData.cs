@@ -12,13 +12,11 @@ namespace DotA
     {
         public List<Hero> Heroes { get; set; } = new List<Hero>();
         public List<Item> Items { get; set; } = new List<Item>();
-        public IEnumerable<Ability> Abilities
-        {
-            get => Heroes.SelectMany(h => h.Abilities);
-        }
 
+        public IEnumerable<Ability> Abilities => Heroes.SelectMany(h => h.Abilities);
         public IEnumerable<Parseable> GetParseableObjects => Heroes.Cast<Parseable>().Concat(Items);
-        public Parseable GetParseablebyName(string name) => GetParseableObjects.FirstOrDefault(o => o.Name == name);
+        public Parseable GetParseablebyName(string name) => GetParseableObjects.Select(o => o.GetItemByName(name))
+                                                                               .FirstOrDefault(o => o != null);
                                                                     
 
         public List<QuestionResponse> QuestionResponses { get; set; } = new List<QuestionResponse>();
