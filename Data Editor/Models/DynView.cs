@@ -128,7 +128,7 @@ namespace DotA.WebEdit.Models
         public DisplayValue(PropertyInfo property)
         {
             SrcProperty = property;
-            Editable = property.GetCustomAttribute<DisplayOnly>() == null;
+            Editable = property.CanWrite && (property.GetCustomAttribute<DisplayOnly>() == null);
         }
 
         public DisplayValueType Type

@@ -30,10 +30,8 @@ namespace DotA.Model
         [JID("MovementTurnRate")]
         public decimal TurnRate { get; set; }
 
-        [DisplayOnly]
         public decimal BaseHealth => 200;
 
-        [DisplayOnly]
         public decimal BaseMana => 75;
 
         [JID("StatusManaRegen")]

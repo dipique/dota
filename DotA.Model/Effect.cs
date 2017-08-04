@@ -9,7 +9,7 @@ namespace DotA.Model
 {
     [DefaultEntryProperty(nameof(Amount))]
     [Serializable]
-    public class Effect
+    public class Effect 
     {
         /// <summary>
         /// Categorization of effect
