@@ -18,23 +18,25 @@ namespace DotA.Model
         public virtual decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
         public virtual decimal Intelligence(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Intelligence, EffectClass.All_Stats }, lvl);
 
-        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Active.Effects.Where(e => classes.Any(c => c == e.Class))
+        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Ability.Effects.Where(e => classes.Any(c => c == e.Class))
                                                                                               .Sum(e => e.Amount[lvl - 1]);
 
-        public Ability Active { get; set; } = new Ability();
-        public List<Effect> Passives { get; set; } = new List<Effect>(); //TODO: Save passives in a separate list
+        public Ability Ability { get; set; } = new Ability();
 
-        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Active, Active.ActiveEffect));
+        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability, Ability.ActiveEffect));
 
         public bool IsRecipe => (Recipe?.Count() ?? 0) > 0;
 
+        /// <summary>
+        /// The notion of having an ability in the item doesn't really exist in the source files, so we need to give the ability a name
+        /// </summary>
         public override string Name
         {
             get => base.Name;
             set
             {
                 base.Name = value;
-                Active.Name = $"{value}{ABILITY_NAME_SUFFIX}";
+                Ability.Name = $"{value}{ABILITY_NAME_SUFFIX}";
             }
         }
 
@@ -75,18 +77,18 @@ namespace DotA.Model
                 };
 
                 //set property to the entry value--effect frist, then the base item
-                entry.Apply(effect, Active, this);
+                entry.Apply(effect, Ability, this);
 
                 //Now, get any entries associated with it
                 foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
-                    entry.Apply(effect, Active, this);
+                    entry.Apply(effect, Ability, this);
                 }
 
                 //Add the entry
-                Active.Effects.Add(effect);
+                Ability.Effects.Add(effect);
             }
         }
 

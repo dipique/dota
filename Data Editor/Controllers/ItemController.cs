@@ -16,7 +16,7 @@ namespace DotA.WebEdit.Controllers
         public override ActionResult Index() => View("Items", new DynMultiView<Item>(db.Items));
 
         public ActionResult Item(string itemName) => View("ItemView", new DynSingleView<Item>(db.Items.FirstOrDefault(h => h.Name == itemName) ??
-                                                                                              db.Items.FirstOrDefault(h => h.Active.Name == itemName)));
+                                                                                              db.Items.FirstOrDefault(h => h.Ability.Name == itemName)));
         public override ActionResult DefaultView(string itemName) => Item(itemName);
     }
 }
