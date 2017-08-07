@@ -57,13 +57,13 @@ namespace DotA.WebEdit.Controllers
                 else
                 {
                     //see if anything has changed
-                    string newStrVal = dv.GetValue(model.Item);
-                    string oldStrVal = dv.GetValue(item);
+                    string newStrVal = dv.GetValueAsString(model.Item);
+                    string oldStrVal = dv.GetValueAsString(item);
                     if (newStrVal == oldStrVal) continue;
 
                     //if it has changed, set the change
                     updated = true;
-                    dv.SetValue(item, newStrVal);
+                    dv.SetValueFromString(item, newStrVal);
                 }
             }
 

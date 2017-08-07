@@ -54,6 +54,8 @@ namespace DotA.WebEdit.Models
             var lambda = Expression.Lambda<Func<DynSingleView<T>, TType>>(propertyCall, param);
             return lambda;
         }
+
+        public void CacheValues() => DisplayValues.ForEach(dv => dv.CachedValue = dv.SrcProperty.GetValue(Item));
     }
 
     /// <summary>
@@ -131,6 +133,11 @@ namespace DotA.WebEdit.Models
             Editable = property.CanWrite && (property.GetCustomAttribute<DisplayOnly>() == null);
         }
 
+        /// <summary>
+        /// This allows the property to briefly carry its value with it; DynSingleView.CacheValues will fill it
+        /// </summary>
+        public object CachedValue { get; set; }
+
         public DisplayValueType Type
         {
             get
@@ -149,14 +156,14 @@ namespace DotA.WebEdit.Models
                                                                                         : Enum.GetNames(SrcProperty.PropertyType);
         public List<SelectListItem> PicklistOptionsAsListItems(object src)
         {
-            var selections = GetValue(src).Split(',').Select(s => s.Trim());
+            var selections = GetValueAsString(src).Split(',').Select(s => s.Trim());
             return GetPicklistOptions().Select(s => new SelectListItem() {
                 Selected = selections.Any(sel => sel == s),
                 Text = s
             }).OrderByDescending(sl => sl.Selected).ToList();
         }
 
-        public string GetValue(object src)
+        public string GetValueAsString(object src)
         {
             object value = null;
             value = SrcProperty.GetValue(src);
@@ -173,7 +180,7 @@ namespace DotA.WebEdit.Models
             }
         }
 
-        public bool SetValue(object item, string val)
+        public bool SetValueFromString(object item, string val)
         {
             object value = null;
 

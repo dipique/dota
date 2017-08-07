@@ -13,9 +13,11 @@
 
         <table border="1">
             @{
+                var prefix = $"{nameof(Model.Item)}.";
                 foreach (var dv in Model.DisplayValues)
                 {
                     <tr><td>@dv.PropertyDisplayName</td><td>
+
                     @if (!dv.Editable)
                     {
                         switch (dv.Type)
@@ -24,10 +26,10 @@
                                 @Html.DisplayFor(Model.GetExpression<decimal>(dv));
                                 break;
                             case DisplayValueType.PickList_Multi:
-                                @Html.ListBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item))
+                                @Html.ListBox($"{prefix}{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item))
                                 break;
                             case DisplayValueType.PickList:
-                                @Html.DropDownList($"{nameof(Model.Item)}.{dv.PropertyName}")
+                                @Html.DropDownList($"{prefix}{dv.PropertyName}")
                                 break;
                             case DisplayValueType.DecimalList:
                                 @Html.DisplayFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to disply with levels
@@ -44,14 +46,13 @@
                             case DisplayValueType.Decimal:
                             case DisplayValueType.String:
                             case DisplayValueType.Other:
-                            @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValue(Model.Item), new { @class = "form-control" });
+                                @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValueAsString(Model.Item));
                                 break;
+                            case DisplayValueType.PickList:
                             case DisplayValueType.PickList_Multi:
                                 @Html.Editor($"{nameof(Model.Item)}.{dv.PropertyName}", new { Name = dv.PropertyName });
                                 break;
-                            case DisplayValueType.PickList:
-                            @Html.DropDownList($"{nameof(Model.Item)}.{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item));
-                                break;
+                            //break;
                             case DisplayValueType.DecimalList:
                                 @Html.EditorFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to display with levels
                                 break;

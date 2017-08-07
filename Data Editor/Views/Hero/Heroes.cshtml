@@ -30,12 +30,12 @@
                 {
                     if (dv.PropertyName == "Name")
                     {
-                        var heroName = dv.GetValue(o);
-                        <td>@Html.ActionLink(dv.GetValue(o), "Hero", "Hero", new { heroName }, null)</td>
+                        var heroName = dv.GetValueAsString(o);
+                        <td>@Html.ActionLink(dv.GetValueAsString(o), "Hero", "Hero", new { heroName }, null)</td>
                     }
                     else
                     {
-                        <td>@dv.GetValue(o)</td>
+                        <td>@dv.GetValueAsString(o)</td>
                     }
                 }
                 @:</tr>

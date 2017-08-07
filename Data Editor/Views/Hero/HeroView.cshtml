@@ -65,7 +65,6 @@
                         @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
                             break;
                         case DisplayValueType.PickList:
-                            //@Html.EnumDropDownListFor(Model.GetExpression<Enum>(dv));
                         @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
                             break;
                         case DisplayValueType.DecimalList:

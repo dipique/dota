@@ -44,7 +44,7 @@
                             case DisplayValueType.Decimal:
                             case DisplayValueType.String:
                             case DisplayValueType.Other:
-                                    @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValue(Model.Item), new { @class = "form-control" });
+                                    @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValueAsString(Model.Item), new { @class = "form-control" });
                                 break;
                             case DisplayValueType.PickList_Multi:
                                     @Html.Editor($"{nameof(Model.Item)}.{dv.PropertyName}", new { Name = dv.PropertyName });

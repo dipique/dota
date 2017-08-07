@@ -12,6 +12,7 @@ namespace DotA.Model
     {
         private const string RECIPE_IND = "item_recipe_";
         private const char RECIPE_SEP = ';';
+        private const string ABILITY_NAME_SUFFIX = "_ability";
 
         public virtual decimal Agility(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Agility, EffectClass.All_Stats }, lvl);
         public virtual decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
@@ -26,7 +27,17 @@ namespace DotA.Model
         public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Active, Active.ActiveEffect));
 
         public bool IsRecipe => (Recipe?.Count() ?? 0) > 0;
-        
+
+        public override string Name
+        {
+            get => base.Name;
+            set
+            {
+                base.Name = value;
+                Active.Name = $"{value}{ABILITY_NAME_SUFFIX}";
+            }
+        }
+
         /// <summary>
         /// Not yet fully implemented because other than actual recipe items, the component items aren't present in the files we're parsing
         /// </summary>
