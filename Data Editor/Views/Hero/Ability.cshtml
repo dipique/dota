@@ -41,16 +41,19 @@
                     }
                     else
                     {
+                        string modelPrefix = $"{nameof(Model.Item)}.";
+                        string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
+                        
                         switch (dv.Type)
                         {
                             case DisplayValueType.Decimal:
                             case DisplayValueType.String:
                             case DisplayValueType.Other:
-                                @Html.TextBox($"{nameof(Model.Item)}.{dv.PropertyName}", dv.GetValueAsString(Model.Item));
+                                @Html.TextBox(propName, dv.GetValueAsString(Model.Item));
                                 break;
                             case DisplayValueType.PickList:
                             case DisplayValueType.PickList_Multi:
-                                @Html.Editor($"{nameof(Model.Item)}.{dv.PropertyName}", new { Name = dv.PropertyName });
+                                @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = modelPrefix });
                                 break;
                             //break;
                             case DisplayValueType.DecimalList:

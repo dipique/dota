@@ -34,6 +34,7 @@
              });
 
     var name = ViewData["Name"].ToString();
+    var fullName = $"{ViewData["ModelPrefix"]?.ToString()}{name}";
     var nameArr = $"{name}[]";
 
     var flags = Model.GetType().GetCustomAttribute<FlagsAttribute>() != null;
@@ -52,7 +53,7 @@
     }
     else  //if this is a single option enum, use a dropdown
     {
-        <select name="@name">
+        <select name="@fullName">
 
         @foreach (var value in values)
         {
