@@ -8,7 +8,7 @@
 @* Credits: http://odetocode.com/blogs/scott/archive/2012/09/04/working-with-enums-and-templates-in-asp-net-mvc.aspx *@
 
 @{
-
+    //This isn't used yet, but we'll want it when we start putting pretty display names on enum values
     Func<object, string> GetDisplayName = o =>
     {
         var result = null as string;
@@ -25,15 +25,18 @@
         return result ?? o.ToString();
     };
 
-    var values = Enum.GetValues(ViewData.ModelMetadata.ModelType).Cast<object>().Where(o => o.ToString().ToUpper() != "NONE")
-             .Select(v => new SelectListItem
-             {
-                 Selected = Model.HasFlag((Enum)v),
-                 Text = v.ToString(),
-                 Value = ((int)v).ToString()
-             });
+    var values = Enum.GetValues(ViewData.ModelMetadata.ModelType).Cast<object>()
+                     .Where(o => o.ToString().ToUpper() != "NONE")
+                     .Select(v => new SelectListItem {
+                         Selected = Model.HasFlag((Enum)v),
+                         Text = v.ToString(),
+                         Value = ((int)v).ToString()
+                     });
 
-    var name = ViewData["Name"].ToString();
+    //all this BS is because for some reason beyond my comprehension, multi-select
+    //items can't have the Item. prefix but single-selects need them to function.
+    //So this allows us to support iether.
+    var name = ViewData["Name"]?.ToString(); //if this is blank the binding won't work
     var fullName = $"{ViewData["ModelPrefix"]?.ToString()}{name}";
     var nameArr = $"{name}[]";
 

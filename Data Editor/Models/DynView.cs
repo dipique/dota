@@ -122,6 +122,7 @@ namespace DotA.WebEdit.Models
         public PropertyInfo SrcProperty { get; set; } = null;
         public string PropertyName => SrcProperty?.Name;
         public bool Editable { get; set; } = true;
+        public bool PrimaryKey { get; set; } = false;
         public int FieldOrder { get; set; }
 
         public const int DEC_ARR_MAX = 7;
@@ -130,7 +131,8 @@ namespace DotA.WebEdit.Models
         public DisplayValue(PropertyInfo property)
         {
             SrcProperty = property;
-            Editable = property.CanWrite && (property.GetCustomAttribute<DisplayOnly>() == null);
+            Editable = property.CanWrite && (property.GetCustomAttribute<DisplayOnly>(true) == null);
+            PrimaryKey = property.GetCustomAttribute<PrimaryKey>(true) != null;
         }
 
         /// <summary>

@@ -181,9 +181,6 @@ namespace DotA.Model
                                obj.GetType().GetCustomAttribute<DefaultEntryProperty>()?.PropertyName;
                 if (string.IsNullOrEmpty(propName)) continue;
 
-                //try
-                //{
-                //Set the property
                 var destProp = obj.GetType().GetProperty(propName);
                 if (destProp == null) continue;
                 if (destProp.PropertyType.IsList()) //All lists are numeric and represent scaling with levels
@@ -227,11 +224,6 @@ namespace DotA.Model
                 }
 
                 return true;
-                //}
-                //catch
-                //{
-                //    throw;
-                //}
             }
 
             //if we're here, it means we never actually found a valid object

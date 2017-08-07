@@ -16,6 +16,7 @@ namespace DotA.Model
         /// </summary>
         public EffectClass Class { get; set; }
 
+        [PrimaryKey] //this is cringey... this isn't really a primary key, I'm SO SORRY!
         public string ParentName { get; set; }
 
         [NoDisplay]

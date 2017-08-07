@@ -30,6 +30,7 @@ namespace DotA.Model
         /// <summary>
         /// The notion of having an ability in the item doesn't really exist in the source files, so we need to give the ability a name
         /// </summary>
+        [PrimaryKey]
         public override string Name
         {
             get => base.Name;

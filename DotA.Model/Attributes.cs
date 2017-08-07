@@ -163,4 +163,9 @@ namespace DotA.Model.Attributes
             GroupName = group;
         }
     }
+
+    public sealed class PrimaryKey: Attribute
+    {
+        public PrimaryKey() { }
+    }
 }

@@ -46,6 +46,7 @@ namespace DotA.Model
         private string displayName = string.Empty;
 
         [FieldOrder(2)]
+        [PrimaryKey]
         public virtual string Name { get; set; }
 
         [FieldOrder(0)]

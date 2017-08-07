@@ -16,12 +16,23 @@
                 var prefix = $"{nameof(Model.Item)}.";
                 foreach (var dv in Model.DisplayValues)
                 {
+                    string modelPrefix = $"{nameof(Model.Item)}.";
+                    string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
+
                     <tr><td>@dv.PropertyDisplayName</td><td>
 
-                    @if (!dv.Editable)
+                    @if (dv.PrimaryKey)
                     {
+                        @Html.Hidden(propName);
+                    }
+                    @if (!dv.Editable || dv.PrimaryKey)
+                    {
+
                         switch (dv.Type)
                         {
+                            case DisplayValueType.String:
+                                @Html.Display(propName);
+                                break;
                             case DisplayValueType.Decimal:
                                 @Html.DisplayFor(Model.GetExpression<decimal>(dv));
                                 break;
@@ -41,15 +52,12 @@
                     }
                     else
                     {
-                        string modelPrefix = $"{nameof(Model.Item)}.";
-                        string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
-                        
                         switch (dv.Type)
                         {
                             case DisplayValueType.Decimal:
                             case DisplayValueType.String:
                             case DisplayValueType.Other:
-                                @Html.TextBox(propName, dv.GetValueAsString(Model.Item));
+                                @Html.Editor(propName);
                                 break;
                             case DisplayValueType.PickList:
                             case DisplayValueType.PickList_Multi:
@@ -62,8 +70,8 @@
                         }
                     }
                     </td></tr>
-                    }
                 }
+             }
             <tr></tr>
         </table>        
         <input type="submit" name="Update" />
@@ -72,7 +80,7 @@
             {
                 @Html.Partial("Effect", new DynSingleView<Effect>(effect))
             }
-               }
+      }
 
 @using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
 {
