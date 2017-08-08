@@ -41,6 +41,8 @@
     var fullName = $"{ViewData["ModelPrefix"]?.ToString()}{name}";
     var nameArr = $"{name}[]";
 
+    var disabled = (bool)(ViewData["Disabled"] ?? false) ? new { disabled = true } : null;
+
     var flags = Model.GetType().GetCustomAttribute<FlagsAttribute>() != null;
 
     if (flags) //if this is a flag/multi-choice enum
@@ -50,7 +52,14 @@
             {
                 string chk = value.Selected ? " checked" : "";
             <label>
-                <input type="checkbox" name="@nameArr" value="@value.Value" @chk />
+                @if (disabled?.disabled == true)
+                {
+                    <input type="checkbox" name="@nameArr" value="@value.Value" @chk disabled="disabled" />
+                }
+                else
+                {
+                    <input type="checkbox" name="@nameArr" value="@value.Value" @chk />
+                }
                 @value.Text
             </label>
             }
@@ -58,19 +67,6 @@
     }
     else  //if this is a single option enum, use a dropdown
     {
-        <select name="@fullName" style="">
-
-        @foreach (var value in values)
-        {
-            if (value.Selected)
-            {
-                <option value="@value.Value" selected="selected">@value.Text</option>
-            }
-            else
-            {
-                <option value="@value.Value">@value.Text</option>
-            }
-        }
-        </select>
+        @Html.DropDownList("", values, disabled)
     }
 }

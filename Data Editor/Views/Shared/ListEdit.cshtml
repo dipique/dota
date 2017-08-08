@@ -23,6 +23,8 @@
             itemCount = Model.Count();
         }
 
+        var disabled = (bool)(ViewData["Disabled"] ?? false);
+
         for (int x = 0; x < itemCount; x++)
         {
             var displayVal = x >= Model.Count() ? "0.00" : Model[x].ToString();
@@ -31,7 +33,14 @@
                 {
                     @Html.Raw($"{labelPrefix} {x + 1}: ");
                 }
-                <input class="text-box single-line" size="5" id="@name" name="@fullName" type="text" value="@displayVal">
+                @if (disabled)
+                {
+                    <input class="text-box single-line" size="5" id="@name" name="@fullName" type="text" value="@displayVal" disabled="disabled">
+                }
+                else
+                {
+                    <input class="text-box single-line" size="5" id="@name" name="@fullName" type="text" value="@displayVal">
+                }                
             </td>
         }
     }

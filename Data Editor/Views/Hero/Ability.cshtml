@@ -16,62 +16,37 @@
                 var prefix = $"{nameof(Model.Item)}.";
                 foreach (var dv in Model.DisplayValues)
                 {
-                    string modelPrefix = $"{nameof(Model.Item)}.";
                     string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
 
                     <tr><td>@dv.PropertyDisplayName</td><td>
-
+                    
+                    
                     @if (dv.PrimaryKey)
                     {
+                        //No updates work if we don't bind the primary key
                         @Html.Hidden(propName);
                     }
-                    @if (!dv.Editable || dv.PrimaryKey)
-                    {
 
-                        switch (dv.Type)
-                        {
-                            case DisplayValueType.String:
-                                @Html.Display(propName);
-                                break;
-                            case DisplayValueType.Decimal:
-                                @Html.DisplayFor(Model.GetExpression<decimal>(dv));
-                                break;
-                            case DisplayValueType.PickList_Multi:
-                                @Html.ListBox($"{prefix}{dv.PropertyName}", dv.PicklistOptionsAsListItems(Model.Item))
-                                break;
-                            case DisplayValueType.PickList:
-                                @Html.DropDownList($"{prefix}{dv.PropertyName}")
-                                break;
-                            case DisplayValueType.DecimalList:
-                                @Html.DisplayFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to disply with levels
-                                break;
-                            default:
-                                @Html.DisplayFor(Model.GetExpression<object>(dv));
-                                break;
-                        }
+                    @if (dv.Type == DisplayValueType.DecimalList)
+                    {
+                        var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
+                        var itemCount = value.Count() == 0 ? 4 : value.Count();
+                        var includeLabels = itemCount != 1;
+                            @Html.Partial("ListEdit",
+                                                  value,
+                                                  new ViewDataDictionary { { "Name", dv.PropertyName },
+                                                                    { "ModelPrefix", prefix },
+                                                                    { "IncludeLabels", includeLabels },
+                                                                    { "LabelPrefix", "Lvl" },
+                                                                    { "ItemCount", itemCount },
+                                                                    { "Disabled", !dv.Editable || dv.PrimaryKey}
+                                                  })
                     }
                     else
                     {
-                        switch (dv.Type)
-                        {
-                            //break;
-                            case DisplayValueType.DecimalList:
-                                var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
-                                var itemCount = value.Count() == 0 ? 4 : value.Count();
-                                var includeLabels = itemCount != 1;
-                                @Html.Partial("ListEdit",
-                                              value,
-                                              new ViewDataDictionary { { "Name", dv.PropertyName },
-                                                                       { "ModelPrefix", modelPrefix },
-                                                                       { "IncludeLabels", includeLabels },
-                                                                       { "LabelPrefix", "Lvl" },
-                                                                       { "ItemCount", itemCount }
-                                              })
-                                break;
-                            default:
-                                @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = modelPrefix });
-                                break;
-                        }
+                        var attribs = new { disabled = "disabled" };
+                        if (dv.Editable && !dv.PrimaryKey) { attribs = null; }
+                            @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = prefix, htmlAttributes = attribs });
                     }
                     </td></tr>
                 }
