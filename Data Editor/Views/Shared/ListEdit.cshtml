@@ -1,0 +1,39 @@
+﻿@using System.Collections.Generic;
+@{
+    Layout = null;
+}
+
+@model List<decimal>
+
+<table>
+    <tr>
+    @{
+        //the name so the elements bind properly
+        var name = ViewData["Name"]?.ToString(); //if this is blank the binding won't work
+        var fullName = $"{ViewData["ModelPrefix"]?.ToString()}{name}[]";
+
+        //labels displayed before each editor (ex: Lvl 1: [editor])
+        var includeLabels = (bool)(ViewData["IncludeLabels"] ?? false);
+        var labelPrefix = ViewData["LabelPrefix"]?.ToString() ?? string.Empty;
+
+        //the number of values that can be entered
+        var itemCount = (int)(ViewData["ItemCount"] ?? 0);
+        if (itemCount == 0)
+        {
+            itemCount = Model.Count();
+        }
+
+        for (int x = 0; x < itemCount; x++)
+        {
+            var displayVal = x >= Model.Count() ? "0.00" : Model[x].ToString();
+            <td>
+                @if (includeLabels)
+                {
+                    @Html.Raw($"{labelPrefix} {x + 1}: ");
+                }
+                <input class="text-box single-line" id="@name" name="@fullName" type="text" value="@displayVal">
+            </td>
+        }
+    }
+    </tr>
+</table>

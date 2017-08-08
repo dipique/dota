@@ -54,18 +54,19 @@
                     {
                         switch (dv.Type)
                         {
-                            case DisplayValueType.Decimal:
-                            case DisplayValueType.String:
-                            case DisplayValueType.Other:
-                                @Html.Editor(propName);
-                                break;
-                            case DisplayValueType.PickList:
-                            case DisplayValueType.PickList_Multi:
-                                @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = modelPrefix });
-                                break;
                             //break;
                             case DisplayValueType.DecimalList:
-                                @Html.EditorFor(Model.GetExpression<List<decimal>>(dv)); //TODO: adjust editor to display with levels
+                                @Html.Partial("ListEdit",
+                                              dv.SrcProperty.GetValue<List<decimal>>(Model.Item),
+                                              new ViewDataDictionary { { "Name", dv.PropertyName },
+                                                                       { "ModelPrefix", modelPrefix },
+                                                                       { "IncludeLabels", true },
+                                                                       { "LabelPrefix", "Lvl" },
+                                                                       { "ItemCount", 4 }
+                                              })
+                                break;
+                            default:
+                                @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = modelPrefix });
                                 break;
                         }
                     }

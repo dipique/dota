@@ -199,6 +199,7 @@
     <Content Include="Views\Shared\Effect.cshtml" />
     <Content Include="Views\Hero\Create.cshtml" />
     <Content Include="Views\Shared\CreateEffect.cshtml" />
+    <Content Include="Views\Shared\ListEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
