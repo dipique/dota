@@ -56,13 +56,16 @@
                         {
                             //break;
                             case DisplayValueType.DecimalList:
+                                var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
+                                var itemCount = value.Count() == 0 ? 4 : value.Count();
+                                var includeLabels = itemCount != 1;
                                 @Html.Partial("ListEdit",
-                                              dv.SrcProperty.GetValue<List<decimal>>(Model.Item),
+                                              value,
                                               new ViewDataDictionary { { "Name", dv.PropertyName },
                                                                        { "ModelPrefix", modelPrefix },
-                                                                       { "IncludeLabels", true },
+                                                                       { "IncludeLabels", includeLabels },
                                                                        { "LabelPrefix", "Lvl" },
-                                                                       { "ItemCount", 4 }
+                                                                       { "ItemCount", itemCount }
                                               })
                                 break;
                             default:

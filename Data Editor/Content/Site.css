@@ -22,3 +22,11 @@ select,
 textarea {
     max-width: 280px;
 }
+
+/* Scrolling text box */
+.chk-container {
+    border: 2px solid #ccc;
+    width: 600px;
+    height: 45px;
+    overflow-y: scroll;
+}

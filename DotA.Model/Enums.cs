@@ -105,6 +105,9 @@ namespace DotA.Model.Enums
         [JID("bonus_attack_speed")]
         Attack_Speed,
 
+        [JID("attack_speed_per_instance")]
+        Attack_Speed_Per_Instance,
+
         [JID("attack_speed_bonus_pct")]
         [Percentage]
         [ExpectedEntry("duration", nameof(Effect.Duration))]
@@ -155,6 +158,9 @@ namespace DotA.Model.Enums
         [JID("bonus_damage")]
         Damage,
 
+        [JID("bonus_damage_per_instance")]
+        Damage_Per_Instance,
+
         [JID("damage_reduction")]
         [FlipNegative]
         [ExpectedEntry("reduction_duration", nameof(Effect.Duration))]
@@ -180,6 +186,9 @@ namespace DotA.Model.Enums
         [ActiveEffect]
         [JID("health_restore")]
         Health_Regen,
+
+        [JID("health_regen_per_instance")]
+        Health_Regen_Per_Instance,
 
         [JID("health_restore")]
         Health_Restore,
@@ -218,6 +227,9 @@ namespace DotA.Model.Enums
         [Percentage]
         [JID("movement_speed_percent_bonus")]
         Movement_Speed_Pct,
+
+        [JID("move_speed_per_instance")]
+        Movement_Speed_Per_Instance,
 
         [JID("slow")]
         [ExpectedEntry("duration", nameof(Effect.Duration))]

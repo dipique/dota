@@ -27,7 +27,8 @@
 
     var values = Enum.GetValues(ViewData.ModelMetadata.ModelType).Cast<object>()
                      .Where(o => o.ToString().ToUpper() != "NONE")
-                     .Select(v => new SelectListItem {
+                     .Select(v => new SelectListItem
+                     {
                          Selected = Model.HasFlag((Enum)v),
                          Text = v.ToString(),
                          Value = ((int)v).ToString()
@@ -44,19 +45,20 @@
 
     if (flags) //if this is a flag/multi-choice enum
     {
-        foreach (var value in values)
-        {
-            string chk = value.Selected ? " checked" : "";
-
-        <label>
-            <input type="checkbox" name="@nameArr" value="@value.Value" @chk />
-            @value.Text
-        </label>
-        }
+        <div class="chk-container">
+            @foreach (var value in values)
+            {
+                string chk = value.Selected ? " checked" : "";
+            <label>
+                <input type="checkbox" name="@nameArr" value="@value.Value" @chk />
+                @value.Text
+            </label>
+            }
+        </div>
     }
     else  //if this is a single option enum, use a dropdown
     {
-        <select name="@fullName">
+        <select name="@fullName" style="">
 
         @foreach (var value in values)
         {
