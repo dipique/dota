@@ -77,6 +77,51 @@ namespace DotA.WebEdit.Controllers
             return DefaultView(model.Item.Name);
         }
 
+        public ActionResult EffectUpdate(DynSingleView<Effect> model)
+        {
+            //get the list of all effects
+            var effects = db.Abilities.SelectMany(a => a.Effects)
+                                      .Concat(db.Items.SelectMany(i => i.Ability.Effects));
+
+            //get the item with the matching name & class
+            var item = effects.FirstOrDefault(e => e.ParentName == model.Item.ParentName && e.Class == model.Item.Class);
+            if (item == null) return View();
+
+            //check all the values
+            bool updated = false;
+            foreach (var dv in model.DisplayValues.Where(dv => dv.Editable))
+            {
+                if (dv.Type == DisplayValueType.PickList_Multi)
+                {
+                    var newEnumValue = EnumHelper.ParseToEnumFlag(dv.SrcProperty.PropertyType, Request.Form, $"{dv.PropertyName}[]");
+                    var oldEnumValue = dv.SrcProperty.GetValue(model.Item);
+                    if (newEnumValue == oldEnumValue) continue;
+                    updated = true;
+                    dv.SrcProperty.SetValue(item, newEnumValue);
+                }
+                else
+                {
+                    //see if anything has changed
+                    string newStrVal = dv.GetValueAsString(model.Item);
+                    string oldStrVal = dv.GetValueAsString(item);
+                    if (newStrVal == oldStrVal) continue;
+
+                    //if it has changed, set the change
+                    updated = true;
+                    dv.SetValueFromString(item, newStrVal);
+                }
+            }
+
+            if (updated)
+            {
+                DotaData.Save(db, dataLocation);
+                Session[dataInd] = null; //forces data to be refreshed
+            }
+
+            //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
+            return DefaultView(model.Item.ParentName);
+        }
+
         public ActionResult CreateEffect(DynSingleView<Effect> model)
         {
             string parentName = model.Item.ParentName;

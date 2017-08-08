@@ -6,15 +6,13 @@
 
 @model DynSingleView<Hero>
 <!DOCTYPE html>
-
 <html>
-<head>
-    <meta name="viewport" content="width=device-width" />
+<head>    
     <title>Hero</title>
     <link href="@Url.Content("~/Content/site.css")" rel="stylesheet" type="text/css" />
-    @*@RenderSection("Styles", false);*@
 </head>
 <body>
+    <h1>Edit Hero</h1>
     @Html.ActionLink("Back to hero list", "Index")
     @using (Html.BeginForm("HeroUpdate", "Hero"))
     {
@@ -25,72 +23,48 @@
             <td>@*<img src="@Model.GetImage(Model.Item.ImgName)" alt="Image" />*@</td>
         </tr>
         @{
+            var prefix = $"{nameof(Model.Item)}.";
             foreach (var dv in Model.DisplayValues)
             {
-                @:<tr><td>@dv.PropertyDisplayName</td><td>
-                if (!dv.Editable)
-                {
-                    switch (dv.Type)
-                    {
-                        case DisplayValueType.Decimal:
-                            @Html.DisplayFor(Model.GetExpression<decimal>(dv));
-                            break;
-                        case DisplayValueType.DecimalList:
-                            {
-                                for (int x = 0; x <= dv.GetMaxIndex(Model.Item); x++)
-                                {
-                                    @Html.Label($"Lvl {x + 1}: ")
-                                    @Html.Label(dv.SrcProperty.GetValue<List<decimal>>(Model.Item)[x].ToString());
-                                }
-                                break;
-                            }
-                        case DisplayValueType.PickList_Multi:
-                            @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
-                            break;
-                        case DisplayValueType.PickList:
-                            @Html.DropDownList("Item." + dv.PropertyName)
-                            break;
-                        default:
-                            @Html.DisplayFor(Model.GetExpression<object>(dv));
-                            break;
-                    }
+                string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
 
-                }
-                else
-                {
-                    switch (dv.Type)
-                    {
-                        case DisplayValueType.Decimal:
-                        @Html.EditorFor(Model.GetExpression<decimal>(dv));
-                            break;
-                        case DisplayValueType.PickList_Multi:
-                        @Html.ListBox("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item));
-                            break;
-                        case DisplayValueType.PickList:
-                        @Html.DropDownList("Item." + dv.PropertyName, dv.PicklistOptionsAsListItems(Model.Item))
-                            break;
-                        case DisplayValueType.DecimalList:
-                            {
-                                for (int x = 0; x <= dv.GetMaxIndex(Model.Item); x++)
-                                {
-                                    @Html.Label($"Lvl {x + 1}: ")
-                                    @Html.Editor($"Item.{dv.PropertyName}[{x}]");
-                                }
-                                break;
-                            }
-                        default:
-                            @Html.EditorFor(Model.GetExpression<object>(dv));
-                            break;
-                    }
-                }
-                @:</td></tr>
+                <tr>
+                    <td>@dv.PropertyDisplayName</td>
+                    <td>
+                        @if (dv.PrimaryKey)
+                        {
+                            //No updates work if we don't bind the primary key
+                            @Html.Hidden(propName);
+                        }
+
+                        @if (dv.Type == DisplayValueType.DecimalList)
+                        {
+                            var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
+                            var itemCount = value.Count() == 0 ? 4 : value.Count();
+                            var includeLabels = itemCount != 1;
+                            @Html.Partial("ListEdit",
+                                value,
+                                new ViewDataDictionary { { "Name", dv.PropertyName },
+                                                         { "ModelPrefix", prefix },
+                                                         { "IncludeLabels", includeLabels },
+                                                         { "LabelPrefix", "Lvl" },
+                                                         { "ItemCount", itemCount },
+                                                         { "Disabled", !dv.Editable || dv.PrimaryKey}
+                                });
+                        }
+                        else
+                        {
+                            var attribs = new { disabled = "disabled" };
+                            if (dv.Editable && !dv.PrimaryKey) { attribs = null; }
+                            @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = prefix, htmlAttributes = attribs });
+                        }
+                    </td>
+                </tr>
             }
         }
-        <tr></tr>
     </table>
                 <input type="submit" name="Update" />
             }
-            @*}*@
     <h1>Abilities</h1>
     @{ 
         foreach(var ability in Model.Item.Abilities)
