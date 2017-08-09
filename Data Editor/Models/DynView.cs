@@ -69,6 +69,7 @@ namespace DotA.WebEdit.Models
 
         protected Type srcType = null;
         public string Title { get; set; }
+        public bool Delete { get; set; } = false;
         private List<DisplayValue> displayValues = null;
         public List<DisplayValue> DisplayValues
         {

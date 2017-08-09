@@ -122,6 +122,27 @@ namespace DotA.WebEdit.Controllers
             return DefaultView(model.Item.ParentName);
         }
 
+        public virtual ActionResult DeleteEffect(DynSingleView<Effect> model)
+        {
+            //get the matching ability
+            var abilities = db.Abilities.Concat(db.Items.Select(i => i.Ability));
+            var matchingAbility = abilities.FirstOrDefault(a => a.Effects.Any(e => e.ParentName == model.Item.ParentName 
+                                                                                && e.Class == model.Item.Class));
+            if (matchingAbility == null) return View();
+            var matchingEffect = matchingAbility.Effects.First(e => e.ParentName == model.Item.ParentName
+                                                                                && e.Class == model.Item.Class);
+
+            //delete the effect
+            matchingAbility.Effects.Remove(matchingEffect);
+
+            //save the changes
+            DotaData.Save(db, dataLocation);
+            Session[dataInd] = null; //forces data to be refreshed
+
+            //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
+            return DefaultView(model.Item.ParentName);
+        }
+
         public ActionResult CreateEffect(DynSingleView<Effect> model)
         {
             string parentName = model.Item.ParentName;
