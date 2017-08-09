@@ -54,12 +54,13 @@
             <tr></tr>
         </table>        
         <input type="submit" name="Update" />
+   }
         <h4>Effects</h4>
-            foreach(Effect effect in Model.Item.Effects)
+            @foreach(Effect effect in Model.Item.Effects)
             {
-                @Html.Partial("Effect", new DynSingleView<Effect>(effect))
+                @Html.Partial("Effect", new DynSingleView<Effect>(effect));
             }
-      }
+      
 
 @using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
 {

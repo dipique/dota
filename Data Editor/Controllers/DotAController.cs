@@ -77,7 +77,7 @@ namespace DotA.WebEdit.Controllers
             return DefaultView(model.Item.Name);
         }
 
-        public ActionResult EffectUpdate(DynSingleView<Effect> model)
+        public virtual ActionResult EffectUpdate(DynSingleView<Effect> model)
         {
             //get the list of all effects
             var effects = db.Abilities.SelectMany(a => a.Effects)

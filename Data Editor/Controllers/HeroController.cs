@@ -23,6 +23,7 @@ namespace DotA.WebEdit.Controllers
 
         public ActionResult HeroUpdate(DynSingleView<Hero> model) => ItemUpdate(model);
         public ActionResult AbilityUpdate(DynSingleView<Ability> model) => ItemUpdate(model);
+        public override ActionResult EffectUpdate(DynSingleView<Effect> model) => base.EffectUpdate(model);
 
         public ActionResult Test()
         {
