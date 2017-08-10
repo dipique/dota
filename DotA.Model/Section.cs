@@ -101,6 +101,15 @@ namespace DotA.Model
                 //Check if there an enum about this entry title
                 var matchingEffect = typeof(EffectClass).GetFields()
                                                         .FirstOrDefault(f => f.GetCustomAttribute<JID>()?.IDs?.Any(id => id == Title) ?? false);
+
+                //check for alt JID
+                if (matchingEffect == null)
+                {
+                    matchingEffect = typeof(EffectClass).GetFields()
+                                                        .FirstOrDefault(f => f.GetCustomAttribute<AltJID>()?.ID == Title);
+                    ValueDest = matchingEffect.GetCustomAttribute<AltJID>().Dest;
+                }
+
                 //and if so, read the metadata
                 if (matchingEffect != null)
                 {
@@ -109,7 +118,10 @@ namespace DotA.Model
                     FlipNegative = matchingEffect.GetCustomAttribute<FlipNegative>() != null;
                     ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
                     ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
-                    ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty;
+                    if (string.IsNullOrEmpty(ValueDest))
+                    {
+                        ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty ?? nameof(Effect.Amount);
+                    }
                 }
             }
         }

@@ -220,7 +220,7 @@ namespace DotA.Model.Enums
         Invisibility,
 
         [ActiveEffect]
-        [JID("knockback_distance_max", "knockback_distance", "knockback_max")]
+        [JID("knockback_distance_max", "knockback_distance", "knockback_max", "travel_distance")]
         [ExpectedEntry("knockback_duration", nameof(Effect.Duration))]
         Knockback,
 
@@ -261,6 +261,7 @@ namespace DotA.Model.Enums
         
         [JID("silence_radius")]
         [ValueDest(nameof(Ability.Radius))]
+        [AltJID("silence_duration", nameof(Effect.Duration))]
         [ExpectedEntry("duration", nameof(Effect.Duration))]
         Silence,
 

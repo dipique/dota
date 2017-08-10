@@ -29,6 +29,21 @@ namespace DotA.Model.Attributes
     }
 
     /// <summary>
+    /// Sometimes there will be an effect class identifier that needs to be assigned to a different
+    /// field. This attribute stores these so it can be assigned differently based on ID.
+    /// </summary>
+    public sealed class AltJID : Attribute
+    {
+        public string ID { get; set; }
+        public string Dest { get; set; }
+        public AltJID(string id, string dest)
+        {
+            ID = id;
+            Dest = dest;
+        }
+    }
+
+    /// <summary>
     /// Indicates what section types, if any, have a special handler within that implementation of Parseable
     /// </summary>
     public sealed class SpecialHandlerSectionMethod : Attribute
