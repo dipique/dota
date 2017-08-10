@@ -23,7 +23,7 @@ namespace DotA.Model
 
         public Ability Ability { get; set; } = new Ability();
 
-        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability, Ability.ActiveEffect));
+        public override void ApplyHeaderLevelEntries(List<Entry> entries) => entries.ForEach(e => e.Apply(this, Ability));
 
         public bool IsRecipe => (Recipe?.Count() ?? 0) > 0;
 

@@ -7,60 +7,67 @@
 
 @model DynSingleView<Ability>
 
+<table border="1">
     @using (Html.BeginForm("AbilityUpdate", "Hero"))
     {
         Html.AntiForgeryToken();
+        var prefix = $"{nameof(Model.Item)}.";
+        foreach (var dv in Model.DisplayValues)
+        {
+            string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
 
-        <table border="1">
-            @{
-                var prefix = $"{nameof(Model.Item)}.";
-                foreach (var dv in Model.DisplayValues)
-                {
-                    string propName = $"{nameof(Model.Item)}.{dv.PropertyName}";
+                <tr>
+                    <td>@dv.PropertyDisplayName</td>
+                    <td>
 
-                    <tr><td>@dv.PropertyDisplayName</td><td>
-                    
-                    
-                    @if (dv.PrimaryKey)
-                    {
-                        //No updates work if we don't bind the primary key
-                        @Html.Hidden(propName);
-                    }
 
-                    @if (dv.Type == DisplayValueType.DecimalList)
-                    {
-                        var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
-                        var itemCount = value.Count() == 0 ? 4 : value.Count();
-                        var includeLabels = itemCount != 1;
+                        @if (dv.PrimaryKey)
+                        {
+                            //No updates work if we don't bind the primary key
+                            @Html.Hidden(propName);
+                        }
+
+                        @if (dv.Type == DisplayValueType.DecimalList)
+                        {
+                            var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
+                            var itemCount = value.Count() == 0 ? 4 : value.Count();
+                            var includeLabels = itemCount != 1;
                             @Html.Partial("ListEdit",
-                                                  value,
-                                                  new ViewDataDictionary { { "Name", dv.PropertyName },
+                                           value,
+                                           new ViewDataDictionary { { "Name", dv.PropertyName },
                                                                     { "ModelPrefix", prefix },
                                                                     { "IncludeLabels", includeLabels },
                                                                     { "LabelPrefix", "Lvl" },
                                                                     { "ItemCount", itemCount },
                                                                     { "Disabled", !dv.Editable || dv.PrimaryKey}
-                                                  })
-                    }
-                    else
-                    {
-                        var attribs = new { disabled = "disabled" };
-                        if (dv.Editable && !dv.PrimaryKey) { attribs = null; }
+                                           })
+                        }
+                        else
+                        {
+                            var attribs = new { disabled = "disabled" };
+                            if (dv.Editable && !dv.PrimaryKey) { attribs = null; }
                             @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = prefix, htmlAttributes = attribs });
-                    }
-                    </td></tr>
-                }
-             }
-            <tr></tr>
-        </table>        
-        <input type="submit" name="Update" />
-   }
-        <h4>Effects</h4>
-            @foreach(Effect effect in Model.Item.Effects)
+                        }
+                    </td>
+                </tr>
+        }
+            <tr>
+                <td align="right" colspan="2">
+                    <input type="submit" name="Update" value="Update Ability" />
+                </td>
+            </tr>
+
+    }
+    <tr>
+        <td colspan="2">
+            <h4>Effects</h4>
+            @foreach (Effect effect in Model.Item.Effects)
             {
                 @Html.Partial("Effect", new DynSingleView<Effect>(effect));
             }
-      
+        </td>
+    </tr>
+</table>
 
 @using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
 {

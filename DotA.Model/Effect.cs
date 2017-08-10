@@ -34,6 +34,7 @@ namespace DotA.Model
         public List<decimal> Amount { get; set; } = new List<decimal>();
 
         //Potential level-scaling properties
+        [JID("duration")]
         public List<decimal> Duration { get; set; } = new List<decimal>();
 
         /// <summary>
@@ -43,10 +44,7 @@ namespace DotA.Model
 
         public List<decimal> Chance = new List<decimal>() { 1 };
         
-        public List<decimal> BaseDamage { get; set; }
-
-        [NoDisplay]
-        public bool HasAOE => AOE > 0;
-        public decimal AOE { get; set; } = 0;
+        [JID("damage")]
+        public List<decimal> Damage { get; set; }
     }
 }

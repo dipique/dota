@@ -31,26 +31,26 @@ namespace DotA.ParseTool
 
                 h.Talents.Add(new Talent() {
                     Level = 10,
-                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[0])?.MainEffect,
-                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[1])?.MainEffect
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[0])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[1])?.Effects.FirstOrDefault()
                 });
                 h.Talents.Add(new Talent()
                 {
                     Level = 15,
-                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[2])?.MainEffect,
-                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[3])?.MainEffect
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[2])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[3])?.Effects.FirstOrDefault()
                 });
                 h.Talents.Add(new Talent()
                 {
                     Level = 20,
-                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[4])?.MainEffect,
-                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[5])?.MainEffect
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[4])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[5])?.Effects.FirstOrDefault()
                 });
                 h.Talents.Add(new Talent()
                 {
                     Level = 25,
-                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[6])?.MainEffect,
-                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[7])?.MainEffect
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[6])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[7])?.Effects.FirstOrDefault()
                 });
 
             });

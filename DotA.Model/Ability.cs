@@ -49,6 +49,9 @@ namespace DotA.Model
         [JID("AbilityUnitDamageType")]
         public DamageType DamageType { get; set; } = DamageType.NONE;
 
+        [JID("AbilityDamage")]
+        public List<decimal> Damage { get; set; } = new List<decimal>();
+
         [JID("SpellImmunityType")]
         public SpellImmunityPiercingType PiercesSpellImmunity { get; set; } = SpellImmunityPiercingType.ENEMIES_NO;
 
@@ -78,23 +81,27 @@ namespace DotA.Model
         [JID("AbilityBehavior")]
         public EffectType EffectType { get; set; }
 
-        [NoDisplay]
-        public Effect ActiveEffect
-        {
-            get
-            {
-                var activeEffects = Effects.Where(e => e.IsActive);
-                if (activeEffects.Count() == 1) return activeEffects.First();
-                if (activeEffects.Count() == 0) return null;
+        /// <summary>
+        /// This may be projectile speed OR expansion speed (like ravage)
+        /// </summary>
+        [JID("bolt_speed", "blast_speed", "speed", "wave_speed")]
+        public List<decimal> ProjectileSpeed { get; set; } = new List<decimal>();
 
-                //TODO: stiffen up these parameters
-                return activeEffects.FirstOrDefault();
-            }
-        }
+        [JID("radius", "bolt_aoe")]
+        public List<decimal> Radius { get; set; } = new List<decimal>();
 
-        [NoDisplay]
-        public Effect MainEffect => ActiveEffect ?? Effects.FirstOrDefault();
+        [JID("AbilityDuration")]
+        public List<decimal> Duration { get; set; } = new List<decimal>();
 
+        /// <summary>
+        /// Here's how this assigns effects:
+        /// 
+        /// 1. Loop through all entries that have a uniquely assigned effectclass via JID (must be at least one or
+        ///    it wouldn't know what effect there was)
+        /// 2. Takes entries that are listed as expected entries and assign them
+        /// 3. Ignores unassigned entries
+        /// </summary>
+        /// <param name="s"></param>
         [SpecialHandlerSectionMethod("AbilitySpecial")]
         public void ParseAbilitySpecial(Section s)
         {
@@ -108,7 +115,7 @@ namespace DotA.Model
                     ParentName = Name
                 };
 
-                //set property to the entry value--effect frist, then the base item
+                //set property to the entry value--effect first, then the base item
                 entry.Apply(effect, this);
 
                 //Now, get any entries associated with it

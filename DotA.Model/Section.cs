@@ -153,6 +153,11 @@ namespace DotA.Model
         public bool IsDuration { get; set; } = false;
         public bool FlipNegative { get; set; } = false;
 
+        /// <summary>
+        /// tracks whether or not the entry's value has been assigned
+        /// </summary>
+        public bool Assigned { get; set; } = false;
+
         public Entry(string title, string value)
         {
             Title = title;
@@ -185,14 +190,8 @@ namespace DotA.Model
                 if (destProp == null) continue;
                 if (destProp.PropertyType.IsList()) //All lists are numeric and represent scaling with levels
                 {
-                    if (FlipNegative)
-                    {
-                        destProp.SetValue(obj, NumericList.Select(n => Math.Abs(n)).ToList());
-                    }
-                    else
-                    {
-                        destProp.SetValue(obj, NumericList);
-                    }
+                    var setValue = FlipNegative ? NumericList.Select(n => Math.Abs(n)).ToList() : NumericList; //get abs value if needed
+                    destProp.SetValue(obj, setValue);
                 }
                 else
                 {
@@ -223,7 +222,7 @@ namespace DotA.Model
                     }
                 }
 
-                return true;
+                return Assigned = true; //value has been successfully assigned
             }
 
             //if we're here, it means we never actually found a valid object
