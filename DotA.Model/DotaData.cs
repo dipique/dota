@@ -8,7 +8,7 @@ using DotA.Flashcards;
 
 namespace DotA
 {
-    public class DotaData
+    public class DotAData
     {
         public List<Hero> Heroes { get; set; } = new List<Hero>();
         public List<Item> Items { get; set; } = new List<Item>();
@@ -17,7 +17,7 @@ namespace DotA
         public IEnumerable<Parseable> GetParseableObjects => Heroes.Cast<Parseable>().Concat(Items);
         public Parseable GetParseablebyName(string name) => GetParseableObjects.Select(o => o.GetItemByName(name))
                                                                                .FirstOrDefault(o => o != null);
-                                                                    
+
 
         public List<QuestionResponse> QuestionResponses { get; set; } = new List<QuestionResponse>();
         public List<FlashcardMode> Modes { get; set; } = new List<FlashcardMode>();
@@ -25,24 +25,74 @@ namespace DotA
 
         public FlashcardMode CurrentMode { get; set; } = new FlashcardMode();
 
-        public static void Save(DotaData data, string filename = "dota.dat")
+        public void Save(string filename)
         {
-            XmlSerializer s = new XmlSerializer(typeof(DotaData));
+            XmlSerializer s = new XmlSerializer(typeof(DotAData));
             if (File.Exists(filename)) File.Delete(filename);
             FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-            s.Serialize(fs, data);
+            s.Serialize(fs, this);
             fs.Close();
         }
 
-        public static DotaData Load(string filename = "dota.dat")
+        public static DotAData LoadFromFile(string filename)
         {
-            if (!File.Exists(filename)) return new DotaData();
+            if (!File.Exists(filename)) return new DotAData();
 
-            XmlSerializer s = new XmlSerializer(typeof(DotaData));
+            XmlSerializer s = new XmlSerializer(typeof(DotAData));
             FileStream fs = new FileStream(filename, FileMode.Open);
-            var retVal = (DotaData)s.Deserialize(fs);
+            var retVal = (DotAData)s.Deserialize(fs);
             fs.Close();
             return retVal;
+        }
+
+        public DotAData() { }
+        public DotAData(string itemLocation, string heroLocation, string abilityLocation, string saveLocation = null)
+        {
+            Items = Parseable.ParseItems<Item>(File.ReadAllLines(itemLocation)).Where(i => i.Valid).ToList();
+            Heroes = Parseable.ParseItems<Hero>(File.ReadAllLines(heroLocation)).Where(h => h.Valid).ToList();
+
+            //get the abilities and try to assign them to the heroes
+            var abilities = Parseable.ParseItems<Ability>(File.ReadAllLines(abilityLocation));
+            Heroes.ForEach(h => {
+                foreach (var abilityName in h.AbilityList)
+                {
+                    var abilityMatch = abilities.FirstOrDefault(a => a.Name == abilityName);
+                    if (abilityMatch != null)
+                        h.Abilities.Add(abilityMatch);
+                }
+
+                //Try to assign the talents as well
+                if (h.TalentList.Count() != 8) return; // 8 is what it should be
+
+                h.Talents.Add(new Talent()
+                {
+                    Level = 10,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[0])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[1])?.Effects.FirstOrDefault()
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 15,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[2])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[3])?.Effects.FirstOrDefault()
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 20,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[4])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[5])?.Effects.FirstOrDefault()
+                });
+                h.Talents.Add(new Talent()
+                {
+                    Level = 25,
+                    Option1 = abilities.FirstOrDefault(a => a.Name == h.TalentList[6])?.Effects.FirstOrDefault(),
+                    Option2 = abilities.FirstOrDefault(a => a.Name == h.TalentList[7])?.Effects.FirstOrDefault()
+                });
+
+            });
+
+            if (!string.IsNullOrEmpty(saveLocation))
+                Save(saveLocation);
         }
     }
 }

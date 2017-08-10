@@ -36,7 +36,7 @@ namespace DotA.Model.Attributes
     {
         public string ID { get; set; }
         public string Dest { get; set; }
-        public AltJID(string id, string dest)
+        public AltJID(string dest, string id)
         {
             ID = id;
             Dest = dest;
@@ -87,11 +87,11 @@ namespace DotA.Model.Attributes
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public sealed class ExpectedEntry : Attribute
     {
-        public string Indicator { get; set; }
+        public string[] Indicators { get; set; }
         public string DestField { get; set; }
-        public ExpectedEntry(string ind, string dest)
+        public ExpectedEntry(string dest, params string[] ind)
         {
-            Indicator = ind;
+            Indicators = ind;
             DestField = dest;
         }
     }

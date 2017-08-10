@@ -92,12 +92,12 @@ namespace DotA.Model.Enums
         Armor,
 
         [JID("armor_aura")]
-        [ExpectedEntry("aura_radius", nameof(Ability.Radius))]
+        [ExpectedEntry(nameof(Ability.Radius), "aura_radius")]
         Armor_Aura,
 
         [JID("corruption_armor", "negative_armor")]
         [FlipNegative]
-        [ExpectedEntry("curruption_duration", nameof(Effect.Duration))]
+        [ExpectedEntry(nameof(Effect.Duration), "curruption_duration")]
         Armor_Corruption,
 
         [JID("enfeeble_attack_reduction", "armor_reduction")]
@@ -114,32 +114,32 @@ namespace DotA.Model.Enums
 
         [JID("attack_speed_bonus_pct")]
         [Percentage]
-        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        [ExpectedEntry(nameof(Effect.Duration), "duration", "epicenter_slow_duration_tooltip")]
         Attack_Speed_Percent,
+
+        [JID("overload_attack_slow", "epicenter_slow_as")]
+        [Percentage]
+        Attack_Speed_Slow,
 
         [JID("bash_chance")]
         [ValueDest(nameof(Effect.Chance))]
-        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("stun_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
-        [ExpectedEntry("bonus_chance_damage", nameof(Effect.Damage))]
-        [ExpectedEntry("bonus_damage", nameof(Effect.Damage))]
+        [ExpectedEntry(nameof(Effect.Duration), "bash_duration", "stun_duration")]
+        [ExpectedEntry(nameof(Effect.EffectResetTime), "bash_cooldown")]
+        [ExpectedEntry(nameof(Effect.Damage), "bonus_chance_damage", "bonus_damage")]
         Bash,
 
         [JID("bash_chance_melee")]
         [ValueDest(nameof(Effect.Chance))]
-        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("stun_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
-        [ExpectedEntry("bonus_chance_damage", nameof(Effect.Damage))]
-        [ExpectedEntry("bonus_damage", nameof(Effect.Damage))]
+        [ExpectedEntry(nameof(Effect.Duration), "bash_duration", "stun_duration")]
+        [ExpectedEntry(nameof(Effect.EffectResetTime), "bash_cooldown")]
+        [ExpectedEntry(nameof(Effect.Damage), "bonus_chance_damage", "bonus_damage")]
         Bash_Melee,
 
         [JID("bash_change_ranged")]
         [ValueDest(nameof(Effect.Chance))]
-        [ExpectedEntry("bash_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("bash_cooldown", nameof(Effect.EffectResetTime))]
-        [ExpectedEntry("bonus_chance_damage", nameof(Effect.Damage))]
+        [ExpectedEntry(nameof(Effect.Duration), "bash_duration")]
+        [ExpectedEntry(nameof(Effect.EffectResetTime), "bash_cooldown")]
+        [ExpectedEntry(nameof(Effect.Damage), "bonus_chance_damage")]
         Bash_Ranged,
 
         [ValueDest(nameof(Ability.CastRange))]
@@ -157,13 +157,18 @@ namespace DotA.Model.Enums
 
         [JID("crit_chance")]
         Crit,
-
-        [ValueDest("BaseDamage")]
+        
         [JID("bonus_damage")]
+        [ValueDest(nameof(Effect.Damage))]
         Damage,
 
+        [JID("caustic_finale_damage")]
+        [ValueDest(nameof(Effect.Damage))]
+        [ExpectedEntry(nameof(Ability.Radius), "caustic_finale_radius")]
+        Damage_AOE,
+
         [JID("damage_aura")]
-        [ExpectedEntry("aura_radius", nameof(Ability.Radius))]
+        [ExpectedEntry(nameof(Ability.Radius), "aura_radius")]
         Damage_Aura,
 
         [JID("trueshot_ranged_damage")]
@@ -173,9 +178,13 @@ namespace DotA.Model.Enums
         [JID("bonus_damage_per_instance")]
         Damage_Per_Instance,
 
+        [JID("damage_pct")]
+        [Percentage]
+        Damage_Pct,
+
         [JID("damage_reduction")]
         [FlipNegative]
-        [ExpectedEntry("reduction_duration", nameof(Effect.Duration))]
+        [ExpectedEntry(nameof(Effect.Duration), "reduction_duration")]
         Damage_Reduction,
 
         [JID("sheep_duration")]
@@ -184,8 +193,8 @@ namespace DotA.Model.Enums
 
         [ActiveEffect]
         [JID("blast_dot_duration", "tick_rate")] //this actually contains the number of ticks
-        [ExpectedEntry("blast_dot_damage", nameof(Effect.Damage))]
-        [ExpectedEntry("blast_speed", nameof(Ability.ProjectileSpeed))]
+        [ExpectedEntry(nameof(Effect.Damage), "blast_dot_damage")]
+        [ExpectedEntry(nameof(Ability.ProjectileSpeed), "blast_speed")]
         DOT_Ticks, //distinct from passive DOT like necro
 
         [JID("bonus_evasion")]
@@ -195,7 +204,7 @@ namespace DotA.Model.Enums
         [ActiveEffect]
         [ValueDest(nameof(Ability.Cooldown))]
         [JID("bonus_gold")]
-        [ExpectedEntry("transmute_cast_range_tooltip", "CastRange")]
+        [ExpectedEntry("CastRange", "transmute_cast_range_tooltip")]
         Gold,
 
         [JID("health_bonus")]
@@ -215,13 +224,13 @@ namespace DotA.Model.Enums
         Intelligence,
 
         [ActiveEffect]
-        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        [ExpectedEntry(nameof(Effect.Duration), "duration")]
         [JID("fade_time", "fade_delay")]
         Invisibility,
 
         [ActiveEffect]
         [JID("knockback_distance_max", "knockback_distance", "knockback_max", "travel_distance")]
-        [ExpectedEntry("knockback_duration", nameof(Effect.Duration))]
+        [ExpectedEntry(nameof(Effect.Duration), "knockback_duration")]
         Knockback,
 
         [Percentage]
@@ -230,8 +239,7 @@ namespace DotA.Model.Enums
 
         [Percentage]
         [JID("vampiric_aura")]
-        [ExpectedEntry("vampiric_aura_radius", nameof(Ability.Radius))]
-        [ExpectedEntry("aura_radius", nameof(Ability.Radius))]
+        [ExpectedEntry(nameof(Ability.Radius), "vampiric_aura_radius", "aura_radius")]
         Lifesteal_Aura,
 
         [JID("bonus_magical_armor")]
@@ -261,13 +269,15 @@ namespace DotA.Model.Enums
         
         [JID("silence_radius")]
         [ValueDest(nameof(Ability.Radius))]
-        [AltJID("silence_duration", nameof(Effect.Duration))]
-        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        [AltJID(nameof(Effect.Duration), "silence_duration")]
+        [ExpectedEntry(nameof(Effect.Duration), "duration")]
         Silence,
 
-        [JID("slow", "frost_arrows_movement_speed")]
+        [JID("slow", "frost_arrows_movement_speed", "blast_slow", "movement_slow", "overload_move_slow", "caustic_finale_slow", "epicenter_slow")]
         [FlipNegative]
-        [ExpectedEntry("duration", nameof(Effect.Duration))]
+        [Percentage]
+        [ExpectedEntry(nameof(Effect.Duration), "duration", "slow_duration", "caustic_finale_slow_duration", "tooltip_slow_duration")]
+        [ExpectedEntry(nameof(Ability.Radius), "slow_radius")]
         Slow,
 
         [Percentage]
@@ -281,7 +291,7 @@ namespace DotA.Model.Enums
         Spell_Lifesteal,
 
         [ActiveEffect]
-        [JID("stun_duration")]
+        [JID("stun_duration", "blast_stun_duration")]
         [ValueDest(nameof(Effect.Duration))]
         Stun,
 

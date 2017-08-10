@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.IO;
+using IO = System.IO;
 
 using DotA;
 using DotA.Model;
@@ -18,15 +18,37 @@ namespace DotA.WebEdit.Controllers
         /// <summary>
         /// Store the data in a persistent session
         /// </summary>
-        internal const string dataLocation = @"c:\users\dkaschel\desktop\dota.dat";
+        private const string itemLocation = @"c:\Data\dota\items.txt";
+        private const string heroLocation = @"c:\Data\dota\npc_heroes.txt";
+        private const string abilityLocation = @"c:\Data\dota\npc_abilities.txt";
+        private const string saveLocation = @"c:\Data\dota\dota.dat";
         internal const string dataInd = "data";
-        public DotaData db => (DotaData)(Session[dataInd] == null ? (Session[dataInd] = DotaData.Load(dataLocation))
-                                                                  : Session[dataInd]);
+        public DotAData db
+        {
+            get
+            {
+                if ((DotAData)(Session[dataInd]) == null)
+                    Session[dataInd] = IO.File.Exists(saveLocation) ? DotAData.LoadFromFile(saveLocation)
+                                                                    : new DotAData(itemLocation, heroLocation, abilityLocation, saveLocation);
+                return (DotAData)Session[dataInd];
+            }
+        }
 
         public ActionResult Image(string dir, string filename)
         {
-            var path = Path.Combine(dir, filename);
+            var path = IO.Path.Combine(dir, filename);
             return File(path, "image/png");
+        }
+
+        private void DeleteSourceData()
+        {
+            IO.File.Delete(saveLocation);
+            ClearSourceCache();
+        }
+
+        private void ClearSourceCache()
+        {
+            Session[dataInd] = null;
         }
 
         public abstract ActionResult DefaultView(string itemName);
@@ -35,7 +57,7 @@ namespace DotA.WebEdit.Controllers
         public ActionResult ItemUpdate<T>(DynSingleView<T> model) where T : Parseable
         {
             //get the db list of with that object
-            var allProps = typeof(DotaData).GetProperties();
+            var allProps = typeof(DotAData).GetProperties();
             var dbListProp = allProps.FirstOrDefault(p => p.PropertyType?.GetGenericArguments()?.FirstOrDefault() == typeof(T));
 
             //get the item with the matching name
@@ -69,8 +91,8 @@ namespace DotA.WebEdit.Controllers
 
             if (updated)
             {
-                DotaData.Save(db, dataLocation);
-                Session[dataInd] = null; //forces data to be refreshed
+                db.Save(saveLocation);
+                ClearSourceCache(); //forces data to be refreshed
             }
 
             //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
@@ -114,8 +136,8 @@ namespace DotA.WebEdit.Controllers
 
             if (updated)
             {
-                DotaData.Save(db, dataLocation);
-                Session[dataInd] = null; //forces data to be refreshed
+                db.Save(saveLocation);
+                ClearSourceCache(); //forces data to be refreshed
             }
 
             //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
@@ -136,8 +158,8 @@ namespace DotA.WebEdit.Controllers
             matchingAbility.Effects.Remove(matchingEffect);
 
             //save the changes
-            DotaData.Save(db, dataLocation);
-            Session[dataInd] = null; //forces data to be refreshed
+            db.Save(saveLocation);
+            ClearSourceCache(); //forces data to be refreshed
 
             //refresh the whole default page (the view will check the abilities for a match if there's no top level match)
             return DefaultView(model.Item.ParentName);
@@ -156,7 +178,7 @@ namespace DotA.WebEdit.Controllers
 
             //Add it and save
             effectList.Add(model.Item);
-            DotaData.Save(db, dataLocation);
+            db.Save(saveLocation);
 
             return DefaultView(model.Item.ParentName);
         }

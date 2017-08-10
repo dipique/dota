@@ -43,8 +43,8 @@ namespace DotA.Model
         public List<decimal> EffectResetTime = new List<decimal>();
 
         public List<decimal> Chance = new List<decimal>() { 1 };
-        
+
         [JID("damage")]
-        public List<decimal> Damage { get; set; }
+        public List<decimal> Damage { get; set; } = new List<decimal>();
     }
 }

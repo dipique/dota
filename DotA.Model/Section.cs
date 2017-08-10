@@ -107,7 +107,10 @@ namespace DotA.Model
                 {
                     matchingEffect = typeof(EffectClass).GetFields()
                                                         .FirstOrDefault(f => f.GetCustomAttribute<AltJID>()?.ID == Title);
-                    ValueDest = matchingEffect.GetCustomAttribute<AltJID>().Dest;
+                    if (matchingEffect != null)
+                    {
+                        ValueDest = matchingEffect.GetCustomAttribute<AltJID>().Dest;
+                    }
                 }
 
                 //and if so, read the metadata
@@ -117,7 +120,7 @@ namespace DotA.Model
                     IsPercentage = matchingEffect.GetCustomAttribute<Percentage>() != null;
                     FlipNegative = matchingEffect.GetCustomAttribute<FlipNegative>() != null;
                     ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
-                    ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().Select(a => (a.Indicator, a.DestField)).ToArray();
+                    ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().SelectMany(a => a.Indicators.Select(i => (i, a.DestField))).ToArray();
                     if (string.IsNullOrEmpty(ValueDest))
                     {
                         ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty ?? nameof(Effect.Amount);
