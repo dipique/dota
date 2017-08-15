@@ -52,6 +52,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="data\Attack Time and Hero Stats 7.06.xlsb" />
+    <None Include="data\dota.dat.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

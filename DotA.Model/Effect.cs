@@ -52,3 +52,32 @@ namespace DotA.Model
         public bool IsPassive { get; set; } = false;
     }
 }
+
+//locked off so it doesn't conflict while I'm writing it
+namespace SomeOther
+{
+    public class EffectClass
+    {
+        public string Name { get; set; }
+        public List<IndDestPair> ClassIndicators { get; set; } = new List<IndDestPair>();
+        public List<IndDestPair> AssociatedEntries { get; set; } = new List<IndDestPair>();
+        public bool FlipNegative { get; set; } = false;
+        public bool ActiveEffect { get; set; } = false;
+        public bool IsPercentage { get; set; } = false;
+
+    }
+
+    public struct IndDestPair //indicator-destination pairs (i.e. for this indicator, the field destination will be X)
+    {
+        public const string DEFAULT_DEST = nameof(DotA.Model.Effect.Amount);
+        public string Indicator { get; set; }
+        public string Destination { get; set; }
+
+        public IndDestPair(string ind, string dest)
+        {
+            Indicator = ind;
+            Destination = dest;
+        }
+    }
+
+}
