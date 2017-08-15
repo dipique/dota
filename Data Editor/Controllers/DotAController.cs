@@ -40,16 +40,19 @@ namespace DotA.WebEdit.Controllers
             return File(path, "image/png");
         }
 
+        public ActionResult RefreshData()
+        {
+            DeleteSourceData();
+            return Index();
+        }
+
         private void DeleteSourceData()
         {
             IO.File.Delete(saveLocation);
             ClearSourceCache();
         }
 
-        private void ClearSourceCache()
-        {
-            Session[dataInd] = null;
-        }
+        private void ClearSourceCache() => Session[dataInd] = null;
 
         public abstract ActionResult DefaultView(string itemName);
         public abstract ActionResult Index();

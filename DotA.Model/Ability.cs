@@ -105,6 +105,10 @@ namespace DotA.Model
         [SpecialHandlerSectionMethod("AbilitySpecial")]
         public void ParseAbilitySpecial(Section s)
         {
+            //For testing, so we can see how things are applying
+            //if (Name.Contains("wave_of"))
+            //{ }
+
             var entries = s.GetAllEntries();
 
             //Every entry with a JID will have it own effect.
@@ -123,7 +127,7 @@ namespace DotA.Model
                                                        .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
-                    entry.Apply(effect, this);
+                    associatedEntry.Apply(effect, this);
                 }
 
                 //Add the entry
