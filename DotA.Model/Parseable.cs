@@ -164,7 +164,8 @@ namespace DotA.Model
                 var effect = new Effect()
                 {
                     Class = entry.AssociatedEffectClass,
-                    ParentName = Name
+                    ParentName = Name, 
+                    IsPassive = !entry.ActiveEffect
                 };
 
                 //set property to the entry value--effect first, then any other items as specified

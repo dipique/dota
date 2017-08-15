@@ -48,5 +48,7 @@ namespace DotA.Model
 
         [JID("damage")]
         public List<decimal> Damage { get; set; } = new List<decimal>();
+
+        public bool IsPassive { get; set; } = false;
     }
 }

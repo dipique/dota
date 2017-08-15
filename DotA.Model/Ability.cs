@@ -81,6 +81,8 @@ namespace DotA.Model
         [JID("AbilityBehavior")]
         public EffectType EffectType { get; set; }
 
+        public bool IsPassive => EffectType.HasFlag(EffectType.PASSIVE);
+
         /// <summary>
         /// This may be projectile speed OR expansion speed (like ravage)
         /// </summary>
@@ -97,6 +99,14 @@ namespace DotA.Model
         public void ParseAbilitySpecial(Section s)
         {
             ParseAbilitySpecial(s, Effects, this);
+
+            //Set the effects to passive or active. The logic is:
+            //  1. If the ability is passive, so are the effects
+            //  2. If not, the effect is active if that ability type is active (decorated in the enum).
+            //  3. Otherwise the effect is passive.
+            //The enum decorations have already been applied, so here we just make sure there aren't active
+            //effects inside passive abilities.
+            if (IsPassive) Effects.ForEach(e => e.IsPassive = true);
         }
     }
 }
