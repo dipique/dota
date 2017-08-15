@@ -34,6 +34,8 @@ namespace DotA.Model
         public List<decimal> Amount { get; set; } = new List<decimal>();
 
         //Potential level-scaling properties
+
+        //Effect duration may actual be be stored at the ability level if not here.
         [JID("duration")]
         public List<decimal> Duration { get; set; } = new List<decimal>();
 

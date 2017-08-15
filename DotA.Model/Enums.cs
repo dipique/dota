@@ -182,6 +182,10 @@ namespace DotA.Model.Enums
         [Percentage]
         Damage_Pct,
 
+        [JID("trueshot_ranged_damage")]
+        [ValueDest(nameof(Effect.Damage))]
+        Damage_Ranged,
+
         [JID("damage_reduction")]
         [FlipNegative]
         [ExpectedEntry(nameof(Effect.Duration), "reduction_duration")]
@@ -193,6 +197,8 @@ namespace DotA.Model.Enums
 
         [ActiveEffect]
         [JID("blast_dot_duration", "tick_rate")] //this actually contains the number of ticks
+        [AltJID(nameof(Effect.Damage), "damage_per_second")]
+        [ExpectedEntry(nameof(Effect.Duration), "duration")]
         [ExpectedEntry(nameof(Effect.Damage), "blast_dot_damage")]
         [ExpectedEntry(nameof(Ability.ProjectileSpeed), "blast_speed")]
         DOT_Ticks, //distinct from passive DOT like necro
@@ -231,6 +237,7 @@ namespace DotA.Model.Enums
         [ActiveEffect]
         [JID("knockback_distance_max", "knockback_distance", "knockback_max", "travel_distance")]
         [ExpectedEntry(nameof(Effect.Duration), "knockback_duration")]
+        [ExpectedEntry(nameof(Ability.ProjectileSpeed), "wave_speed")]
         Knockback,
 
         [Percentage]
