@@ -93,15 +93,6 @@ namespace DotA.Model
         [JID("AbilityDuration")]
         public List<decimal> Duration { get; set; } = new List<decimal>();
 
-        /// <summary>
-        /// Here's how this assigns effects:
-        /// 
-        /// 1. Loop through all entries that have a uniquely assigned effectclass via JID (must be at least one or
-        ///    it wouldn't know what effect there was)
-        /// 2. Takes entries that are listed as expected entries and assign them
-        /// 3. Ignores unassigned entries
-        /// </summary>
-        /// <param name="s"></param>
         [SpecialHandlerSectionMethod("AbilitySpecial")]
         public void ParseAbilitySpecial(Section s)
         {

@@ -142,6 +142,14 @@ namespace DotA.Model
                                              ?.Select(d => ParseItem<T>(d))
                                              ?.ToList();
 
+        /// <summary>
+        /// Here's how this assigns effects:
+        /// 
+        /// 1. Loop through all entries that have a uniquely assigned effectclass via JID (must be at least one or
+        ///    it wouldn't know what effect there was)
+        /// 2. Takes entries that are listed as expected entries and assign them
+        /// 3. Ignores unassigned entries
+        /// </summary>
         public void ParseAbilitySpecial(Section s, List<Effect> effectList, params object[] applicationOrder)
         {
             //For testing, so we can see how things are applying
@@ -159,7 +167,7 @@ namespace DotA.Model
                     ParentName = Name
                 };
 
-                //set property to the entry value--effect first, then the base item
+                //set property to the entry value--effect first, then any other items as specified
                 entry.Apply(effect, applicationOrder);
 
                 //Now, get any entries associated with it
