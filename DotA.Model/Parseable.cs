@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 
 using DotA.Model.Attributes;
 using DotA.Model.Extensions;
+using DotA.Model.Enums;
 
 namespace DotA.Model
 {
@@ -140,5 +141,38 @@ namespace DotA.Model
                                              ?.Sections
                                              ?.Select(d => ParseItem<T>(d))
                                              ?.ToList();
+
+        public void ParseAbilitySpecial(Section s, List<Effect> effectList, params object[] applicationOrder)
+        {
+            //For testing, so we can see how things are applying
+            //if (Name.Contains("wave_of"))
+            //{ }
+
+            var entries = s.GetAllEntries();
+
+            //Every entry with a JID will have it own effect.
+            foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
+            {
+                var effect = new Effect()
+                {
+                    Class = entry.AssociatedEffectClass,
+                    ParentName = Name
+                };
+
+                //set property to the entry value--effect first, then the base item
+                entry.Apply(effect, applicationOrder);
+
+                //Now, get any entries associated with it
+                foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
+                                                       .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
+                {
+                    associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
+                    associatedEntry.Apply(effect, this);
+                }
+
+                //Add the entry
+                effectList.Add(effect);
+            }
+        }
     }
 }

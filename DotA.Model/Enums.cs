@@ -264,7 +264,9 @@ namespace DotA.Model.Enums
         [JID("mana_restore")]
         Mana_Restore,
 
-        [JID("bonus_movement")]
+        [JID("bonus_movement", "speed_bonus")]
+        [ExpectedEntry(nameof(Effect.Duration), "duration", "speed_duration")]
+        [ExpectedEntry(nameof(Ability.Radius), "speed_aoe")]
         Movement_Speed,
 
         [Percentage]
