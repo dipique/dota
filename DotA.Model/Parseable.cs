@@ -7,7 +7,6 @@ using System.Runtime.Serialization;
 
 using DotA.Model.Attributes;
 using DotA.Model.Extensions;
-using DotA.Model.Enums;
 
 namespace DotA.Model
 {
@@ -17,7 +16,7 @@ namespace DotA.Model
     {
         [IgnoreDataMember]
         [NoDisplay]
-        public virtual int MAX_ID => 255; //dota IDs only go up to 255
+        public virtual int MAX_ID => 255; //dota hero IDs only go up to 255
         private const char BEHAVIOR_SEP = '|';
 
         [NoDisplay]
@@ -52,6 +51,7 @@ namespace DotA.Model
 
         [FieldOrder(0)]
         [JID("ID","HeroID")]
+        [PrimaryKey]
         public string ID
         {
             get => id.ToString();
@@ -159,21 +159,21 @@ namespace DotA.Model
             var entries = s.GetAllEntries();
 
             //Every entry with a JID will have it own effect.
-            foreach (var entry in entries.Where(e => e.AssociatedEffectClass != EffectClass.None))
+            foreach (var entry in entries.Where(e => e.AssociatedEffectClass.Name != EffectClass.DEF_NAME))
             {
                 var effect = new Effect()
                 {
-                    Class = entry.AssociatedEffectClass,
+                    Class = entry.AssociatedEffectClass.Name,
                     ParentName = Name, 
-                    IsPassive = !entry.ActiveEffect
+                    IsPassive = !entry.AssociatedEffectClass.ActiveEffect
                 };
 
                 //set property to the entry value--effect first, then any other items as specified
                 entry.Apply(effect, applicationOrder);
 
                 //Now, get any entries associated with it
-                foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass == EffectClass.None)
-                                                       .Where(e => entry.ExpectedEntries.Select(ee => ee.name).Contains(e.Title)))
+                foreach (var associatedEntry in entries.Where(e => e.AssociatedEffectClass.Name != EffectClass.DEF_NAME)
+                                                       .Where(e => entry.ExpectedEntries?.Select(ee => ee.name).Contains(e.Title) ?? false))
                 {
                     associatedEntry.ValueDest = entry.ExpectedEntries.First(ee => ee.name == associatedEntry.Title).dest;
                     associatedEntry.Apply(effect, this);

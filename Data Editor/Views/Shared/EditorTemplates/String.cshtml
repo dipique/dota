@@ -1,0 +1,29 @@
+﻿@using System;
+@using System.Linq;
+@using System.Reflection;
+@using DotA.Model.Enums;
+
+@model string
+@using System.ComponentModel.DataAnnotations
+
+@{ 
+    var attributes = ViewData["htmlAttributes"];
+    var optionSet = (SelectionOptions)(ViewData["OptionSet"] ?? SelectionOptions.None);
+
+    //treat it normally if it's normal
+    if (optionSet == SelectionOptions.None)
+    {
+        @Html.TextBoxFor(m => m, attributes);
+    }
+    else
+    {
+        //but if not, make a list box based on the option type
+        var options = DotAData.GetOptions(optionSet).Select(o => new SelectListItem() {
+            Text = o,
+            Value = o,
+            Selected = Model == o
+        });
+
+        @Html.DropDownList("", options, attributes)
+    }
+}

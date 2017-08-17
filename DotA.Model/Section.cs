@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -99,32 +98,14 @@ namespace DotA.Model
                 title = value;
 
                 //Check if there an enum about this entry title
-                var matchingEffect = typeof(EffectClass).GetFields()
-                                                        .FirstOrDefault(f => f.GetCustomAttribute<JID>()?.IDs?.Any(id => id == Title) ?? false);
-
-                //check for alt JID
-                if (matchingEffect == null)
-                {
-                    matchingEffect = typeof(EffectClass).GetFields()
-                                                        .FirstOrDefault(f => f.GetCustomAttribute<AltJID>()?.ID == Title);
-                    if (matchingEffect != null)
-                    {
-                        ValueDest = matchingEffect.GetCustomAttribute<AltJID>().Dest;
-                    }
-                }
+                string dest = null;
+                var matchingEffect = DotAData.ECs.FirstOrDefault(ec => ec.HasIndicator(title, out dest));
 
                 //and if so, read the metadata
                 if (matchingEffect != null)
                 {
-                    AssociatedEffectClass = (EffectClass)Enum.Parse(typeof(EffectClass), matchingEffect.Name, false);
-                    IsPercentage = matchingEffect.GetCustomAttribute<Percentage>() != null;
-                    FlipNegative = matchingEffect.GetCustomAttribute<FlipNegative>() != null;
-                    ActiveEffect = matchingEffect.GetCustomAttribute<ActiveEffect>() != null;
-                    ExpectedEntries = matchingEffect.GetCustomAttributes<ExpectedEntry>().SelectMany(a => a.Indicators.Select(i => (i, a.DestField))).ToArray();
-                    if (string.IsNullOrEmpty(ValueDest))
-                    {
-                        ValueDest = matchingEffect.GetCustomAttribute<ValueDest>()?.DestProperty ?? nameof(Effect.Amount);
-                    }
+                    ValueDest = dest;
+                    AssociatedEffectClass = matchingEffect;
                 }
             }
         }
@@ -143,7 +124,7 @@ namespace DotA.Model
                 {
                     if (decimal.TryParse(val, out decimal d))
                     {
-                        numValues.Add(IsPercentage ? d / 100 : d);  //get rid of negative numbers
+                        numValues.Add(AssociatedEffectClass.IsPercentage ? d / 100 : d);  //get rid of negative numbers
                     }
                     else //if we find a single non-numeric value, stop trying to look for one
                     {
@@ -161,12 +142,9 @@ namespace DotA.Model
         public decimal NumericValue => NumericList[0];
         public List<decimal> NumericList { get; private set; } = new List<decimal>() { 0m };
         public bool IsNumericValue { get; private set; } = false;
-        public bool IsPercentage { get; set; } = false;
-        public EffectClass AssociatedEffectClass { get; set; } = EffectClass.None;
-        public bool ActiveEffect { get; set; } = false;
+        public EffectClass AssociatedEffectClass { get; set; } = new EffectClass();
         public (string name, string dest)[] ExpectedEntries { get; set; }
         public bool IsDuration { get; set; } = false;
-        public bool FlipNegative { get; set; } = false;
 
         /// <summary>
         /// tracks whether or not the entry's value has been assigned
@@ -205,7 +183,8 @@ namespace DotA.Model
                 if (destProp == null) continue;
                 if (destProp.PropertyType.IsList()) //All lists are numeric and represent scaling with levels
                 {
-                    var setValue = FlipNegative ? NumericList.Select(n => Math.Abs(n)).ToList() : NumericList; //get abs value if needed
+                    var setValue = AssociatedEffectClass.FlipNegative ? NumericList.Select(n => Math.Abs(n)).ToList() 
+                                                                      : NumericList; //get abs value if needed
                     destProp.SetValue(obj, setValue);
                 }
                 else
@@ -214,8 +193,9 @@ namespace DotA.Model
                     if (destProp.PropertyType == typeof(decimal))
                     {
                         //check if it a percentage
-                        var divisor = (!IsPercentage && destProp.GetCustomAttribute<Percentage>() != null) ? 100 : 1;
-                        destProp.SetValue(obj, (FlipNegative ? Math.Abs(NumericValue) : NumericValue) / divisor);
+                        var divisor = (!AssociatedEffectClass.IsPercentage && destProp.GetCustomAttribute<Percentage>() != null) ? 100m : 1m;
+                        var value = AssociatedEffectClass.FlipNegative ? Math.Abs(NumericValue) : NumericValue;
+                        destProp.SetValue(obj, value / divisor);
 
                     }
                     else if (destProp.PropertyType.IsEnum)

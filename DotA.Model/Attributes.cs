@@ -1,5 +1,7 @@
 ﻿using System;
 
+using DotA.Model.Enums;
+
 namespace DotA.Model.Attributes
 {
     /// <summary>
@@ -68,34 +70,6 @@ namespace DotA.Model.Attributes
         }
     }
 
-    /// <summary>
-    /// Determines which field should store the value provided. If blank it will be
-    /// stored in the "Amount" field.
-    /// </summary>
-    public sealed class ValueDest : Attribute
-    {
-        public string DestProperty { get; set; }
-        public ValueDest(string prop = "Amount")
-        {
-            DestProperty = prop;
-        }
-    }
-
-    /// <summary>
-    /// For this effect class, we expect to see certain other attributes
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public sealed class ExpectedEntry : Attribute
-    {
-        public string[] Indicators { get; set; }
-        public string DestField { get; set; }
-        public ExpectedEntry(string dest, params string[] ind)
-        {
-            Indicators = ind;
-            DestField = dest;
-        }
-    }
-
     public sealed class InputHeader : Attribute
     {
         public string Header { get; set; }
@@ -114,6 +88,7 @@ namespace DotA.Model.Attributes
         }
     }
 
+    //TODO: Is anything actually using this? Behaviors are marked in enums, but where are they referenced?
     /// <summary>
     /// Indicates that a given effect should be assumed to be an active (passive is the default)
     /// </summary>
@@ -130,13 +105,13 @@ namespace DotA.Model.Attributes
         public Percentage() { }
     }
 
-    /// <summary>
-    /// Indicates that this comes as a negative number that needs to be flipped to a positive one
-    /// </summary>
-    public sealed class FlipNegative : Attribute
-    {
-        public FlipNegative() { }
-    }
+    ///// <summary>
+    ///// Indicates that this comes as a negative number that needs to be flipped to a positive one
+    ///// </summary>
+    //public sealed class FlipNegative : Attribute
+    //{
+    //    public FlipNegative() { }
+    //}
 
     /// <summary>
     /// Indicates that this should not be displayed
@@ -182,5 +157,15 @@ namespace DotA.Model.Attributes
     public sealed class PrimaryKey: Attribute
     {
         public PrimaryKey() { }
+    }
+
+    public sealed class Options: Attribute
+    {
+        public SelectionOptions Option { get; set; }
+
+        public Options(SelectionOptions option)
+        {
+            Option = option;
+        }
     }
 }

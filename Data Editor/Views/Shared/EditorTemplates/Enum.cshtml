@@ -36,7 +36,7 @@
 
     //all this BS is because for some reason beyond my comprehension, multi-select
     //items can't have the Item. prefix but single-selects need them to function.
-    //So this allows us to support iether.
+    //So this allows us to support either.
     var name = ViewData["Name"]?.ToString(); //if this is blank the binding won't work
     var fullName = $"{ViewData["ModelPrefix"]?.ToString()}{name}";
     var nameArr = $"{name}[]";

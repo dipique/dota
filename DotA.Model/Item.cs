@@ -14,12 +14,12 @@ namespace DotA.Model
         private const char RECIPE_SEP = ';';
         private const string ABILITY_NAME_SUFFIX = "_ability";
 
-        public virtual decimal Agility(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Agility, EffectClass.All_Stats }, lvl);
-        public virtual decimal Strength(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Strength, EffectClass.All_Stats }, lvl);
-        public virtual decimal Intelligence(int lvl = 1) => GetAmountByClass(new EffectClass[] { EffectClass.Intelligence, EffectClass.All_Stats }, lvl);
+        public virtual decimal Agility(int lvl = 1) => GetAmountByClass(lvl, "Agility", "All_Stats");
+        public virtual decimal Strength(int lvl = 1) => GetAmountByClass(lvl, "Strength", "All_Stats");
+        public virtual decimal Intelligence(int lvl = 1) => GetAmountByClass(lvl, "Intelligence", "All_Stats");
 
-        public decimal GetAmountByClass(EffectClass[] classes, int lvl = 1) => Ability.Effects.Where(e => classes.Any(c => c == e.Class))
-                                                                                              .Sum(e => e.Amount[lvl - 1]);
+        public decimal GetAmountByClass(int lvl = 1, params string[] classes) => Ability.Effects.Where(e => classes.Any(c => c == e.Class))
+                                                                                        .Sum(e => e.Amount[lvl - 1]);
 
         public Ability Ability { get; set; } = new Ability();
 

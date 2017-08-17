@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using DotA.Model;
 using DotA.Model.Attributes;
 using DotA.Model.Extensions;
+using DotA.Model.Enums;
 
 namespace DotA.WebEdit.Models
 {
@@ -213,6 +214,8 @@ namespace DotA.WebEdit.Models
             catch { return false; } //conversion unsuccessful
         }
 
+        public T GetValue<T>(object src) => SrcProperty.GetValue<T>(src);
+
         private string propertyDisplayName = string.Empty;
         public string PropertyDisplayName
         {
@@ -254,6 +257,10 @@ namespace DotA.WebEdit.Models
         }
         private string displayGroup = null;
         private int displayOrder = int.MaxValue;
+
+        public SelectionOptions SelectionOptions => SrcProperty.GetCustomAttribute<Options>()?.Option ?? SelectionOptions.None;
+
+        public bool DisabledForEdit => PrimaryKey || !Editable;
     }
 
     public enum DisplayValueType

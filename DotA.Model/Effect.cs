@@ -14,15 +14,14 @@ namespace DotA.Model
         /// <summary>
         /// Categorization of effect
         /// </summary>
-        public EffectClass Class { get; set; }
+        [Options(SelectionOptions.EffectClass)]
+        [PrimaryKey] //We have to use the combination of class and parent name to locate effects. It ain't fun.
+        public string Class { get; set; }
+
+        public EffectClass GetEffectClass() => DotAData.ECs.FirstOrDefault(ec => ec.Name == Class);
 
         [PrimaryKey] //this is cringey... this isn't really a primary key, I'm SO SORRY!
         public string ParentName { get; set; }
-
-        [NoDisplay]
-        public bool IsActive => typeof(EffectClass).GetField(Class.ToString())
-                                                   .GetCustomAttributes(typeof(ActiveEffect), false)
-                                                  ?.FirstOrDefault() != null;
 
         public string Description { get; set; }
 
@@ -53,31 +52,43 @@ namespace DotA.Model
     }
 }
 
-//locked off so it doesn't conflict while I'm writing it
-namespace SomeOther
+public class EffectClass
 {
-    public class EffectClass
+    public const string DEF_NAME = "None";
+    public string Name { get; set; } = DEF_NAME;
+    public List<IndDestPair> ClassIndicators { get; set; } = new List<IndDestPair>();
+    public List<IndDestPair> AssociatedEntries { get; set; } = new List<IndDestPair>();
+    public bool FlipNegative { get; set; } = false;
+    public bool ActiveEffect { get; set; } = false;
+    public bool IsPercentage { get; set; } = false;
+
+    public bool HasIndicator(string ind, out string dest)
     {
-        public string Name { get; set; }
-        public List<IndDestPair> ClassIndicators { get; set; } = new List<IndDestPair>();
-        public List<IndDestPair> AssociatedEntries { get; set; } = new List<IndDestPair>();
-        public bool FlipNegative { get; set; } = false;
-        public bool ActiveEffect { get; set; } = false;
-        public bool IsPercentage { get; set; } = false;
-
-    }
-
-    public struct IndDestPair //indicator-destination pairs (i.e. for this indicator, the field destination will be X)
-    {
-        public const string DEFAULT_DEST = nameof(DotA.Model.Effect.Amount);
-        public string Indicator { get; set; }
-        public string Destination { get; set; }
-
-        public IndDestPair(string ind, string dest)
+        var match = ClassIndicators.FirstOrDefault(i => i.Indicator == ind);
+        if (match == null)
         {
-            Indicator = ind;
-            Destination = dest;
+            dest = null;
+            return false;
         }
+
+        dest = match.Destination;
+        return true;
     }
 
+}
+
+//indicator-destination pairs (i.e. for this indicator, the field destination will be X)
+public class IndDestPair 
+{
+    public const string DEFAULT_DEST = nameof(DotA.Model.Effect.Amount);
+    public string Indicator { get; set; }
+    public string Destination { get; set; }
+
+    public IndDestPair(string ind, string dest)
+    {
+        Indicator = ind;
+        Destination = dest;
+    }
+
+    public IndDestPair() { }
 }

@@ -39,7 +39,7 @@
 
                         @if (dv.Type == DisplayValueType.DecimalList)
                         {
-                            var value = dv.SrcProperty.GetValue<List<decimal>>(Model.Item);
+                            var value = dv.GetValue<List<decimal>>(Model.Item);
                             var itemCount = value.Count() == 0 ? 4 : value.Count();
                             var includeLabels = itemCount != 1;
                             @Html.Partial("ListEdit",
@@ -49,14 +49,13 @@
                                                          { "IncludeLabels", includeLabels },
                                                          { "LabelPrefix", "Lvl" },
                                                          { "ItemCount", itemCount },
-                                                         { "Disabled", !dv.Editable || dv.PrimaryKey}
+                                                         { "Disabled", dv.DisabledForEdit}
                                 });
                         }
                         else
                         {
-                            var attribs = new { disabled = "disabled" };
-                            if (dv.Editable && !dv.PrimaryKey) { attribs = null; }
-                            @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = prefix, htmlAttributes = attribs });
+                            var attribs = dv.DisabledForEdit ? new { disabled = "disabled" } : null;
+                            @Html.Editor(propName, new { Name = dv.PropertyName, ModelPrefix = prefix, optionSet = dv.SelectionOptions, htmlAttributes = attribs });
                         }
                     </td>
                 </tr>
