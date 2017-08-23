@@ -66,10 +66,13 @@
             }
         </td>
     </tr>
+    <tr>
+        <td align="right" colspan="2">
+            @using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
+            {
+                <input type="submit" name="newEffect" value="New Effect" />
+            }
+        </td>
+    </tr>
 </table>
-
-@using (Html.BeginForm("NewEffectView", "Hero", new { parentName = Model.Item.Name }))
-{
-    <input type="submit" name="newEffect" value="New Effect"/>
-}
 <p />
