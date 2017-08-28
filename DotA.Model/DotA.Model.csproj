@@ -48,6 +48,7 @@
     <Compile Include="Ability.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="DotaData.cs" />
+    <Compile Include="DotASupplement.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />

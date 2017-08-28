@@ -15,13 +15,17 @@ namespace DotA.Model
         /// Categorization of effect
         /// </summary>
         [Options(SelectionOptions.EffectClass)]
-        [PrimaryKey] //We have to use the combination of class and parent name to locate effects. It ain't fun.
+        [DisplayOnly]
         public string Class { get; set; }
 
         public EffectClass GetEffectClass() => DotAData.ECs.FirstOrDefault(ec => ec.Name == Class);
 
-        [PrimaryKey] //this is cringey... this isn't really a primary key, I'm SO SORRY!
+        [DisplayOnly] //this is cringey... this isn't really a primary key, I'm SO SORRY!
         public string ParentName { get; set; }
+
+        [PrimaryKey]
+        [NoDisplay]
+        public string ID => $"{ParentName}.{Class}";
 
         public string Description { get; set; }
 
