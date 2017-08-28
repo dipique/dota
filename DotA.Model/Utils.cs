@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+
+using DotA.Model.Attributes;
 
 namespace DotA.Model
 {
@@ -33,7 +34,9 @@ namespace DotA.Model
 
 
         /// <summary>
-        /// TODO: This needs to support array/list indexes as well as nagivating to the correct effect using the "unique" ID
+        /// Call strings can either be in the form Property or Property[i] if an
+        /// index, or Property[uniqueStringID] if a collection such that the attribute PrimaryKey
+        /// is sufficient to find the correct item in the list.
         /// </summary>
         /// <param name="hierarchy"></param>
         /// <param name="target"></param>
@@ -44,7 +47,8 @@ namespace DotA.Model
             {
                 var prop = new PropertyCall(hierarchy[i]);
                 PropertyInfo propertyToGet = target.GetType().GetProperty(prop.PropertyName);
-                target = propertyToGet.GetValue(target, prop.IndexAsObjectArray);
+                target = prop.IndexType == IndexType.String ? GetPKMatchValue(target, prop, propertyToGet)
+                                                            : propertyToGet.GetValue(target, prop.IndexAsObjectArray);
             }
 
             var setProp = new PropertyCall(hierarchy.Last());
@@ -52,38 +56,82 @@ namespace DotA.Model
             propertyToSet.SetValue(target, value, setProp.IndexAsObjectArray);
         }
 
+        private static object GetPKMatchValue(object target, PropertyCall prop, PropertyInfo propertyToGet)
+        {
+            //first, get the enumerable target
+            var enumerableObj = propertyToGet.GetValue(target, null); //this is now an array, like Ability.Effects
+
+            //get the generic type of the target
+            Type genType = enumerableObj.GetType().GetGenericArguments()[0]; //this is now the type, like Effect
+
+            //get the property designated as the PrimaryKey using that attribute
+            var pkProp = genType.GetProperties().FirstOrDefault(pi => pi.GetCustomAttribute<PrimaryKey>() != null);
+
+            //create the expression
+            Func<object, bool> comparePK = new Func<object, bool>(o => pkProp.GetValue(o).ToString() == prop.StrIndex);
+
+            //Get the method that represents FirstOrDefault for the enumerable target
+            var fodMethod = enumerableObj.GetType().GetMethods()
+                                                   .Where(m => m.Name == nameof(Enumerable.FirstOrDefault))
+                                                   .FirstOrDefault(m => m.GetParameters().Count() == 1);
+
+            //use the expression as an input to the method call
+            return fodMethod.Invoke(enumerableObj, new object[] { comparePK });
+        }
+
         public class PropertyCall
         {
             private const int NOT_FOUND = -1;
             public int Index { get; set; } = NOT_FOUND;
+            public string StrIndex { get; set; }
             public string PropertyName { get; set; }
-            public bool HasIndex => Index == NOT_FOUND;
+            public bool HasIndex => IndexType == IndexType.None;
+            public IndexType IndexType { get; set; } = IndexType.None;
 
             public object[] IndexAsObjectArray => HasIndex ? null : new object[] { Index };
 
             /// <summary>
-            /// Call string scan either be in the form Property or Property[i] if an
-            /// index.
+            /// Call strings can either be in the form Property or Property[i] if an
+            /// index, or Property[uniqueStringID] if a collection such that the attribute PrimaryKey
+            /// is sufficient to find the correct item in the list.
             /// </summary>
             /// <param name="callString"></param>
             public PropertyCall(string callString)
             {
+                //Get the index, if there is one
                 var openBracketPosition = callString.IndexOf('[');
                 var closedBracketPosition = callString.IndexOf(']');
                 var indexLength = closedBracketPosition - openBracketPosition - 1;
+                var indexString = callString.Substring(openBracketPosition + 1, indexLength);
 
-                if (openBracketPosition != NOT_FOUND && closedBracketPosition != NOT_FOUND && 
-                    openBracketPosition < closedBracketPosition &&
-                    int.TryParse(callString.Substring(openBracketPosition + 1, indexLength), out int index))
-                {
-                    Index = index;
-                    PropertyName = callString.Substring(0, openBracketPosition);                    
-                }
-                else
+                //These conditions indicate that there isn't an index
+                if (openBracketPosition == NOT_FOUND || closedBracketPosition == NOT_FOUND || openBracketPosition > closedBracketPosition)
                 {
                     PropertyName = callString;
+                    return;
+                }
+
+                PropertyName = callString.Substring(0, openBracketPosition);
+
+                //If it's an integer index
+                if (int.TryParse(indexString, out int index))
+                {
+                    Index = index;
+                    IndexType = IndexType.Int;
+                }
+                else //it's a string index
+                {
+                    StrIndex = indexString;
+                    IndexType = IndexType.String;
                 }
             }
+        }
+
+        public enum IndexType
+        {
+            None = 0,
+            Int,
+            String
         }
     }
 }
